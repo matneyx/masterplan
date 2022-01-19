@@ -4,280 +4,274 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Text;
 using System.Windows.Forms;
-
 using Masterplan.Data;
 using Masterplan.Tools;
 
 namespace Masterplan.Controls
 {
-	partial class CardDeck : UserControl
-	{
-		public CardDeck()
-		{
-			InitializeComponent();
+    internal partial class CardDeck : UserControl
+    {
+        private const float _radius = 10;
 
-			SetStyle(ControlStyles.AllPaintingInWmPaint
-				| ControlStyles.OptimizedDoubleBuffer
-				| ControlStyles.ResizeRedraw
-				| ControlStyles.UserPaint, true);
+        private readonly StringFormat _centered = new StringFormat();
+        private readonly StringFormat _info = new StringFormat();
+        private readonly StringFormat _title = new StringFormat();
 
-			fCentred.Alignment = StringAlignment.Center;
-			fCentred.LineAlignment = StringAlignment.Center;
-			fCentred.Trimming = StringTrimming.EllipsisWord;
+        private List<Pair<EncounterCard, int>> _cards;
 
-			fTitle.Alignment = StringAlignment.Near;
-			fTitle.LineAlignment = StringAlignment.Center;
-			fTitle.Trimming = StringTrimming.Character;
+        private EncounterCard _hoverCard;
 
-			fInfo.Alignment = StringAlignment.Far;
-			fInfo.LineAlignment = StringAlignment.Center;
-			fInfo.Trimming = StringTrimming.Character;
-		}
+        private List<Pair<RectangleF, EncounterCard>> _regions;
+        private int _visibleCards;
 
-		public void SetCards(List<EncounterCard> cards)
-		{
-			fCards = new List<Pair<EncounterCard, int>>();
+        public EncounterCard TopCard
+        {
+            get
+            {
+                if (_cards == null || _cards.Count == 0)
+                    return null;
 
-			BinarySearchTree<string> titles = new BinarySearchTree<string>();
-			foreach (EncounterCard card in cards)
-				titles.Add(card.Title);
+                return _cards[0].First;
+            }
+        }
 
-			List<string> title_list = titles.SortedList;
-			foreach (string title in title_list)
-			{
-				Pair<EncounterCard, int> pair = new Pair<EncounterCard, int>();
+        public CardDeck()
+        {
+            InitializeComponent();
 
-				foreach (EncounterCard card in cards)
-				{
-					if (card.Title == title)
-					{
-						pair.First = card;
-						pair.Second += 1;
-					}
-				}
+            SetStyle(ControlStyles.AllPaintingInWmPaint
+                     | ControlStyles.OptimizedDoubleBuffer
+                     | ControlStyles.ResizeRedraw
+                     | ControlStyles.UserPaint, true);
 
-				fCards.Add(pair);
-			}
+            _centered.Alignment = StringAlignment.Center;
+            _centered.LineAlignment = StringAlignment.Center;
+            _centered.Trimming = StringTrimming.EllipsisWord;
 
-			Invalidate();
-		}
+            _title.Alignment = StringAlignment.Near;
+            _title.LineAlignment = StringAlignment.Center;
+            _title.Trimming = StringTrimming.Character;
 
-		public EncounterCard TopCard
-		{
-			get
-			{
-				if ((fCards == null) || (fCards.Count == 0))
-					return null;
+            _info.Alignment = StringAlignment.Far;
+            _info.LineAlignment = StringAlignment.Center;
+            _info.Trimming = StringTrimming.Character;
+        }
 
-				return fCards[0].First;
-			}
-		}
+        public void SetCards(List<EncounterCard> cards)
+        {
+            _cards = new List<Pair<EncounterCard, int>>();
 
-		List<Pair<EncounterCard, int>> fCards = null;
+            var titles = new BinarySearchTree<string>();
+            foreach (var card in cards)
+                titles.Add(card.Title);
 
-		StringFormat fCentred = new StringFormat();
-		StringFormat fTitle = new StringFormat();
-		StringFormat fInfo = new StringFormat();
+            var titleList = titles.SortedList;
+            foreach (var title in titleList)
+            {
+                var pair = new Pair<EncounterCard, int>();
 
-		float fRadius = 10;
-		int fVisibleCards = 0;
+                foreach (var card in cards)
+                    if (card.Title == title)
+                    {
+                        pair.First = card;
+                        pair.Second += 1;
+                    }
 
-		List<Pair<RectangleF, EncounterCard>> fRegions = null;
+                _cards.Add(pair);
+            }
 
-		public event EventHandler DeckOrderChanged;
+            Invalidate();
+        }
 
-		protected void OnDeckOrderChanged()
-		{
-			if (DeckOrderChanged != null)
-				DeckOrderChanged(this, new EventArgs());
-		}
+        public event EventHandler DeckOrderChanged;
 
-		#region Painting
+        private void OnDeckOrderChanged()
+        {
+            DeckOrderChanged?.Invoke(this, EventArgs.Empty);
+        }
 
-		protected override void OnPaint(PaintEventArgs e)
-		{
-			e.Graphics.FillRectangle(Brushes.Transparent, ClientRectangle);
+        protected override void OnPaint(PaintEventArgs e)
+        {
+            e.Graphics.FillRectangle(Brushes.Transparent, ClientRectangle);
 
-			if ((fCards == null) || (fCards.Count == 0))
-			{
-				e.Graphics.DrawString("(no cards)", Font, Brushes.Black, ClientRectangle, fCentred);
-				return;
-			}
+            if (_cards == null || _cards.Count == 0)
+            {
+                e.Graphics.DrawString("(no cards)", Font, Brushes.Black, ClientRectangle, _centered);
+                return;
+            }
 
-			e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
-			e.Graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
-			e.Graphics.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;
+            e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
+            e.Graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
+            e.Graphics.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;
 
-			RectangleF deck_rect = new RectangleF(ClientRectangle.X, ClientRectangle.Y, ClientRectangle.Width - 1, ClientRectangle.Height - 1);
+            var deckRect = new RectangleF(ClientRectangle.X, ClientRectangle.Y, ClientRectangle.Width - 1,
+                ClientRectangle.Height - 1);
 
-			fRegions = new List<Pair<RectangleF, EncounterCard>>();
+            _regions = new List<Pair<RectangleF, EncounterCard>>();
 
-			float card_delta_y = Font.Height * 1.8f;
-			float card_delta_x = card_delta_y * 0.2f;
+            var cardDeltaY = Font.Height * 1.8f;
+            var cardDeltaX = cardDeltaY * 0.2f;
 
-			float usable_height = Height - (4 * fRadius);
-			int max_cards = (int)(usable_height / card_delta_y);
-			fVisibleCards = Math.Min(max_cards, fCards.Count);
-			if (fVisibleCards + 1 == fCards.Count)
-				fVisibleCards += 1;
+            var usableHeight = Height - 4 * _radius;
+            var maxCards = (int)(usableHeight / cardDeltaY);
+            _visibleCards = Math.Min(maxCards, _cards.Count);
+            if (_visibleCards + 1 == _cards.Count)
+                _visibleCards += 1;
 
-			bool more_cards = fCards.Count > fVisibleCards;
-			int edges = (more_cards) ? fVisibleCards + 1 : fVisibleCards;
+            var moreCards = _cards.Count > _visibleCards;
+            var edges = moreCards ? _visibleCards + 1 : _visibleCards;
 
-			if (more_cards)
-			{
-				float dx = card_delta_x * fVisibleCards;
+            if (moreCards)
+            {
+                var dx = cardDeltaX * _visibleCards;
 
-				float x = deck_rect.X + dx;
-				float y = deck_rect.Y;
-				float width = deck_rect.Width - (card_delta_x * (edges - 1));
-				float height = deck_rect.Height - y;
+                var x = deckRect.X + dx;
+                var y = deckRect.Y;
+                var width = deckRect.Width - cardDeltaX * (edges - 1);
+                var height = deckRect.Height - y;
 
-				RectangleF card_rect = new RectangleF(x, y, width, height);
+                var cardRect = new RectangleF(x, y, width, height);
 
-				draw_card(null, 0, false, card_rect, e.Graphics);
-			}
+                draw_card(null, 0, false, cardRect, e.Graphics);
+            }
 
-			for (int index = fVisibleCards - 1; index >= 0; --index)
-			{
-				float dx = card_delta_x * index;
-				float dy = card_delta_y * (edges - index - 1);
+            for (var index = _visibleCards - 1; index >= 0; --index)
+            {
+                var dx = cardDeltaX * index;
+                var dy = cardDeltaY * (edges - index - 1);
 
-				float x = deck_rect.X + dx;
-				float y = deck_rect.Y + dy;
-				float width = deck_rect.Width - (card_delta_x * (edges - 1));
-				float height = deck_rect.Height - y;
+                var x = deckRect.X + dx;
+                var y = deckRect.Y + dy;
+                var width = deckRect.Width - cardDeltaX * (edges - 1);
+                var height = deckRect.Height - y;
 
-				RectangleF card_rect = new RectangleF(x, y, width, height);
+                var cardRect = new RectangleF(x, y, width, height);
 
-				Pair<EncounterCard, int> card_info = fCards[index];
-				bool topmost = (index == 0);
-				draw_card(card_info.First, card_info.Second, topmost, card_rect, e.Graphics);
+                var cardInfo = _cards[index];
+                var topmost = index == 0;
+                draw_card(cardInfo.First, cardInfo.Second, topmost, cardRect, e.Graphics);
 
-				fRegions.Add(new Pair<RectangleF, EncounterCard>(card_rect, card_info.First));
-			}
-		}
+                _regions.Add(new Pair<RectangleF, EncounterCard>(cardRect, cardInfo.First));
+            }
+        }
 
-		void draw_card(EncounterCard card, int count, bool topmost, RectangleF rect, Graphics g)
-		{
-			int alpha = (card != null) ? 255 : 100;
+        private void draw_card(EncounterCard card, int count, bool topmost, RectangleF rect, Graphics g)
+        {
+            var alpha = card != null ? 255 : 100;
 
-			GraphicsPath gp = RoundedRectangle.Create(rect, fRadius, RoundedRectangle.RectangleCorners.TopLeft | RoundedRectangle.RectangleCorners.TopRight);
-			using (Brush b = new SolidBrush(Color.FromArgb(alpha, 54, 79, 39)))
-			{
-				g.FillPath(b, gp);
-			}
-			g.DrawPath(Pens.White, gp);
+            var gp = RoundedRectangle.Create(rect, _radius,
+                RoundedRectangle.RectangleCorners.TopLeft | RoundedRectangle.RectangleCorners.TopRight);
+            using (Brush b = new SolidBrush(Color.FromArgb(alpha, 54, 79, 39)))
+            {
+                g.FillPath(b, gp);
+            }
 
-			float card_delta_y = Font.Height * 1.5f;
-			RectangleF text_rect = new RectangleF(rect.X + fRadius, rect.Y, rect.Width - (2 * fRadius), card_delta_y);
+            g.DrawPath(Pens.White, gp);
 
-			if (card != null)
-			{
-				string title = card.Title;
-				if (count > 1)
-					title = "(" + count + "x) " + title;
+            var cardDeltaY = Font.Height * 1.5f;
+            var textRect = new RectangleF(rect.X + _radius, rect.Y, rect.Width - 2 * _radius, cardDeltaY);
 
-				Color text_colour = (card != fHoverCard) ? Color.White : Color.PaleGreen;
-				using (Brush b = new SolidBrush(text_colour))
-				{
-					using (Font f = new Font(Font, Font.Style | FontStyle.Bold))
-					{
-						g.DrawString(title, f, b, text_rect, fTitle);
-					}
+            if (card != null)
+            {
+                var title = card.Title;
+                if (count > 1)
+                    title = "(" + count + "x) " + title;
 
-					g.DrawString(card.Info, Font, b, text_rect, fInfo);
-				}
+                var textColour = card != _hoverCard ? Color.White : Color.PaleGreen;
+                using (Brush b = new SolidBrush(textColour))
+                {
+                    using (var f = new Font(Font, Font.Style | FontStyle.Bold))
+                    {
+                        g.DrawString(title, f, b, textRect, _title);
+                    }
 
-				if (topmost)
-				{
-					float dx = fRadius * 0.2f;
-					RectangleF content = new RectangleF(rect.X + dx, rect.Y + text_rect.Height, rect.Width - (2 * dx), rect.Height - text_rect.Height);
-					using (Brush b = new SolidBrush(Color.FromArgb(225, 231, 197)))
-					{
-						g.FillRectangle(b, content);
-					}
+                    g.DrawString(card.Info, Font, b, textRect, _info);
+                }
 
-					string msg = "Click on a card to move it to the front of the deck.";
-					g.DrawString(msg, Font, Brushes.Black, content, fCentred);
-				}
-			}
-			else
-			{
-				int remaining = fCards.Count - fVisibleCards;
-				g.DrawString("(" + remaining + " more cards)", Font, Brushes.White, text_rect, fCentred);
-			}
-		}
+                if (topmost)
+                {
+                    var dx = _radius * 0.2f;
+                    var content = new RectangleF(rect.X + dx, rect.Y + textRect.Height, rect.Width - 2 * dx,
+                        rect.Height - textRect.Height);
+                    using (Brush b = new SolidBrush(Color.FromArgb(225, 231, 197)))
+                    {
+                        g.FillRectangle(b, content);
+                    }
 
-		#endregion
+                    var msg = "Click on a card to move it to the front of the deck.";
+                    g.DrawString(msg, Font, Brushes.Black, content, _centered);
+                }
+            }
+            else
+            {
+                var remaining = _cards.Count - _visibleCards;
+                g.DrawString("(" + remaining + " more cards)", Font, Brushes.White, textRect, _centered);
+            }
+        }
 
-		EncounterCard fHoverCard = null;
+        protected override void OnMouseMove(MouseEventArgs e)
+        {
+            if (_regions == null)
+                return;
 
-		protected override void OnMouseMove(MouseEventArgs e)
-		{
-			if (fRegions == null)
-				return;
+            EncounterCard card = null;
 
-			EncounterCard card = null;
+            foreach (var pair in _regions)
+                if (pair.First.Top <= e.Location.Y && pair.First.Bottom >= e.Location.Y)
+                    card = pair.Second;
 
-			foreach (Pair<RectangleF, EncounterCard> pair in fRegions)
-			{
-				if ((pair.First.Top <= e.Location.Y) && (pair.First.Bottom >= e.Location.Y))
-					card = pair.Second;
-			}
+            _hoverCard = card;
+            Invalidate();
+        }
 
-			fHoverCard = card;
-			Invalidate();
-		}
+        protected override void OnMouseLeave(EventArgs e)
+        {
+            _hoverCard = null;
+            Invalidate();
+        }
 
-		protected override void OnMouseLeave(EventArgs e)
-		{
-			fHoverCard = null;
-			Invalidate();
-		}
+        protected override void OnMouseClick(MouseEventArgs e)
+        {
+            if (_hoverCard == null)
+                return;
 
-		protected override void OnMouseClick(MouseEventArgs e)
-		{
-			if (fHoverCard == null)
-				return;
+            var card = _hoverCard;
+            _hoverCard = null;
 
-			EncounterCard card = fHoverCard;
-			fHoverCard = null;
+            while (_cards[0].First != card)
+            {
+                var topCard = _cards[0];
 
-			while (fCards[0].First != card)
-			{
-				Pair<EncounterCard, int> top_card = fCards[0];
+                _cards.RemoveAt(0);
+                _cards.Add(topCard);
 
-				fCards.RemoveAt(0);
-				fCards.Add(top_card);
+                Refresh();
+            }
 
-				Refresh();
-			}
+            OnDeckOrderChanged();
+        }
 
-			OnDeckOrderChanged();
-		}
+        protected override void OnMouseWheel(MouseEventArgs e)
+        {
+            if (e.Delta > 0)
+            {
+                var topCard = _cards[0];
 
-		protected override void OnMouseWheel(MouseEventArgs e)
-		{
-			if (e.Delta > 0)
-			{
-				Pair<EncounterCard, int> top_card = fCards[0];
+                _cards.RemoveAt(0);
+                _cards.Add(topCard);
+            }
+            else
+            {
+                var lastCard = _cards[_cards.Count - 1];
 
-				fCards.RemoveAt(0);
-				fCards.Add(top_card);
-			}
-			else
-			{
-				Pair<EncounterCard, int> last_card = fCards[fCards.Count - 1];
+                _cards.RemoveAt(_cards.Count - 1);
+                _cards.Insert(0, lastCard);
+            }
 
-				fCards.RemoveAt(fCards.Count - 1);
-				fCards.Insert(0, last_card);
-			}
+            _hoverCard = null;
+            Refresh();
 
-			fHoverCard = null;
-			Refresh();
-
-			OnDeckOrderChanged();
-		}
-	}
+            OnDeckOrderChanged();
+        }
+    }
 }

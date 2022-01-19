@@ -1,32 +1,27 @@
 ﻿using System;
 using System.Windows.Forms;
-
 using Masterplan.Data;
 
 namespace Masterplan.UI
 {
-	partial class BackgroundForm : Form
-	{
-		public BackgroundForm(Background bg)
-		{
-			InitializeComponent();
+    internal partial class BackgroundForm : Form
+    {
+        public Background Background { get; }
 
-			fBackground = bg.Copy();
+        public BackgroundForm(Background bg)
+        {
+            InitializeComponent();
 
-			TitleBox.Text = fBackground.Title;
-			DetailsBox.Text = fBackground.Details;
-		}
+            Background = bg.Copy();
 
-		public Background Background
-		{
-			get { return fBackground; }
-		}
-		Background fBackground = null;
+            TitleBox.Text = Background.Title;
+            DetailsBox.Text = Background.Details;
+        }
 
-		private void OKBtn_Click(object sender, EventArgs e)
-		{
-			fBackground.Title = TitleBox.Text;
-			fBackground.Details = (DetailsBox.Text != DetailsBox.DefaultText) ? DetailsBox.Text : "";
-		}
-	}
+        private void OKBtn_Click(object sender, EventArgs e)
+        {
+            Background.Title = TitleBox.Text;
+            Background.Details = DetailsBox.Text != DetailsBox.DefaultText ? DetailsBox.Text : "";
+        }
+    }
 }

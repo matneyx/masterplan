@@ -2,161 +2,165 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
-
 using Masterplan.Tools;
 
 namespace Masterplan.Controls
 {
-    partial class DiceGraphPanel : UserControl
+    internal partial class DiceGraphPanel : UserControl
     {
+        private readonly StringFormat _centered = new StringFormat();
+
+        private readonly float _fRange = 0.5F;
+
+        private int _fConstant;
+
+        private List<int> _fDice = new List<int>();
+
+        private Dictionary<int, int> _fDistribution;
+
+        private string _title = "";
+
+        public List<int> Dice
+        {
+            get => _fDice;
+            set
+            {
+                _fDice = value;
+
+                _fDistribution = null;
+                Invalidate();
+            }
+        }
+
+        public int Constant
+        {
+            get => _fConstant;
+            set
+            {
+                _fConstant = value;
+
+                _fDistribution = null;
+                Invalidate();
+            }
+        }
+
+        public string Title
+        {
+            get => _title;
+            set
+            {
+                _title = value;
+
+                Invalidate();
+            }
+        }
+
         public DiceGraphPanel()
         {
             InitializeComponent();
 
             SetStyle(ControlStyles.AllPaintingInWmPaint
-                | ControlStyles.OptimizedDoubleBuffer
-                | ControlStyles.ResizeRedraw
-                | ControlStyles.UserPaint, true);
+                     | ControlStyles.OptimizedDoubleBuffer
+                     | ControlStyles.ResizeRedraw
+                     | ControlStyles.UserPaint, true);
 
-            fCentred.Alignment = StringAlignment.Center;
-            fCentred.LineAlignment = StringAlignment.Center;
-            fCentred.Trimming = StringTrimming.EllipsisWord;
+            _centered.Alignment = StringAlignment.Center;
+            _centered.LineAlignment = StringAlignment.Center;
+            _centered.Trimming = StringTrimming.EllipsisWord;
         }
-
-        public List<int> Dice
-        {
-            get { return fDice; }
-            set
-            {
-                fDice = value;
-
-				fDistribution = null;
-                Invalidate();
-            }
-        }
-        List<int> fDice = new List<int>();
-
-		public int Constant
-		{
-			get { return fConstant; }
-			set
-			{
-				fConstant = value;
-
-				fDistribution = null;
-				Invalidate();
-			}
-		}
-		int fConstant = 0;
-
-		public string Title
-		{
-			get { return fTitle; }
-			set
-			{
-				fTitle = value;
-
-				Invalidate();
-			}
-		}
-        string fTitle = "";
-
-        float fRange = 0.5F;
-
-        Dictionary<int, int> fDistribution = null;
-
-        StringFormat fCentred = new StringFormat();
 
         protected override void OnPaint(PaintEventArgs e)
         {
             base.OnPaint(e);
 
-			try
-			{
-				if (fDistribution == null)
-					fDistribution = DiceStatistics.Odds(fDice, fConstant);
+            try
+            {
+                if (_fDistribution == null)
+                    _fDistribution = DiceStatistics.Odds(_fDice, _fConstant);
 
-				if ((fDistribution == null) || (fDistribution.Keys.Count == 0))
-					return;
+                if (_fDistribution == null || _fDistribution.Keys.Count == 0)
+                    return;
 
-				int delta_x = Width / 10;
-				int delta_y = Height / 10;
-				Rectangle rect = new Rectangle(delta_x, (3 * delta_y), Width - (2 * delta_x), Height - (5 * delta_y));
+                var deltaX = Width / 10;
+                var deltaY = Height / 10;
+                var rect = new Rectangle(deltaX, 3 * deltaY, Width - 2 * deltaX, Height - 5 * deltaY);
 
-				if ((fTitle != null) && (fTitle != ""))
-				{
-					// Draw graph title
-					Rectangle title_rect = new Rectangle(rect.X, rect.Y - (2 * delta_y), rect.Width, delta_y);
-					e.Graphics.FillRectangle(Brushes.White, title_rect);
-					e.Graphics.DrawRectangle(Pens.DarkGray, title_rect);
-					e.Graphics.DrawString(fTitle, new Font(Font.FontFamily, delta_y / 3), Brushes.Black, title_rect, fCentred);
-				}
+                if (_title != null && _title != "")
+                {
+                    // Draw graph title
+                    var titleRect = new Rectangle(rect.X, rect.Y - 2 * deltaY, rect.Width, deltaY);
+                    e.Graphics.FillRectangle(Brushes.White, titleRect);
+                    e.Graphics.DrawRectangle(Pens.DarkGray, titleRect);
+                    e.Graphics.DrawString(_title, new Font(Font.FontFamily, deltaY / 3), Brushes.Black, titleRect,
+                        _centered);
+                }
 
-				int min_x = int.MaxValue;
-				int max_x = int.MinValue;
-				int max_y = int.MinValue;
-				int sum = 0;
-				foreach (int roll in fDistribution.Keys)
-				{
-					min_x = Math.Min(min_x, roll);
-					max_x = Math.Max(max_x, roll);
+                var minX = int.MaxValue;
+                var maxX = int.MinValue;
+                var maxY = int.MinValue;
+                var sum = 0;
+                foreach (var roll in _fDistribution.Keys)
+                {
+                    minX = Math.Min(minX, roll);
+                    maxX = Math.Max(maxX, roll);
 
-					max_y = Math.Max(max_y, fDistribution[roll]);
-					sum += fDistribution[roll];
-				}
+                    maxY = Math.Max(maxY, _fDistribution[roll]);
+                    sum += _fDistribution[roll];
+                }
 
-				float lower_delta = (1 - fRange) / 2;
-				float upper_delta = 1 - lower_delta;
+                var lowerDelta = (1 - _fRange) / 2;
+                var upperDelta = 1 - lowerDelta;
 
-				Point mouse = PointToClient(Cursor.Position);
+                var mouse = PointToClient(Cursor.Position);
 
-				int range = max_x - min_x + 1;
-				float width = (float)rect.Width / range;
+                var range = maxX - minX + 1;
+                var width = (float)rect.Width / range;
 
-				float size = Math.Min(Font.Size, width / 2);
-				Font label_font = new Font(Font.FontFamily, size);
+                var size = Math.Min(Font.Size, width / 2);
+                var labelFont = new Font(Font.FontFamily, size);
 
-				List<PointF> levels = new List<PointF>();
-				int integral = 0;
-				foreach (int roll in fDistribution.Keys)
-				{
-					int index = roll - min_x;
-					float x = width * index;
-					float height = rect.Height * (max_y - fDistribution[roll]) / max_y;
+                var levels = new List<PointF>();
+                var integral = 0;
+                foreach (var roll in _fDistribution.Keys)
+                {
+                    var index = roll - minX;
+                    var x = width * index;
+                    float height = rect.Height * (maxY - _fDistribution[roll]) / maxY;
 
-					RectangleF roll_rect = new RectangleF(x + rect.X, rect.Y + height, width, rect.Height - height);
+                    var rollRect = new RectangleF(x + rect.X, rect.Y + height, width, rect.Height - height);
 
-					integral += fDistribution[roll];
-					float fraction = (float)integral / sum;
+                    integral += _fDistribution[roll];
+                    var fraction = (float)integral / sum;
 
-					bool highlighted = roll_rect.Contains(mouse);
-					bool inter_quartile = ((fraction >= lower_delta) && (fraction <= upper_delta));
-					inter_quartile = false;
+                    var highlighted = rollRect.Contains(mouse);
+                    var interQuartile = fraction >= lowerDelta && fraction <= upperDelta;
+                    interQuartile = false;
 
-					float midpoint = x + rect.X + (width / 2);
-					float y = rect.Y + height;
-					levels.Add(new PointF(midpoint, y));
+                    var midpoint = x + rect.X + width / 2;
+                    var y = rect.Y + height;
+                    levels.Add(new PointF(midpoint, y));
 
-					Pen pen = Pens.Gray;
-					if (inter_quartile || highlighted)
-						pen = Pens.Black;
+                    var pen = Pens.Gray;
+                    if (interQuartile || highlighted)
+                        pen = Pens.Black;
 
-					e.Graphics.DrawLine(pen, midpoint, rect.Bottom, midpoint, y);
+                    e.Graphics.DrawLine(pen, midpoint, rect.Bottom, midpoint, y);
 
-					RectangleF label_rect = new RectangleF(roll_rect.Left, roll_rect.Bottom, width, delta_y);
-					e.Graphics.DrawString(roll.ToString(), label_font, highlighted ? Brushes.Black : Brushes.DarkGray, label_rect, fCentred);
-				}
+                    var labelRect = new RectangleF(rollRect.Left, rollRect.Bottom, width, deltaY);
+                    e.Graphics.DrawString(roll.ToString(), labelFont, highlighted ? Brushes.Black : Brushes.DarkGray,
+                        labelRect, _centered);
+                }
 
-				// Draw x-axis
-				e.Graphics.DrawLine(Pens.Black, rect.Left, rect.Bottom, rect.Right, rect.Bottom);
+                // Draw x-axis
+                e.Graphics.DrawLine(Pens.Black, rect.Left, rect.Bottom, rect.Right, rect.Bottom);
 
-				// Draw curve
-				for (int n = 1; n < levels.Count; ++n)
-					e.Graphics.DrawLine(new Pen(Color.Red, 2F), levels[n - 1], levels[n]);
-			}
-			catch
-			{
-			}
+                // Draw curve
+                for (var n = 1; n < levels.Count; ++n)
+                    e.Graphics.DrawLine(new Pen(Color.Red, 2F), levels[n - 1], levels[n]);
+            }
+            catch
+            {
+            }
         }
 
         protected override void OnMouseMove(MouseEventArgs e)

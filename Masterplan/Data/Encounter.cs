@@ -1,629 +1,598 @@
 ﻿using System;
 using System.Collections.Generic;
-
 using Masterplan.Tools;
 
 namespace Masterplan.Data
 {
-	/// <summary>
-	/// Class representing a combat encounter game element.
-	/// </summary>
-	[Serializable]
-	public class Encounter : IElement
-	{
-		/// <summary>
-		/// Gets or sets the list of encounter slots.
-		/// </summary>
-		public List<EncounterSlot> Slots
-		{
-			get { return fSlots; }
-			set { fSlots = value; }
-		}
-		List<EncounterSlot> fSlots = new List<EncounterSlot>();
+    /// <summary>
+    ///     Class representing a combat encounter game element.
+    /// </summary>
+    [Serializable]
+    public class Encounter : IElement
+    {
+        private List<CustomToken> _fCustomTokens = new List<CustomToken>();
 
-		/// <summary>
-		/// Gets or sets the list of traps in the encounter.
-		/// </summary>
-		public List<Trap> Traps
-		{
-			get { return fTraps; }
-			set { fTraps = value; }
-		}
-		List<Trap> fTraps = new List<Trap>();
+        private Guid _fMapAreaId = Guid.Empty;
 
-		/// <summary>
-		/// Gets or sets the list of skill challenges in the encounter.
-		/// </summary>
-		public List<SkillChallenge> SkillChallenges
-		{
-			get { return fSkillChallenges; }
-			set { fSkillChallenges = value; }
-		}
-		List<SkillChallenge> fSkillChallenges = new List<SkillChallenge>();
+        private Guid _fMapId = Guid.Empty;
 
-		/// <summary>
-		/// Gets or sets the list of custom map tokens.
-		/// </summary>
-		public List<CustomToken> CustomTokens
-		{
-			get { return fCustomTokens; }
-			set { fCustomTokens = value; }
-		}
-		List<CustomToken> fCustomTokens = new List<CustomToken>();
+        private List<EncounterNote> _fNotes = new List<EncounterNote>();
 
-		/// <summary>
-		/// Gets or sets the ID of the map to be used, or Guid.Empty to use no map.
-		/// </summary>
-		public Guid MapID
-		{
-			get { return fMapID; }
-			set { fMapID = value; }
-		}
-		Guid fMapID = Guid.Empty;
+        private List<SkillChallenge> _fSkillChallenges = new List<SkillChallenge>();
 
-		/// <summary>
-		/// Gets or sets the ID of the map area to be used, or Guid.Empty to use the full map.
-		/// </summary>
-		public Guid MapAreaID
-		{
-			get { return fMapAreaID; }
-			set { fMapAreaID = value; }
-		}
-		Guid fMapAreaID = Guid.Empty;
+        private List<EncounterSlot> _fSlots = new List<EncounterSlot>();
 
-		/// <summary>
-		/// Gets or sets the list of encounter notes.
-		/// </summary>
-		public List<EncounterNote> Notes
-		{
-			get { return fNotes; }
-			set { fNotes = value; }
-		}
-		List<EncounterNote> fNotes = new List<EncounterNote>();
+        private List<Trap> _fTraps = new List<Trap>();
 
-		/// <summary>
-		/// Gets or sets the list of encounter waves.
-		/// </summary>
-		public List<EncounterWave> Waves
-		{
-			get { return fWaves; }
-			set { fWaves = value; }
-		}
-		List<EncounterWave> fWaves = new List<EncounterWave>();
-
-		/// <summary>
-		/// Gets the number of creatures in the encounter.
-		/// </summary>
-		public int Count
-		{
-			get
-			{
-				int count = 0;
-
-				foreach (EncounterSlot slot in AllSlots)
-					count += slot.CombatData.Count;
-
-				return count;
-			}
-		}
-
-		/// <summary>
-		/// Gets the collection of all the encounter slots for all waves of the encounter.
-		/// </summary>
-		public List<EncounterSlot> AllSlots
-		{
-			get
-			{
-				List<EncounterSlot> slots = new List<EncounterSlot>();
-
-				slots.AddRange(fSlots);
-
-				if (fWaves != null)
-				{
-					foreach (EncounterWave ew in fWaves)
-						slots.AddRange(ew.Slots);
-				}
-
-				return slots;
-			}
-		}
+        private List<EncounterWave> _fWaves = new List<EncounterWave>();
 
         /// <summary>
-        /// Finds the encounter slot with the given ID.
+        ///     Gets or sets the list of encounter slots.
         /// </summary>
-        /// <param name="slot_id">The ID of the slot.</param>
-        /// <returns>Returns the slot, or null if no such slot exists.</returns>
-        public EncounterSlot FindSlot(Guid slot_id)
+        public List<EncounterSlot> Slots
         {
-            foreach (EncounterSlot slot in AllSlots)
+            get => _fSlots;
+            set => _fSlots = value;
+        }
+
+        /// <summary>
+        ///     Gets or sets the list of traps in the encounter.
+        /// </summary>
+        public List<Trap> Traps
+        {
+            get => _fTraps;
+            set => _fTraps = value;
+        }
+
+        /// <summary>
+        ///     Gets or sets the list of skill challenges in the encounter.
+        /// </summary>
+        public List<SkillChallenge> SkillChallenges
+        {
+            get => _fSkillChallenges;
+            set => _fSkillChallenges = value;
+        }
+
+        /// <summary>
+        ///     Gets or sets the list of custom map tokens.
+        /// </summary>
+        public List<CustomToken> CustomTokens
+        {
+            get => _fCustomTokens;
+            set => _fCustomTokens = value;
+        }
+
+        /// <summary>
+        ///     Gets or sets the ID of the map to be used, or Guid.Empty to use no map.
+        /// </summary>
+        public Guid MapId
+        {
+            get => _fMapId;
+            set => _fMapId = value;
+        }
+
+        /// <summary>
+        ///     Gets or sets the ID of the map area to be used, or Guid.Empty to use the full map.
+        /// </summary>
+        public Guid MapAreaId
+        {
+            get => _fMapAreaId;
+            set => _fMapAreaId = value;
+        }
+
+        /// <summary>
+        ///     Gets or sets the list of encounter notes.
+        /// </summary>
+        public List<EncounterNote> Notes
+        {
+            get => _fNotes;
+            set => _fNotes = value;
+        }
+
+        /// <summary>
+        ///     Gets or sets the list of encounter waves.
+        /// </summary>
+        public List<EncounterWave> Waves
+        {
+            get => _fWaves;
+            set => _fWaves = value;
+        }
+
+        /// <summary>
+        ///     Gets the number of creatures in the encounter.
+        /// </summary>
+        public int Count
+        {
+            get
             {
-                if (slot.ID == slot_id)
-                    return slot;
+                var count = 0;
+
+                foreach (var slot in AllSlots)
+                    count += slot.CombatData.Count;
+
+                return count;
             }
+        }
+
+        /// <summary>
+        ///     Gets the collection of all the encounter slots for all waves of the encounter.
+        /// </summary>
+        public List<EncounterSlot> AllSlots
+        {
+            get
+            {
+                var slots = new List<EncounterSlot>();
+
+                slots.AddRange(_fSlots);
+
+                if (_fWaves != null)
+                    foreach (var ew in _fWaves)
+                        slots.AddRange(ew.Slots);
+
+                return slots;
+            }
+        }
+
+        /// <summary>
+        ///     Finds the encounter slot with the given ID.
+        /// </summary>
+        /// <param name="slotId">The ID of the slot.</param>
+        /// <returns>Returns the slot, or null if no such slot exists.</returns>
+        public EncounterSlot FindSlot(Guid slotId)
+        {
+            foreach (var slot in AllSlots)
+                if (slot.Id == slotId)
+                    return slot;
 
             return null;
         }
 
-		/// <summary>
-		/// Finds the encounter slot with the given combat data.
-		/// </summary>
-		/// <param name="data">The combat data.</param>
-		/// <returns>Returns the slot, or null if no such slot exists.</returns>
-		public EncounterSlot FindSlot(CombatData data)
-		{
-			foreach (EncounterSlot slot in AllSlots)
-			{
-				if (slot.CombatData.Contains(data))
-					return slot;
-			}
+        /// <summary>
+        ///     Finds the encounter slot with the given combat data.
+        /// </summary>
+        /// <param name="data">The combat data.</param>
+        /// <returns>Returns the slot, or null if no such slot exists.</returns>
+        public EncounterSlot FindSlot(CombatData data)
+        {
+            foreach (var slot in AllSlots)
+                if (slot.CombatData.Contains(data))
+                    return slot;
 
-			return null;
-		}
-
-		/// <summary>
-		/// Finds the encounter wave with the given encounter slot.
-		/// </summary>
-		/// <param name="slot">The encounter slot.</param>
-		/// <returns>Returns the wave, or null if no such wave exists.</returns>
-		public EncounterWave FindWave(EncounterSlot slot)
-		{
-			foreach (EncounterWave ew in fWaves)
-			{
-				if (ew.Slots.Contains(slot))
-					return ew;
-			}
-
-			return null;
-		}
-
-		/// <summary>
-		/// Searches for the CombatData with the given ID.
-		/// </summary>
-		/// <param name="id">The id to search for.</param>
-		/// <returns>Returns the CombatData if it exists; null otherwise.</returns>
-		public CombatData FindCombatData(Guid id)
-		{
-			foreach (EncounterSlot slot in AllSlots)
-			{
-				foreach (CombatData cd in slot.CombatData)
-				{
-					if (cd.ID == id)
-						return cd;
-				}
-			}
-
-			return null;
-		}
-
-		/// <summary>
-		/// Finds the trap with the given ID.
-		/// </summary>
-		/// <param name="trap_id">The ID of the trap.</param>
-		/// <returns>Returns the trap, or null if no such trap exists.</returns>
-		public Trap FindTrap(Guid trap_id)
-		{
-			foreach (Trap trap in fTraps)
-			{
-				if (trap.ID == trap_id)
-					return trap;
-			}
-
-			return null;
-		}
-
-		/// <summary>
-		/// Finds the skill challenge with the given ID.
-		/// </summary>
-		/// <param name="challenge_id">The ID of the skill challenge.</param>
-		/// <returns>Returns the skill challenge, or null if no such trap exists.</returns>
-		public SkillChallenge FindSkillChallenge(Guid challenge_id)
-		{
-			foreach (SkillChallenge sc in fSkillChallenges)
-			{
-				if (sc.ID == challenge_id)
-					return sc;
-			}
-
-			return null;
-		}
-
-		/// <summary>
-		/// Finds the encounter note with the given title.
-		/// </summary>
-		/// <param name="note_title">The title of the note.</param>
-		/// <returns>Returns the note, or null if no such note exists.</returns>
-		public EncounterNote FindNote(string note_title)
-		{
-			foreach (EncounterNote note in fNotes)
-			{
-				if (note.Title == note_title)
-					return note;
-			}
-
-			return null;
-		}
-
-		/// <summary>
-		/// Determines whether the encounter contains the given combatant.
-		/// </summary>
-		/// <param name="combatant_id">The ID of a creature or NPC.</param>
-		/// <returns>True if the encounter contains the creature; false otherwise.</returns>
-		public bool Contains(Guid combatant_id)
-		{
-			foreach (EncounterSlot slot in AllSlots)
-			{
-				if (slot.Card.CreatureID == combatant_id)
-					return true;
-			}
-
-			return false;
-		}
-
-		/// <summary>
-		/// Returns the display name of a creature / hero / trap with the given ID.
-		/// </summary>
-		/// <param name="id">The ID to search for.</param>
-		/// <returns>Returns the name if found; empty string otherwise.</returns>
-		public string WhoIs(Guid id)
-		{
-			// Check slot combat data
-			foreach (EncounterSlot slot in AllSlots)
-			{
-				foreach (CombatData data in slot.CombatData)
-				{
-					if (data.ID == id)
-						return data.DisplayName;
-				}
-			}
-
-			// Check heroes
-			foreach (Hero hero in Session.Project.Heroes)
-			{
-				if (hero.ID == id)
-					return hero.Name;
-			}
-
-			// Check traps
-			foreach (Trap trap in fTraps)
-			{
-				if (trap.ID == id)
-					return trap.Name;
-			}
-
-			return "";
-		}
-
-		/// <summary>
-		/// Calculates the XP value of the encounter.
-		/// </summary>
-		/// <returns>Returns the encounter XP value.</returns>
-		public int GetXP()
-		{
-			int total = 0;
-
-			foreach (EncounterSlot slot in AllSlots)
-				total += slot.XP;
-
-			foreach (Trap trap in fTraps)
-				total += trap.XP;
-
-			foreach (SkillChallenge sc in fSkillChallenges)
-				total += sc.GetXP();
-
-			total = Math.Max(0, total);
-			return total;
-		}
-
-		/// <summary>
-		/// Calculates the level of the encounter.
-		/// </summary>
-		/// <param name="party_size">The party size.</param>
-		/// <returns>Returns the encounter level.</returns>
-		public int GetLevel(int party_size)
-		{
-            if (party_size == 0)
-                return -1;
-
-			int xp = GetXP();
-			if (Session.Project != null)
-				xp = (int)(xp / Session.Project.CampaignSettings.XP);
-
-			xp /= party_size;
-
-			int result = 0;
-			int min_diff = int.MaxValue;
-
-			for (int cl = 0; cl <= 40; ++cl)
-			{
-				int level_xp = Experience.GetCreatureXP(cl);
-				int diff = Math.Abs(xp - level_xp);
-
-				if (diff < min_diff)
-				{
-					result = cl;
-					min_diff = diff;
-				}
-			}
-
-			return result;
-		}
-
-		/// <summary>
-		/// Calculates the difficulty of the encounter.
-		/// </summary>
-		/// <param name="party_level">The party level.</param>
-		/// <param name="party_size">The party size.</param>
-		/// <returns>Returns the encounter difficulty.</returns>
-		public Difficulty GetDifficulty(int party_level, int party_size)
-		{
-			List<Difficulty> diffs = new List<Difficulty>();
-
-			foreach (EncounterSlot slot in AllSlots)
-			{
-				if (slot.Type != EncounterSlotType.Opponent)
-					continue;
-
-				ICreature creature = Session.FindCreature(slot.Card.CreatureID, SearchType.Global);
-				if (creature != null)
-					diffs.Add(AI.GetThreatDifficulty(creature.Level + slot.Card.LevelAdjustment, party_level));
-			}
-
-			foreach (Trap trap in fTraps)
-			{
-				diffs.Add(AI.GetThreatDifficulty(trap.Level, party_level));
-			}
-
-			foreach (SkillChallenge sc in fSkillChallenges)
-			{
-				diffs.Add(sc.GetDifficulty(party_level, party_size));
-			}
-
-			diffs.Add(get_diff(party_level, party_size));
-
-			if (diffs.Contains(Difficulty.Extreme))
-				return Difficulty.Extreme;
-
-			if (diffs.Contains(Difficulty.Hard))
-				return Difficulty.Hard;
-
-			if (diffs.Contains(Difficulty.Moderate))
-				return Difficulty.Moderate;
-
-			if (diffs.Contains(Difficulty.Easy))
-				return Difficulty.Easy;
-
-			return Difficulty.Trivial;
-		}
+            return null;
+        }
 
         /// <summary>
-        /// Adds blank standard notes to the encounter.
+        ///     Finds the encounter wave with the given encounter slot.
+        /// </summary>
+        /// <param name="slot">The encounter slot.</param>
+        /// <returns>Returns the wave, or null if no such wave exists.</returns>
+        public EncounterWave FindWave(EncounterSlot slot)
+        {
+            foreach (var ew in _fWaves)
+                if (ew.Slots.Contains(slot))
+                    return ew;
+
+            return null;
+        }
+
+        /// <summary>
+        ///     Searches for the CombatData with the given ID.
+        /// </summary>
+        /// <param name="id">The id to search for.</param>
+        /// <returns>Returns the CombatData if it exists; null otherwise.</returns>
+        public CombatData FindCombatData(Guid id)
+        {
+            foreach (var slot in AllSlots)
+            foreach (var cd in slot.CombatData)
+                if (cd.Id == id)
+                    return cd;
+
+            return null;
+        }
+
+        /// <summary>
+        ///     Finds the trap with the given ID.
+        /// </summary>
+        /// <param name="trapId">The ID of the trap.</param>
+        /// <returns>Returns the trap, or null if no such trap exists.</returns>
+        public Trap FindTrap(Guid trapId)
+        {
+            foreach (var trap in _fTraps)
+                if (trap.Id == trapId)
+                    return trap;
+
+            return null;
+        }
+
+        /// <summary>
+        ///     Finds the skill challenge with the given ID.
+        /// </summary>
+        /// <param name="challengeId">The ID of the skill challenge.</param>
+        /// <returns>Returns the skill challenge, or null if no such trap exists.</returns>
+        public SkillChallenge FindSkillChallenge(Guid challengeId)
+        {
+            foreach (var sc in _fSkillChallenges)
+                if (sc.Id == challengeId)
+                    return sc;
+
+            return null;
+        }
+
+        /// <summary>
+        ///     Finds the encounter note with the given title.
+        /// </summary>
+        /// <param name="noteTitle">The title of the note.</param>
+        /// <returns>Returns the note, or null if no such note exists.</returns>
+        public EncounterNote FindNote(string noteTitle)
+        {
+            foreach (var note in _fNotes)
+                if (note.Title == noteTitle)
+                    return note;
+
+            return null;
+        }
+
+        /// <summary>
+        ///     Determines whether the encounter contains the given combatant.
+        /// </summary>
+        /// <param name="combatantId">The ID of a creature or NPC.</param>
+        /// <returns>True if the encounter contains the creature; false otherwise.</returns>
+        public bool Contains(Guid combatantId)
+        {
+            foreach (var slot in AllSlots)
+                if (slot.Card.CreatureId == combatantId)
+                    return true;
+
+            return false;
+        }
+
+        /// <summary>
+        ///     Returns the display name of a creature / hero / trap with the given ID.
+        /// </summary>
+        /// <param name="id">The ID to search for.</param>
+        /// <returns>Returns the name if found; empty string otherwise.</returns>
+        public string WhoIs(Guid id)
+        {
+            // Check slot combat data
+            foreach (var slot in AllSlots)
+            foreach (var data in slot.CombatData)
+                if (data.Id == id)
+                    return data.DisplayName;
+
+            // Check heroes
+            foreach (var hero in Session.Project.Heroes)
+                if (hero.Id == id)
+                    return hero.Name;
+
+            // Check traps
+            foreach (var trap in _fTraps)
+                if (trap.Id == id)
+                    return trap.Name;
+
+            return "";
+        }
+
+        /// <summary>
+        ///     Calculates the level of the encounter.
+        /// </summary>
+        /// <param name="partySize">The party size.</param>
+        /// <returns>Returns the encounter level.</returns>
+        public int GetLevel(int partySize)
+        {
+            if (partySize == 0)
+                return -1;
+
+            var xp = GetXp();
+            if (Session.Project != null)
+                xp = (int)(xp / Session.Project.CampaignSettings.Xp);
+
+            xp /= partySize;
+
+            var result = 0;
+            var minDiff = int.MaxValue;
+
+            for (var cl = 0; cl <= 40; ++cl)
+            {
+                var levelXp = Experience.GetCreatureXp(cl);
+                var diff = Math.Abs(xp - levelXp);
+
+                if (diff < minDiff)
+                {
+                    result = cl;
+                    minDiff = diff;
+                }
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        ///     Adds blank standard notes to the encounter.
         /// </summary>
         public void SetStandardEncounterNotes()
         {
-            fNotes.Add(new EncounterNote("Illumination"));
-            fNotes.Add(new EncounterNote("Features of the Area"));
-            fNotes.Add(new EncounterNote("Setup"));
-            fNotes.Add(new EncounterNote("Tactics"));
-            fNotes.Add(new EncounterNote("Victory Conditions"));
+            _fNotes.Add(new EncounterNote("Illumination"));
+            _fNotes.Add(new EncounterNote("Features of the Area"));
+            _fNotes.Add(new EncounterNote("Setup"));
+            _fNotes.Add(new EncounterNote("Tactics"));
+            _fNotes.Add(new EncounterNote("Victory Conditions"));
         }
 
-		/// <summary>
-		/// Creates a copy of the encounter.
-		/// </summary>
-		/// <returns>Returns the copy.</returns>
-		public IElement Copy()
-		{
-			Encounter enc = new Encounter();
+        private Difficulty get_diff(int partyLevel, int partySize)
+        {
+            if (GetXp() <= 0)
+                return Difficulty.Trivial;
 
-			foreach (EncounterSlot slot in fSlots)
-				enc.Slots.Add(slot.Copy());
+            var level = GetLevel(partySize);
+            var levelDiff = level - partyLevel;
 
-			foreach (Trap trap in fTraps)
-				enc.Traps.Add(trap.Copy());
+            if (levelDiff < -2)
+                return Difficulty.Trivial;
+            if (levelDiff == -2 || levelDiff == -1)
+                return Difficulty.Easy;
+            if (levelDiff == 0 || levelDiff == 1)
+                return Difficulty.Moderate;
+            if (levelDiff == 2 || levelDiff == 3 || levelDiff == 4)
+                return Difficulty.Hard;
+            return Difficulty.Extreme;
+        }
 
-			foreach (SkillChallenge sc in fSkillChallenges)
-				enc.SkillChallenges.Add(sc.Copy() as SkillChallenge);
+        /// <summary>
+        ///     Calculates the XP value of the encounter.
+        /// </summary>
+        /// <returns>Returns the encounter XP value.</returns>
+        public int GetXp()
+        {
+            var total = 0;
 
-			foreach (CustomToken ct in fCustomTokens)
-				enc.CustomTokens.Add(ct.Copy());
+            foreach (var slot in AllSlots)
+                total += slot.Xp;
 
-			enc.MapID = fMapID;
-			enc.MapAreaID = fMapAreaID;
+            foreach (var trap in _fTraps)
+                total += trap.Xp;
 
-			foreach (EncounterNote en in fNotes)
-				enc.Notes.Add(en.Copy());
+            foreach (var sc in _fSkillChallenges)
+                total += sc.GetXp();
 
-			foreach (EncounterWave ew in fWaves)
-				enc.Waves.Add(ew.Copy());
+            total = Math.Max(0, total);
+            return total;
+        }
 
-			return enc;
-		}
+        /// <summary>
+        ///     Calculates the difficulty of the encounter.
+        /// </summary>
+        /// <param name="partyLevel">The party level.</param>
+        /// <param name="partySize">The party size.</param>
+        /// <returns>Returns the encounter difficulty.</returns>
+        public Difficulty GetDifficulty(int partyLevel, int partySize)
+        {
+            var diffs = new List<Difficulty>();
 
-		Difficulty get_diff(int party_level, int party_size)
-		{
-			if (GetXP() <= 0)
-				return Difficulty.Trivial;
+            foreach (var slot in AllSlots)
+            {
+                if (slot.Type != EncounterSlotType.Opponent)
+                    continue;
 
-			int level = GetLevel(party_size);
-			int level_diff = level - party_level;
+                var creature = Session.FindCreature(slot.Card.CreatureId, SearchType.Global);
+                if (creature != null)
+                    diffs.Add(Ai.GetThreatDifficulty(creature.Level + slot.Card.LevelAdjustment, partyLevel));
+            }
 
-			if (level_diff < -2)
-			{
-				return Difficulty.Trivial;
-			}
-			else if ((level_diff == -2) || (level_diff == -1))
-			{
-				return Difficulty.Easy;
-			}
-			else if ((level_diff == 0) || (level_diff == 1))
-			{
-				return Difficulty.Moderate;
-			}
-			else if ((level_diff == 2) || (level_diff == 3) || (level_diff == 4))
-			{
-				return Difficulty.Hard;
-			}
-			else
-			{
-				return Difficulty.Extreme;
-			}
-		}
-	}
+            foreach (var trap in _fTraps) diffs.Add(Ai.GetThreatDifficulty(trap.Level, partyLevel));
+
+            foreach (var sc in _fSkillChallenges) diffs.Add(sc.GetDifficulty(partyLevel, partySize));
+
+            diffs.Add(get_diff(partyLevel, partySize));
+
+            if (diffs.Contains(Difficulty.Extreme))
+                return Difficulty.Extreme;
+
+            if (diffs.Contains(Difficulty.Hard))
+                return Difficulty.Hard;
+
+            if (diffs.Contains(Difficulty.Moderate))
+                return Difficulty.Moderate;
+
+            if (diffs.Contains(Difficulty.Easy))
+                return Difficulty.Easy;
+
+            return Difficulty.Trivial;
+        }
+
+        /// <summary>
+        ///     Creates a copy of the encounter.
+        /// </summary>
+        /// <returns>Returns the copy.</returns>
+        public IElement Copy()
+        {
+            var enc = new Encounter();
+
+            foreach (var slot in _fSlots)
+                enc.Slots.Add(slot.Copy());
+
+            foreach (var trap in _fTraps)
+                enc.Traps.Add(trap.Copy());
+
+            foreach (var sc in _fSkillChallenges)
+                enc.SkillChallenges.Add(sc.Copy() as SkillChallenge);
+
+            foreach (var ct in _fCustomTokens)
+                enc.CustomTokens.Add(ct.Copy());
+
+            enc.MapId = _fMapId;
+            enc.MapAreaId = _fMapAreaId;
+
+            foreach (var en in _fNotes)
+                enc.Notes.Add(en.Copy());
+
+            foreach (var ew in _fWaves)
+                enc.Waves.Add(ew.Copy());
+
+            return enc;
+        }
+    }
 
     /// <summary>
-    /// Class representing a piece of information about an encounter.
+    ///     Class representing a piece of information about an encounter.
     /// </summary>
     [Serializable]
     public class EncounterNote
     {
-		/// <summary>
-		/// Default constructor.
-		/// </summary>
-		public EncounterNote()
-		{
-		}
+        private string _fContents = "";
 
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		/// <param name="title">The title of the note.</param>
-        public EncounterNote(string title)
-		{
-			fTitle = title;
-		}
+        private Guid _fId = Guid.NewGuid();
 
-		/// <summary>
-		/// Gets or sets the unique ID of the note.
-		/// </summary>
-		public Guid ID
-		{
-			get { return fID; }
-			set { fID = value; }
-		}
-		Guid fID = Guid.NewGuid();
+        private string _title = "";
 
         /// <summary>
-        /// Gets or sets the encounter note title.
+        ///     Gets or sets the unique ID of the note.
+        /// </summary>
+        public Guid Id
+        {
+            get => _fId;
+            set => _fId = value;
+        }
+
+        /// <summary>
+        ///     Gets or sets the encounter note title.
         /// </summary>
         public string Title
         {
-            get { return fTitle; }
-            set { fTitle = value; }
+            get => _title;
+            set => _title = value;
         }
-        string fTitle = "";
 
         /// <summary>
-        /// Gets or sets the encounter note contents.
+        ///     Gets or sets the encounter note contents.
         /// </summary>
         public string Contents
         {
-            get { return fContents; }
-            set { fContents = value; }
+            get => _fContents;
+            set => _fContents = value;
         }
-        string fContents = "";
 
-		/// <summary>
-		/// Creates a copy of the note.
-		/// </summary>
-		/// <returns>Returns the copy.</returns>
+        /// <summary>
+        ///     Default constructor.
+        /// </summary>
+        public EncounterNote()
+        {
+        }
+
+        /// <summary>
+        ///     Constructor.
+        /// </summary>
+        /// <param name="title">The title of the note.</param>
+        public EncounterNote(string title)
+        {
+            _title = title;
+        }
+
+        /// <summary>
+        ///     Creates a copy of the note.
+        /// </summary>
+        /// <returns>Returns the copy.</returns>
         public EncounterNote Copy()
-		{
-            EncounterNote en = new EncounterNote();
+        {
+            var en = new EncounterNote();
 
-			en.ID = fID;
-			en.Title = fTitle;
-            en.Contents = fContents;
+            en.Id = _fId;
+            en.Title = _title;
+            en.Contents = _fContents;
 
-			return en;
-		}
+            return en;
+        }
 
-		/// <summary>
-		/// Returns the note title.
-		/// </summary>
-		/// <returns>Returns the note title.</returns>
-		public override string ToString()
-		{
-			return fTitle;
-		}
+        /// <summary>
+        ///     Returns the note title.
+        /// </summary>
+        /// <returns>Returns the note title.</returns>
+        public override string ToString()
+        {
+            return _title;
+        }
     }
 
-	/// <summary>
-	/// Class representing a wave of combatants
-	/// </summary>
-	[Serializable]
-	public class EncounterWave
-	{
-		/// <summary>
-		/// Gets or sets the ID of the wave.
-		/// </summary>
-		public Guid ID
-		{
-			get { return fID; }
-			set { fID = value; }
-		}
-		Guid fID = Guid.NewGuid();
+    /// <summary>
+    ///     Class representing a wave of combatants
+    /// </summary>
+    [Serializable]
+    public class EncounterWave
+    {
+        private bool _fActive;
 
-		/// <summary>
-		/// Gets or sets the name of the wave.
-		/// </summary>
-		public string Name
-		{
-			get { return fName; }
-			set { fName = value; }
-		}
-		string fName = "";
+        private Guid _fId = Guid.NewGuid();
 
-		/// <summary>
-		/// Gets or sets whether the wave is active.
-		/// </summary>
-		public bool Active
-		{
-			get { return fActive; }
-			set { fActive = value; }
-		}
-		bool fActive = false;
+        private string _fName = "";
 
-		/// <summary>
-		/// Gets or sets the list of encounter slots in the wave.
-		/// </summary>
-		public List<EncounterSlot> Slots
-		{
-			get { return fSlots; }
-			set { fSlots = value; }
-		}
-		List<EncounterSlot> fSlots = new List<EncounterSlot>();
+        private List<EncounterSlot> _fSlots = new List<EncounterSlot>();
 
-		/// <summary>
-		/// Gets the number of combatants in this wave.
-		/// </summary>
-		public int Count
-		{
-			get
-			{
-				int count = 0;
-				foreach (EncounterSlot slot in fSlots)
-					count += slot.CombatData.Count;
+        /// <summary>
+        ///     Gets or sets the ID of the wave.
+        /// </summary>
+        public Guid Id
+        {
+            get => _fId;
+            set => _fId = value;
+        }
 
-				return count;
-			}
-		}
+        /// <summary>
+        ///     Gets or sets the name of the wave.
+        /// </summary>
+        public string Name
+        {
+            get => _fName;
+            set => _fName = value;
+        }
 
-		/// <summary>
-		/// Creates a copy of the wave.
-		/// </summary>
-		/// <returns>Returns the copy.</returns>
-		public EncounterWave Copy()
-		{
-			EncounterWave ew = new EncounterWave();
+        /// <summary>
+        ///     Gets or sets whether the wave is active.
+        /// </summary>
+        public bool Active
+        {
+            get => _fActive;
+            set => _fActive = value;
+        }
 
-			ew.ID = fID;
-			ew.Name = fName;
-			ew.Active = fActive;
+        /// <summary>
+        ///     Gets or sets the list of encounter slots in the wave.
+        /// </summary>
+        public List<EncounterSlot> Slots
+        {
+            get => _fSlots;
+            set => _fSlots = value;
+        }
 
-			foreach (EncounterSlot slot in fSlots)
-				ew.Slots.Add(slot.Copy());
+        /// <summary>
+        ///     Gets the number of combatants in this wave.
+        /// </summary>
+        public int Count
+        {
+            get
+            {
+                var count = 0;
+                foreach (var slot in _fSlots)
+                    count += slot.CombatData.Count;
 
-			return ew;
-		}
-	}
+                return count;
+            }
+        }
+
+        /// <summary>
+        ///     Creates a copy of the wave.
+        /// </summary>
+        /// <returns>Returns the copy.</returns>
+        public EncounterWave Copy()
+        {
+            var ew = new EncounterWave();
+
+            ew.Id = _fId;
+            ew.Name = _fName;
+            ew.Active = _fActive;
+
+            foreach (var slot in _fSlots)
+                ew.Slots.Add(slot.Copy());
+
+            return ew;
+        }
+    }
 }

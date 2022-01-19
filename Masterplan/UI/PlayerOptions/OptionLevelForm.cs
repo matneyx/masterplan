@@ -1,179 +1,174 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
-
 using Masterplan.Data;
 
-namespace Masterplan.UI
+namespace Masterplan.UI.PlayerOptions
 {
-	partial class OptionLevelForm : Form
-	{
-		public OptionLevelForm(LevelData level, bool show_features)
-		{
-			InitializeComponent();
+    internal partial class OptionLevelForm : Form
+    {
+        public LevelData Level { get; }
 
-			Application.Idle += new EventHandler(Application_Idle);
+        public Feature SelectedFeature
+        {
+            get
+            {
+                if (FeatureList.SelectedItems.Count != 0)
+                    return FeatureList.SelectedItems[0].Tag as Feature;
 
-			fLevel = level.Copy();
-			Text = "Level " + fLevel.Level;
+                return null;
+            }
+        }
 
-			if (!show_features)
-				Pages.TabPages.Remove(FeaturesPage);
+        public PlayerPower SelectedPower
+        {
+            get
+            {
+                if (PowerList.SelectedItems.Count != 0)
+                    return PowerList.SelectedItems[0].Tag as PlayerPower;
 
-			update_features();
-			update_powers();
-		}
+                return null;
+            }
+        }
 
-		~OptionLevelForm()
-		{
-			Application.Idle -= Application_Idle;
-		}
+        public OptionLevelForm(LevelData level, bool showFeatures)
+        {
+            InitializeComponent();
 
-		void Application_Idle(object sender, EventArgs e)
-		{
-			FeatureRemoveBtn.Enabled = (SelectedFeature != null);
-			FeatureEditBtn.Enabled = (SelectedFeature != null);
+            Application.Idle += Application_Idle;
 
-			PowerRemoveBtn.Enabled = (SelectedPower != null);
-			PowerEditBtn.Enabled = (SelectedPower != null);
-		}
+            Level = level.Copy();
+            Text = "Level " + Level.Level;
 
-		public LevelData Level
-		{
-			get { return fLevel; }
-		}
-		LevelData fLevel = null;
+            if (!showFeatures)
+                Pages.TabPages.Remove(FeaturesPage);
 
-		private void OKBtn_Click(object sender, EventArgs e)
-		{
-		}
+            update_features();
+            update_powers();
+        }
 
-		public Feature SelectedFeature
-		{
-			get
-			{
-				if (FeatureList.SelectedItems.Count != 0)
-					return FeatureList.SelectedItems[0].Tag as Feature;
+        ~OptionLevelForm()
+        {
+            Application.Idle -= Application_Idle;
+        }
 
-				return null;
-			}
-		}
+        private void Application_Idle(object sender, EventArgs e)
+        {
+            FeatureRemoveBtn.Enabled = SelectedFeature != null;
+            FeatureEditBtn.Enabled = SelectedFeature != null;
 
-		private void FeatureAddBtn_Click(object sender, EventArgs e)
-		{
-			Feature ft = new Feature();
-			ft.Name = "New Feature";
+            PowerRemoveBtn.Enabled = SelectedPower != null;
+            PowerEditBtn.Enabled = SelectedPower != null;
+        }
 
-			OptionFeatureForm dlg = new OptionFeatureForm(ft);
-			if (dlg.ShowDialog() == DialogResult.OK)
-			{
-				fLevel.Features.Add(dlg.Feature);
-				update_features();
-			}
-		}
+        private void OKBtn_Click(object sender, EventArgs e)
+        {
+        }
 
-		private void FeatureRemoveBtn_Click(object sender, EventArgs e)
-		{
-			if (SelectedFeature != null)
-			{
-				fLevel.Features.Remove(SelectedFeature);
-				update_features();
-			}
-		}
+        private void FeatureAddBtn_Click(object sender, EventArgs e)
+        {
+            var ft = new Feature();
+            ft.Name = "New Feature";
 
-		private void FeatureEditBtn_Click(object sender, EventArgs e)
-		{
-			if (SelectedFeature != null)
-			{
-				int index = fLevel.Features.IndexOf(SelectedFeature);
+            var dlg = new OptionFeatureForm(ft);
+            if (dlg.ShowDialog() == DialogResult.OK)
+            {
+                Level.Features.Add(dlg.Feature);
+                update_features();
+            }
+        }
 
-				OptionFeatureForm dlg = new OptionFeatureForm(SelectedFeature);
-				if (dlg.ShowDialog() == DialogResult.OK)
-				{
-					fLevel.Features[index] = dlg.Feature;
-					update_features();
-				}
-			}
-		}
+        private void FeatureRemoveBtn_Click(object sender, EventArgs e)
+        {
+            if (SelectedFeature != null)
+            {
+                Level.Features.Remove(SelectedFeature);
+                update_features();
+            }
+        }
 
-		void update_features()
-		{
-			FeatureList.Items.Clear();
-			foreach (Feature ft in fLevel.Features)
-			{
-				ListViewItem lvi = FeatureList.Items.Add(ft.Name);
-				lvi.Tag = ft;
-			}
+        private void FeatureEditBtn_Click(object sender, EventArgs e)
+        {
+            if (SelectedFeature != null)
+            {
+                var index = Level.Features.IndexOf(SelectedFeature);
 
-			if (fLevel.Features.Count == 0)
-			{
-				ListViewItem lvi = FeatureList.Items.Add("(none)");
-				lvi.ForeColor = SystemColors.GrayText;
-			}
-		}
+                var dlg = new OptionFeatureForm(SelectedFeature);
+                if (dlg.ShowDialog() == DialogResult.OK)
+                {
+                    Level.Features[index] = dlg.Feature;
+                    update_features();
+                }
+            }
+        }
 
-		public PlayerPower SelectedPower
-		{
-			get
-			{
-				if (PowerList.SelectedItems.Count != 0)
-					return PowerList.SelectedItems[0].Tag as PlayerPower;
+        private void update_features()
+        {
+            FeatureList.Items.Clear();
+            foreach (var ft in Level.Features)
+            {
+                var lvi = FeatureList.Items.Add(ft.Name);
+                lvi.Tag = ft;
+            }
 
-				return null;
-			}
-		}
+            if (Level.Features.Count == 0)
+            {
+                var lvi = FeatureList.Items.Add("(none)");
+                lvi.ForeColor = SystemColors.GrayText;
+            }
+        }
 
-		private void PowerAddBtn_Click(object sender, EventArgs e)
-		{
-			PlayerPower power = new PlayerPower();
-			power.Name = "New Power";
+        private void PowerAddBtn_Click(object sender, EventArgs e)
+        {
+            var power = new PlayerPower();
+            power.Name = "New Power";
 
-			OptionPowerForm dlg = new OptionPowerForm(power);
-			if (dlg.ShowDialog() == DialogResult.OK)
-			{
-				fLevel.Powers.Add(dlg.Power);
-				update_powers();
-			}
-		}
+            var dlg = new OptionPowerForm(power);
+            if (dlg.ShowDialog() == DialogResult.OK)
+            {
+                Level.Powers.Add(dlg.Power);
+                update_powers();
+            }
+        }
 
-		private void PowerRemoveBtn_Click(object sender, EventArgs e)
-		{
-			if (SelectedPower != null)
-			{
-				fLevel.Powers.Remove(SelectedPower);
-				update_powers();
-			}
-		}
+        private void PowerRemoveBtn_Click(object sender, EventArgs e)
+        {
+            if (SelectedPower != null)
+            {
+                Level.Powers.Remove(SelectedPower);
+                update_powers();
+            }
+        }
 
-		private void PowerEditBtn_Click(object sender, EventArgs e)
-		{
-			if (SelectedPower != null)
-			{
-				int index = fLevel.Powers.IndexOf(SelectedPower);
+        private void PowerEditBtn_Click(object sender, EventArgs e)
+        {
+            if (SelectedPower != null)
+            {
+                var index = Level.Powers.IndexOf(SelectedPower);
 
-				OptionPowerForm dlg = new OptionPowerForm(SelectedPower);
-				if (dlg.ShowDialog() == DialogResult.OK)
-				{
-					fLevel.Powers[index] = dlg.Power;
-					update_powers();
-				}
-			}
-		}
+                var dlg = new OptionPowerForm(SelectedPower);
+                if (dlg.ShowDialog() == DialogResult.OK)
+                {
+                    Level.Powers[index] = dlg.Power;
+                    update_powers();
+                }
+            }
+        }
 
-		void update_powers()
-		{
-			PowerList.Items.Clear();
-			foreach (PlayerPower power in fLevel.Powers)
-			{
-				ListViewItem lvi = PowerList.Items.Add(power.Name);
-				lvi.Tag = power;
-			}
+        private void update_powers()
+        {
+            PowerList.Items.Clear();
+            foreach (var power in Level.Powers)
+            {
+                var lvi = PowerList.Items.Add(power.Name);
+                lvi.Tag = power;
+            }
 
-			if (fLevel.Powers.Count == 0)
-			{
-				ListViewItem lvi = PowerList.Items.Add("(none)");
-				lvi.ForeColor = SystemColors.GrayText;
-			}
-		}
-	}
+            if (Level.Powers.Count == 0)
+            {
+                var lvi = PowerList.Items.Add("(none)");
+                lvi.ForeColor = SystemColors.GrayText;
+            }
+        }
+    }
 }

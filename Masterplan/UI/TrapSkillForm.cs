@@ -1,79 +1,73 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Windows.Forms;
-
 using Masterplan.Data;
 using Masterplan.Tools;
 
 namespace Masterplan.UI
 {
-	partial class TrapSkillForm : Form
-	{
-		public TrapSkillForm(TrapSkillData tsd, int level)
-		{
-			InitializeComponent();
+    internal partial class TrapSkillForm : Form
+    {
+        private readonly int _fLevel = 1;
 
-			List<string> skills = Skills.GetSkillNames();
-			foreach (string skill in skills)
-				SkillBox.Items.Add(skill);
+        public TrapSkillData SkillData { get; }
 
-			Application.Idle += new EventHandler(Application_Idle);
+        public TrapSkillForm(TrapSkillData tsd, int level)
+        {
+            InitializeComponent();
 
-			fSkillData = tsd.Copy();
-			fLevel = level;
+            var skills = Skills.GetSkillNames();
+            foreach (var skill in skills)
+                SkillBox.Items.Add(skill);
 
-			SkillBox.Text = fSkillData.SkillName;
-			DCBtn.Checked = (fSkillData.DC != 0);
-			DCBox.Value = fSkillData.DC;
-			DetailsBox.Text = fSkillData.Details;
+            Application.Idle += Application_Idle;
 
-			update_advice();
-		}
+            SkillData = tsd.Copy();
+            _fLevel = level;
 
-		~TrapSkillForm()
-		{
-			Application.Idle -= Application_Idle;
-		}
+            SkillBox.Text = SkillData.SkillName;
+            DCBtn.Checked = SkillData.Dc != 0;
+            DCBox.Value = SkillData.Dc;
+            DetailsBox.Text = SkillData.Details;
 
-		void Application_Idle(object sender, EventArgs e)
-		{
-			DCLbl.Enabled = DCBtn.Checked;
-			DCBox.Enabled = DCBtn.Checked;
+            update_advice();
+        }
 
-			OKBtn.Enabled = ((SkillBox.Text != "") && (DetailsBox.Text != ""));
-		}
+        ~TrapSkillForm()
+        {
+            Application.Idle -= Application_Idle;
+        }
 
-		public TrapSkillData SkillData
-		{
-			get { return fSkillData; }
-		}
-		TrapSkillData fSkillData = null;
+        private void Application_Idle(object sender, EventArgs e)
+        {
+            DCLbl.Enabled = DCBtn.Checked;
+            DCBox.Enabled = DCBtn.Checked;
 
-		int fLevel = 1;
+            OKBtn.Enabled = SkillBox.Text != "" && DetailsBox.Text != "";
+        }
 
-		private void OKBtn_Click(object sender, EventArgs e)
-		{
-			fSkillData.SkillName = SkillBox.Text;
-			if (DCBtn.Checked)
-				fSkillData.DC = (int)DCBox.Value;
-			else
-				fSkillData.DC = 0;
-			fSkillData.Details = DetailsBox.Text;
-		}
+        private void OKBtn_Click(object sender, EventArgs e)
+        {
+            SkillData.SkillName = SkillBox.Text;
+            if (DCBtn.Checked)
+                SkillData.Dc = (int)DCBox.Value;
+            else
+                SkillData.Dc = 0;
+            SkillData.Details = DetailsBox.Text;
+        }
 
-		void update_advice()
-		{
-			ListViewItem lvi_easy = AdviceList.Items.Add("Skill DC (easy)");
-			lvi_easy.SubItems.Add(AI.GetSkillDC(Difficulty.Easy, fLevel).ToString());
-			lvi_easy.Group = AdviceList.Groups[0];
+        private void update_advice()
+        {
+            var lviEasy = AdviceList.Items.Add("Skill DC (easy)");
+            lviEasy.SubItems.Add(Ai.GetSkillDc(Difficulty.Easy, _fLevel).ToString());
+            lviEasy.Group = AdviceList.Groups[0];
 
-			ListViewItem lvi_mod = AdviceList.Items.Add("Skill DC (moderate)");
-			lvi_mod.SubItems.Add(AI.GetSkillDC(Difficulty.Moderate, fLevel).ToString());
-			lvi_mod.Group = AdviceList.Groups[0];
+            var lviMod = AdviceList.Items.Add("Skill DC (moderate)");
+            lviMod.SubItems.Add(Ai.GetSkillDc(Difficulty.Moderate, _fLevel).ToString());
+            lviMod.Group = AdviceList.Groups[0];
 
-			ListViewItem lvi_hard = AdviceList.Items.Add("Skill DC (hard)");
-			lvi_hard.SubItems.Add(AI.GetSkillDC(Difficulty.Hard, fLevel).ToString());
-			lvi_hard.Group = AdviceList.Groups[0];
-		}
-	}
+            var lviHard = AdviceList.Items.Add("Skill DC (hard)");
+            lviHard.SubItems.Add(Ai.GetSkillDc(Difficulty.Hard, _fLevel).ToString());
+            lviHard.Group = AdviceList.Groups[0];
+        }
+    }
 }

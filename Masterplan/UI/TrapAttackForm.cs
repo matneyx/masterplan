@@ -1,109 +1,105 @@
 ﻿using System;
 using System.Windows.Forms;
-
 using Masterplan.Data;
 
 namespace Masterplan.UI
 {
-	partial class TrapAttackForm : Form
-	{
-		public TrapAttackForm(TrapAttack attack, int level, bool elite)
-		{
-			InitializeComponent();
+    internal partial class TrapAttackForm : Form
+    {
+        private readonly bool _fElite;
 
-			Array actions = Enum.GetValues(typeof(ActionType));
-			foreach (ActionType action in actions)
-				ActionBox.Items.Add(action);
+        private readonly int _fLevel = 1;
 
-			Application.Idle += new EventHandler(Application_Idle);
+        public TrapAttack Attack { get; }
 
-			fAttack = attack.Copy();
-			fLevel = level;
-			fElite = elite;
+        public TrapAttackForm(TrapAttack attack, int level, bool elite)
+        {
+            InitializeComponent();
 
-			TriggerBox.Text = fAttack.Trigger;
-			ActionBox.SelectedItem = fAttack.Action;
-			RangeBox.Text = fAttack.Range;
-			TargetBox.Text = fAttack.Target;
-			InitBtn.Checked = fAttack.HasInitiative;
-			InitBox.Value = fAttack.Initiative;
-			AttackBtn.Text = fAttack.Attack.ToString();
-			HitBox.Text = fAttack.OnHit;
-			MissBox.Text = fAttack.OnMiss;
-			EffectBox.Text = fAttack.Effect;
+            var actions = Enum.GetValues(typeof(ActionType));
+            foreach (ActionType action in actions)
+                ActionBox.Items.Add(action);
 
-			update_advice();
-		}
+            Application.Idle += Application_Idle;
 
-		~TrapAttackForm()
-		{
-			Application.Idle -= Application_Idle;
-		}
+            Attack = attack.Copy();
+            _fLevel = level;
+            _fElite = elite;
 
-		void Application_Idle(object sender, EventArgs e)
-		{
-			InitBox.Enabled = InitBtn.Checked;
-		}
+            TriggerBox.Text = Attack.Trigger;
+            ActionBox.SelectedItem = Attack.Action;
+            RangeBox.Text = Attack.Range;
+            TargetBox.Text = Attack.Target;
+            InitBtn.Checked = Attack.HasInitiative;
+            InitBox.Value = Attack.Initiative;
+            AttackBtn.Text = Attack.Attack.ToString();
+            HitBox.Text = Attack.OnHit;
+            MissBox.Text = Attack.OnMiss;
+            EffectBox.Text = Attack.Effect;
 
-		public TrapAttack Attack
-		{
-			get { return fAttack; }
-		}
-		TrapAttack fAttack = null;
+            update_advice();
+        }
 
-		int fLevel = 1;
-		bool fElite = false;
+        ~TrapAttackForm()
+        {
+            Application.Idle -= Application_Idle;
+        }
 
-		private void OKBtn_Click(object sender, EventArgs e)
-		{
-			fAttack.Trigger = TriggerBox.Text;
-			fAttack.Action = (ActionType)ActionBox.SelectedItem;
-			fAttack.Range = RangeBox.Text;
-			fAttack.Target = TargetBox.Text;
-			fAttack.HasInitiative = InitBtn.Checked;
-			fAttack.Initiative = (int)InitBox.Value;
-			fAttack.OnHit = HitBox.Text;
-			fAttack.OnMiss = MissBox.Text;
-			fAttack.Effect = EffectBox.Text;
-		}
+        private void Application_Idle(object sender, EventArgs e)
+        {
+            InitBox.Enabled = InitBtn.Checked;
+        }
 
-		private void AttackBtn_Click(object sender, EventArgs e)
-		{
-			PowerAttackForm dlg = new PowerAttackForm(fAttack.Attack, false, 0, null);
-			if (dlg.ShowDialog() == DialogResult.OK)
-			{
-				fAttack.Attack = dlg.Attack;
-				AttackBtn.Text = fAttack.Attack.ToString();
-			}
-		}
+        private void OKBtn_Click(object sender, EventArgs e)
+        {
+            Attack.Trigger = TriggerBox.Text;
+            Attack.Action = (ActionType)ActionBox.SelectedItem;
+            Attack.Range = RangeBox.Text;
+            Attack.Target = TargetBox.Text;
+            Attack.HasInitiative = InitBtn.Checked;
+            Attack.Initiative = (int)InitBox.Value;
+            Attack.OnHit = HitBox.Text;
+            Attack.OnMiss = MissBox.Text;
+            Attack.Effect = EffectBox.Text;
+        }
 
-		void update_advice()
-		{
-			int init = 2;
-			int attack_ac = fLevel + 5;
-			int attack_nad = fLevel + 3;
+        private void AttackBtn_Click(object sender, EventArgs e)
+        {
+            var dlg = new PowerAttackForm(Attack.Attack, false, 0, null);
+            if (dlg.ShowDialog() == DialogResult.OK)
+            {
+                Attack.Attack = dlg.Attack;
+                AttackBtn.Text = Attack.Attack.ToString();
+            }
+        }
 
-			if (fElite)
-			{
-				init += 2;
-				attack_ac += 2;
-				attack_nad += 2;
-			}
+        private void update_advice()
+        {
+            var init = 2;
+            var attackAc = _fLevel + 5;
+            var attackNad = _fLevel + 3;
 
-			// Init
-			ListViewItem lvi_init = AdviceList.Items.Add("Initiative");
-			lvi_init.SubItems.Add("+" + init);
-			lvi_init.Group = AdviceList.Groups[0];
+            if (_fElite)
+            {
+                init += 2;
+                attackAc += 2;
+                attackNad += 2;
+            }
 
-			// Attack vs AC
-			ListViewItem lvi_att_ac = AdviceList.Items.Add("Attack vs AC");
-			lvi_att_ac.SubItems.Add("+" + attack_ac);
-			lvi_att_ac.Group = AdviceList.Groups[1];
+            // Init
+            var lviInit = AdviceList.Items.Add("Initiative");
+            lviInit.SubItems.Add("+" + init);
+            lviInit.Group = AdviceList.Groups[0];
 
-			// Attack vs NAD
-			ListViewItem lvi_att_nad = AdviceList.Items.Add("Attack vs other defence");
-			lvi_att_nad.SubItems.Add("+" + attack_nad);
-			lvi_att_nad.Group = AdviceList.Groups[1];
-		}
-	}
+            // Attack vs AC
+            var lviAttAc = AdviceList.Items.Add("Attack vs AC");
+            lviAttAc.SubItems.Add("+" + attackAc);
+            lviAttAc.Group = AdviceList.Groups[1];
+
+            // Attack vs NAD
+            var lviAttNad = AdviceList.Items.Add("Attack vs other defence");
+            lviAttNad.SubItems.Add("+" + attackNad);
+            lviAttNad.Group = AdviceList.Groups[1];
+        }
+    }
 }

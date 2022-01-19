@@ -47,9 +47,9 @@
 			((System.ComponentModel.ISupportInitialize)(this.TempHPBox)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.CurrentHPBox)).BeginInit();
 			this.SuspendLayout();
-			// 
+			//
 			// CloseBtn
-			// 
+			//
 			this.CloseBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.CloseBtn.DialogResult = System.Windows.Forms.DialogResult.OK;
 			this.CloseBtn.Location = new System.Drawing.Point(378, 220);
@@ -58,9 +58,9 @@
 			this.CloseBtn.TabIndex = 2;
 			this.CloseBtn.Text = "OK";
 			this.CloseBtn.UseVisualStyleBackColor = true;
-			// 
+			//
 			// CombatantList
-			// 
+			//
 			this.CombatantList.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
 						| System.Windows.Forms.AnchorStyles.Left)
 						| System.Windows.Forms.AnchorStyles.Right)));
@@ -78,20 +78,20 @@
 			this.CombatantList.View = System.Windows.Forms.View.Details;
 			this.CombatantList.SelectedIndexChanged += new System.EventHandler(this.CombatantList_SelectedIndexChanged);
 			this.CombatantList.DoubleClick += new System.EventHandler(this.CombatantList_DoubleClick);
-			// 
+			//
 			// CombatantHdr
-			// 
+			//
 			this.CombatantHdr.Text = "PC";
 			this.CombatantHdr.Width = 131;
-			// 
+			//
 			// InitHdr
-			// 
+			//
 			this.InitHdr.Text = "Hit Points";
 			this.InitHdr.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			this.InitHdr.Width = 76;
-			// 
+			//
 			// HPPanel
-			// 
+			//
 			this.HPPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
 						| System.Windows.Forms.AnchorStyles.Right)));
 			this.HPPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
@@ -108,9 +108,9 @@
 			this.HPPanel.Name = "HPPanel";
 			this.HPPanel.Size = new System.Drawing.Size(197, 202);
 			this.HPPanel.TabIndex = 3;
-			// 
+			//
 			// FullHealBtn
-			// 
+			//
 			this.FullHealBtn.Location = new System.Drawing.Point(6, 135);
 			this.FullHealBtn.Name = "FullHealBtn";
 			this.FullHealBtn.Size = new System.Drawing.Size(148, 23);
@@ -118,9 +118,9 @@
 			this.FullHealBtn.Text = "Full Heal";
 			this.FullHealBtn.UseVisualStyleBackColor = true;
 			this.FullHealBtn.Click += new System.EventHandler(this.FullHealBtn_Click);
-			// 
+			//
 			// HeroNameLbl
-			// 
+			//
 			this.HeroNameLbl.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.HeroNameLbl.Location = new System.Drawing.Point(3, 3);
 			this.HeroNameLbl.Name = "HeroNameLbl";
@@ -128,9 +128,9 @@
 			this.HeroNameLbl.TabIndex = 15;
 			this.HeroNameLbl.Text = "[hero]";
 			this.HeroNameLbl.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-			// 
+			//
 			// MaxHPBox
-			// 
+			//
 			this.MaxHPBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
 						| System.Windows.Forms.AnchorStyles.Right)));
 			this.MaxHPBox.Location = new System.Drawing.Point(76, 57);
@@ -153,30 +153,30 @@
             0,
             0});
 			this.MaxHPBox.ValueChanged += new System.EventHandler(this.MaxHPBox_ValueChanged);
-			// 
+			//
 			// MaxHPLbl
-			// 
+			//
 			this.MaxHPLbl.AutoSize = true;
 			this.MaxHPLbl.Location = new System.Drawing.Point(3, 59);
 			this.MaxHPLbl.Name = "MaxHPLbl";
 			this.MaxHPLbl.Size = new System.Drawing.Size(48, 13);
 			this.MaxHPLbl.TabIndex = 8;
 			this.MaxHPLbl.Text = "Max HP:";
-			// 
+			//
 			// HPGauge
-			// 
+			//
 			this.HPGauge.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
 						| System.Windows.Forms.AnchorStyles.Right)));
 			this.HPGauge.Damage = 0;
-			this.HPGauge.FullHP = 0;
+			this.HPGauge.FullHp = 0;
 			this.HPGauge.Location = new System.Drawing.Point(160, 3);
 			this.HPGauge.Name = "HPGauge";
 			this.HPGauge.Size = new System.Drawing.Size(32, 194);
 			this.HPGauge.TabIndex = 14;
-			this.HPGauge.TempHP = 0;
-			// 
+			this.HPGauge.TempHp = 0;
+			//
 			// TempHPBox
-			// 
+			//
 			this.TempHPBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
 						| System.Windows.Forms.AnchorStyles.Right)));
 			this.TempHPBox.Location = new System.Drawing.Point(76, 109);
@@ -189,18 +189,18 @@
 			this.TempHPBox.Size = new System.Drawing.Size(78, 20);
 			this.TempHPBox.TabIndex = 13;
 			this.TempHPBox.ValueChanged += new System.EventHandler(this.TempHPBox_ValueChanged);
-			// 
+			//
 			// TempHPLbl
-			// 
+			//
 			this.TempHPLbl.AutoSize = true;
 			this.TempHPLbl.Location = new System.Drawing.Point(3, 111);
 			this.TempHPLbl.Name = "TempHPLbl";
 			this.TempHPLbl.Size = new System.Drawing.Size(55, 13);
 			this.TempHPLbl.TabIndex = 12;
 			this.TempHPLbl.Text = "Temp HP:";
-			// 
+			//
 			// CurrentHPBox
-			// 
+			//
 			this.CurrentHPBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
 						| System.Windows.Forms.AnchorStyles.Right)));
 			this.CurrentHPBox.Location = new System.Drawing.Point(76, 83);
@@ -218,18 +218,18 @@
 			this.CurrentHPBox.Size = new System.Drawing.Size(78, 20);
 			this.CurrentHPBox.TabIndex = 11;
 			this.CurrentHPBox.ValueChanged += new System.EventHandler(this.CurrentHPBox_ValueChanged);
-			// 
+			//
 			// CurrentHPLbl
-			// 
+			//
 			this.CurrentHPLbl.AutoSize = true;
 			this.CurrentHPLbl.Location = new System.Drawing.Point(3, 85);
 			this.CurrentHPLbl.Name = "CurrentHPLbl";
 			this.CurrentHPLbl.Size = new System.Drawing.Size(62, 13);
 			this.CurrentHPLbl.TabIndex = 10;
 			this.CurrentHPLbl.Text = "Current HP:";
-			// 
+			//
 			// GroupHealthForm
-			// 
+			//
 			this.AcceptButton = this.CloseBtn;
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;

@@ -1,81 +1,76 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-
 using Masterplan.Data;
 
 namespace Masterplan.UI
 {
-	partial class MonsterThemePowerForm : Form
-	{
-		public MonsterThemePowerForm(ThemePowerData power)
-		{
-			InitializeComponent();
+    internal partial class MonsterThemePowerForm : Form
+    {
+        public ThemePowerData Power { get; }
 
-			Application.Idle += new EventHandler(Application_Idle);
+        public MonsterThemePowerForm(ThemePowerData power)
+        {
+            InitializeComponent();
 
-			Array types = Enum.GetValues(typeof(PowerType));
-			foreach (PowerType type in types)
-				TypeBox.Items.Add(type);
+            Application.Idle += Application_Idle;
 
-			fPower = power.Copy();
+            var types = Enum.GetValues(typeof(PowerType));
+            foreach (PowerType type in types)
+                TypeBox.Items.Add(type);
 
-			TypeBox.SelectedItem = fPower.Type;
+            Power = power.Copy();
 
-			ArtilleryBox.Checked = fPower.Roles.Contains(RoleType.Artillery);
-			BruteBox.Checked = fPower.Roles.Contains(RoleType.Brute);
-			ControllerBox.Checked = fPower.Roles.Contains(RoleType.Controller);
-			LurkerBox.Checked = fPower.Roles.Contains(RoleType.Lurker);
-			SkirmisherBox.Checked = fPower.Roles.Contains(RoleType.Skirmisher);
-			SoldierBox.Checked = fPower.Roles.Contains(RoleType.Soldier);
-		}
+            TypeBox.SelectedItem = Power.Type;
 
-		~MonsterThemePowerForm()
-		{
-			Application.Idle -= Application_Idle;
-		}
+            ArtilleryBox.Checked = Power.Roles.Contains(RoleType.Artillery);
+            BruteBox.Checked = Power.Roles.Contains(RoleType.Brute);
+            ControllerBox.Checked = Power.Roles.Contains(RoleType.Controller);
+            LurkerBox.Checked = Power.Roles.Contains(RoleType.Lurker);
+            SkirmisherBox.Checked = Power.Roles.Contains(RoleType.Skirmisher);
+            SoldierBox.Checked = Power.Roles.Contains(RoleType.Soldier);
+        }
 
-		void Application_Idle(object sender, EventArgs e)
-		{
-			List<RoleType> roles = get_roles();
-			OKBtn.Enabled = (roles.Count != 0);
-		}
+        ~MonsterThemePowerForm()
+        {
+            Application.Idle -= Application_Idle;
+        }
 
-		public ThemePowerData Power
-		{
-			get { return fPower; }
-		}
-		ThemePowerData fPower = null;
+        private void Application_Idle(object sender, EventArgs e)
+        {
+            var roles = get_roles();
+            OKBtn.Enabled = roles.Count != 0;
+        }
 
-		private void OKBtn_Click(object sender, EventArgs e)
-		{
-			fPower.Type = (PowerType)TypeBox.SelectedItem;
-			fPower.Roles = get_roles();
-		}
+        private void OKBtn_Click(object sender, EventArgs e)
+        {
+            Power.Type = (PowerType)TypeBox.SelectedItem;
+            Power.Roles = get_roles();
+        }
 
-		List<RoleType> get_roles()
-		{
-			List<RoleType> roles = new List<RoleType>();
+        private List<RoleType> get_roles()
+        {
+            var roles = new List<RoleType>();
 
-			if (ArtilleryBox.Checked)
-				roles.Add(RoleType.Artillery);
+            if (ArtilleryBox.Checked)
+                roles.Add(RoleType.Artillery);
 
-			if (BruteBox.Checked)
-				roles.Add(RoleType.Brute);
+            if (BruteBox.Checked)
+                roles.Add(RoleType.Brute);
 
-			if (ControllerBox.Checked)
-				roles.Add(RoleType.Controller);
+            if (ControllerBox.Checked)
+                roles.Add(RoleType.Controller);
 
-			if (LurkerBox.Checked)
-				roles.Add(RoleType.Lurker);
+            if (LurkerBox.Checked)
+                roles.Add(RoleType.Lurker);
 
-			if (SkirmisherBox.Checked)
-				roles.Add(RoleType.Skirmisher);
+            if (SkirmisherBox.Checked)
+                roles.Add(RoleType.Skirmisher);
 
-			if (SoldierBox.Checked)
-				roles.Add(RoleType.Soldier);
+            if (SoldierBox.Checked)
+                roles.Add(RoleType.Soldier);
 
-			return roles;
-		}
-	}
+            return roles;
+        }
+    }
 }

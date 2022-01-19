@@ -1,139 +1,134 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
-
 using Masterplan.Data;
 using Masterplan.Tools;
 
 namespace Masterplan.UI
 {
-	partial class CustomOverlayForm : Form
-	{
-		const string ROUNDED = "Rounded (translucent)";
-		const string BLOCK = "Block (opaque)";
+    internal partial class CustomOverlayForm : Form
+    {
+        private const string Rounded = "Rounded (translucent)";
+        private const string Block = "Block (opaque)";
 
-		public CustomOverlayForm(CustomToken ct)
-		{
-			InitializeComponent();
+        public CustomToken Token { get; }
 
-            Application.Idle += new EventHandler(Application_Idle);
+        public CustomOverlayForm(CustomToken ct)
+        {
+            InitializeComponent();
 
-            fToken = ct.Copy();
+            Application.Idle += Application_Idle;
 
-			NameBox.Text = fToken.Name;
+            Token = ct.Copy();
 
-            WidthBox.Value = fToken.OverlaySize.Width;
-            HeightBox.Value = fToken.OverlaySize.Height;
+            NameBox.Text = Token.Name;
+
+            WidthBox.Value = Token.OverlaySize.Width;
+            HeightBox.Value = Token.OverlaySize.Height;
 
             update_power();
 
-			DetailsBox.Text = fToken.Details;
+            DetailsBox.Text = Token.Details;
 
-			TilePanel.TileSize = fToken.OverlaySize;
-			TilePanel.Image = fToken.Image;
-			TilePanel.Colour = fToken.Colour;
+            TilePanel.TileSize = Token.OverlaySize;
+            TilePanel.Image = Token.Image;
+            TilePanel.Colour = Token.Colour;
 
-			StyleBox.Items.Add(ROUNDED);
-			StyleBox.Items.Add(BLOCK);
-			switch (fToken.OverlayStyle)
-			{
-				case OverlayStyle.Rounded:
-					StyleBox.Text = ROUNDED;
-					break;
-				case OverlayStyle.Block:
-					StyleBox.Text = BLOCK;
-					break;
-			}
+            StyleBox.Items.Add(Rounded);
+            StyleBox.Items.Add(Block);
+            switch (Token.OverlayStyle)
+            {
+                case OverlayStyle.Rounded:
+                    StyleBox.Text = Rounded;
+                    break;
+                case OverlayStyle.Block:
+                    StyleBox.Text = Block;
+                    break;
+            }
 
-            DifficultBox.Checked = fToken.DifficultTerrain;
-            OpaqueBox.Checked = fToken.Opaque;
-		}
-
-		~CustomOverlayForm()
-		{
-			Application.Idle -= Application_Idle;
-		}
-
-		void Application_Idle(object sender, EventArgs e)
-        {
-            RemoveBtn.Enabled = (fToken.TerrainPower != null);
-			SelectBtn.Enabled = (Session.TerrainPowers.Count != 0);
+            DifficultBox.Checked = Token.DifficultTerrain;
+            OpaqueBox.Checked = Token.Opaque;
         }
 
-		public CustomToken Token
-		{
-			get { return fToken; }
-		}
-		CustomToken fToken = null;
+        ~CustomOverlayForm()
+        {
+            Application.Idle -= Application_Idle;
+        }
 
-		private void OKBtn_Click(object sender, EventArgs e)
-		{
-			fToken.Name = NameBox.Text;
-            fToken.OverlaySize = new Size((int)WidthBox.Value, (int)HeightBox.Value);
+        private void Application_Idle(object sender, EventArgs e)
+        {
+            RemoveBtn.Enabled = Token.TerrainPower != null;
+            SelectBtn.Enabled = Session.TerrainPowers.Count != 0;
+        }
 
-			fToken.Details = DetailsBox.Text;
-            fToken.DifficultTerrain = DifficultBox.Checked;
-            fToken.Opaque = OpaqueBox.Checked;
+        private void OKBtn_Click(object sender, EventArgs e)
+        {
+            Token.Name = NameBox.Text;
+            Token.OverlaySize = new Size((int)WidthBox.Value, (int)HeightBox.Value);
 
-			fToken.Image = TilePanel.Image;
-			fToken.Colour = TilePanel.Colour;
+            Token.Details = DetailsBox.Text;
+            Token.DifficultTerrain = DifficultBox.Checked;
+            Token.Opaque = OpaqueBox.Checked;
 
-			fToken.OverlayStyle = (StyleBox.Text == ROUNDED) ? OverlayStyle.Rounded : OverlayStyle.Block;
-		}
+            Token.Image = TilePanel.Image;
+            Token.Colour = TilePanel.Colour;
 
-		private void WidthBox_ValueChanged(object sender, EventArgs e)
-		{
-			update_tile_size();
-		}
+            Token.OverlayStyle = StyleBox.Text == Rounded ? OverlayStyle.Rounded : OverlayStyle.Block;
+        }
 
-		private void HeightBox_ValueChanged(object sender, EventArgs e)
-		{
-			update_tile_size();
-		}
+        private void WidthBox_ValueChanged(object sender, EventArgs e)
+        {
+            update_tile_size();
+        }
 
-		void update_tile_size()
-		{
-			TilePanel.TileSize = new Size((int)WidthBox.Value, (int)HeightBox.Value);
-		}
+        private void HeightBox_ValueChanged(object sender, EventArgs e)
+        {
+            update_tile_size();
+        }
 
-		private void EditBtn_Click(object sender, EventArgs e)
-		{
-			TerrainPower power = fToken.TerrainPower;
-			if (power == null)
-			{
-				power = new TerrainPower();
-				power.Name = NameBox.Text;
-			}
+        private void update_tile_size()
+        {
+            TilePanel.TileSize = new Size((int)WidthBox.Value, (int)HeightBox.Value);
+        }
 
-			TerrainPowerForm dlg = new TerrainPowerForm(power);
-			if (dlg.ShowDialog() == DialogResult.OK)
-			{
-				fToken.TerrainPower = dlg.Power;
-				NameBox.Text = fToken.TerrainPower.Name;
+        private void EditBtn_Click(object sender, EventArgs e)
+        {
+            var power = Token.TerrainPower;
+            if (power == null)
+            {
+                power = new TerrainPower();
+                power.Name = NameBox.Text;
+            }
 
-				update_power();
-			}
-		}
+            var dlg = new TerrainPowerForm(power);
+            if (dlg.ShowDialog() == DialogResult.OK)
+            {
+                Token.TerrainPower = dlg.Power;
+                NameBox.Text = Token.TerrainPower.Name;
 
-		private void RemoveBtn_Click(object sender, EventArgs e)
-		{
-			fToken.TerrainPower = null;
-			update_power();
-		}
+                update_power();
+            }
+        }
 
-		private void SelectBtn_Click(object sender, EventArgs e)
-		{
-			TerrainPowerSelectForm dlg = new TerrainPowerSelectForm();
-			if (dlg.ShowDialog() == DialogResult.OK)
-			{
-				fToken.TerrainPower = dlg.TerrainPower.Copy();
-				update_power();
-			}
-		}
+        private void RemoveBtn_Click(object sender, EventArgs e)
+        {
+            Token.TerrainPower = null;
+            update_power();
+        }
 
-		void update_power()
-		{
-			PowerBrowser.DocumentText = HTML.TerrainPower(fToken.TerrainPower, Session.Preferences.TextSize);
-		}
-	}
+        private void SelectBtn_Click(object sender, EventArgs e)
+        {
+            var dlg = new TerrainPowerSelectForm();
+            if (dlg.ShowDialog() == DialogResult.OK)
+            {
+                Token.TerrainPower = dlg.TerrainPower.Copy();
+                update_power();
+            }
+        }
+
+        private void update_power()
+        {
+            PowerBrowser.DocumentText = Html.TerrainPower(Token.TerrainPower, Session.Preferences.TextSize);
+        }
+    }
 }

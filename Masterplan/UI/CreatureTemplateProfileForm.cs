@@ -1,46 +1,41 @@
 ﻿using System;
 using System.Windows.Forms;
-
 using Masterplan.Data;
 
 namespace Masterplan.UI
 {
-	partial class CreatureTemplateProfileForm : Form
-	{
-		public CreatureTemplateProfileForm(CreatureTemplate t)
-		{
-			InitializeComponent();
+    internal partial class CreatureTemplateProfileForm : Form
+    {
+        public CreatureTemplate Template { get; }
 
-			TypeBox.Items.Add(CreatureTemplateType.Functional);
-			TypeBox.Items.Add(CreatureTemplateType.Class);
+        public CreatureTemplateProfileForm(CreatureTemplate t)
+        {
+            InitializeComponent();
 
-			RoleBox.Items.Add(RoleType.Artillery);
-			RoleBox.Items.Add(RoleType.Brute);
-			RoleBox.Items.Add(RoleType.Controller);
-			RoleBox.Items.Add(RoleType.Lurker);
-			RoleBox.Items.Add(RoleType.Skirmisher);
-			RoleBox.Items.Add(RoleType.Soldier);
+            TypeBox.Items.Add(CreatureTemplateType.Functional);
+            TypeBox.Items.Add(CreatureTemplateType.Class);
 
-			fTemplate = t.Copy();
+            RoleBox.Items.Add(RoleType.Artillery);
+            RoleBox.Items.Add(RoleType.Brute);
+            RoleBox.Items.Add(RoleType.Controller);
+            RoleBox.Items.Add(RoleType.Lurker);
+            RoleBox.Items.Add(RoleType.Skirmisher);
+            RoleBox.Items.Add(RoleType.Soldier);
 
-			NameBox.Text = fTemplate.Name;
-			TypeBox.SelectedItem = fTemplate.Type;
-			RoleBox.SelectedItem = fTemplate.Role;
-			LeaderBox.Checked = fTemplate.Leader;
-		}
+            Template = t.Copy();
 
-		public CreatureTemplate Template
-		{
-			get { return fTemplate; }
-		}
-		CreatureTemplate fTemplate = null;
+            NameBox.Text = Template.Name;
+            TypeBox.SelectedItem = Template.Type;
+            RoleBox.SelectedItem = Template.Role;
+            LeaderBox.Checked = Template.Leader;
+        }
 
-		private void OKBtn_Click(object sender, EventArgs e)
-		{
-			fTemplate.Name = NameBox.Text;
-			fTemplate.Type = (CreatureTemplateType)TypeBox.SelectedItem;
-			fTemplate.Role = (RoleType)RoleBox.SelectedItem;
-			fTemplate.Leader = LeaderBox.Checked;
-		}
-	}
+        private void OKBtn_Click(object sender, EventArgs e)
+        {
+            Template.Name = NameBox.Text;
+            Template.Type = (CreatureTemplateType)TypeBox.SelectedItem;
+            Template.Role = (RoleType)RoleBox.SelectedItem;
+            Template.Leader = LeaderBox.Checked;
+        }
+    }
 }

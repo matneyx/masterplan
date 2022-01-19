@@ -1,37 +1,32 @@
 ﻿using System;
 using System.Windows.Forms;
-
 using Masterplan.Data;
 
 namespace Masterplan.UI
 {
-	partial class SatelliteForm : Form
-	{
-		public SatelliteForm(Satellite sat)
-		{
-			InitializeComponent();
+    internal partial class SatelliteForm : Form
+    {
+        public Satellite Satellite { get; }
 
-			fSatellite = sat.Copy();
+        public SatelliteForm(Satellite sat)
+        {
+            InitializeComponent();
 
-			if (fSatellite.Period == 0)
-				fSatellite.Period = 1;
+            Satellite = sat.Copy();
 
-			NameBox.Text = fSatellite.Name;
-			PeriodBox.Value = fSatellite.Period;
-			OffsetBox.Value = fSatellite.Offset;
-		}
+            if (Satellite.Period == 0)
+                Satellite.Period = 1;
 
-		public Satellite Satellite
-		{
-			get { return fSatellite; }
-		}
-		Satellite fSatellite = null;
+            NameBox.Text = Satellite.Name;
+            PeriodBox.Value = Satellite.Period;
+            OffsetBox.Value = Satellite.Offset;
+        }
 
-		private void OKBtn_Click(object sender, EventArgs e)
-		{
-			fSatellite.Name = NameBox.Text;
-			fSatellite.Period = (int)PeriodBox.Value;
-			fSatellite.Offset = (int)OffsetBox.Value;
-		}
-	}
+        private void OKBtn_Click(object sender, EventArgs e)
+        {
+            Satellite.Name = NameBox.Text;
+            Satellite.Period = (int)PeriodBox.Value;
+            Satellite.Offset = (int)OffsetBox.Value;
+        }
+    }
 }

@@ -1,188 +1,166 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-
 using Masterplan.Data;
 using Masterplan.Tools;
 using Masterplan.UI;
 
 namespace Masterplan.Wizards
 {
-	partial class VariantBasePage : UserControl, IWizardPage
-	{
-		public VariantBasePage()
-		{
-			InitializeComponent();
+    internal partial class VariantBasePage : UserControl, IWizardPage
+    {
+        private VariantData _fData;
 
-			Application.Idle += new EventHandler(Application_Idle);
-		}
+        public Creature SelectedCreature
+        {
+            get
+            {
+                if (CreatureList.SelectedItems.Count != 0)
+                    return CreatureList.SelectedItems[0].Tag as Creature;
 
-		~VariantBasePage()
-		{
-			Application.Idle -= Application_Idle;
-		}
+                return null;
+            }
+        }
 
-		void Application_Idle(object sender, EventArgs e)
-		{
-			SearchClearBtn.Enabled = (SearchBox.Text != "");
-		}
+        public VariantBasePage()
+        {
+            InitializeComponent();
 
-		VariantData fData = null;
+            Application.Idle += Application_Idle;
+        }
 
-		#region IWizardPage Members
+        ~VariantBasePage()
+        {
+            Application.Idle -= Application_Idle;
+        }
 
-		public bool AllowNext
-		{
-			get { return (SelectedCreature != null); }
-		}
+        private void Application_Idle(object sender, EventArgs e)
+        {
+            SearchClearBtn.Enabled = SearchBox.Text != "";
+        }
 
-		public bool AllowBack
-		{
-			get { return false; }
-		}
+        private void SearchBox_TextChanged(object sender, EventArgs e)
+        {
+            update_list();
+        }
 
-		public bool AllowFinish
-		{
-			get { return false; }
-		}
+        private void SearchClearBtn_Click(object sender, EventArgs e)
+        {
+            SearchBox.Text = "";
+        }
 
-		public void OnShown(object data)
-		{
-			if (fData == null)
-			{
-				fData = data as VariantData;
-				update_list();
-			}
-		}
+        private void update_list()
+        {
+            var creatures = Session.Creatures;
 
-		public bool OnBack()
-		{
-			return false;
-		}
+            var bst = new BinarySearchTree<string>();
+            foreach (var c in creatures)
+                if (c.Category != null && c.Category != "")
+                    bst.Add(c.Category);
 
-		public bool OnNext()
-		{
-			// Set base creature
-			fData.BaseCreature = SelectedCreature;
+            var cats = bst.SortedList;
+            cats.Add("Miscellaneous Creatures");
 
-			if (fData.BaseCreature.Role is Minion)
-				fData.Templates.Clear();
+            CreatureList.BeginUpdate();
 
-			return true;
-		}
+            CreatureList.Groups.Clear();
+            foreach (var cat in cats)
+                CreatureList.Groups.Add(cat, cat);
 
-		public bool OnFinish()
-		{
-			return false;
-		}
+            var items = new List<ListViewItem>();
+            foreach (var c in creatures)
+                if (Match(c, SearchBox.Text))
+                {
+                    var lvi = new ListViewItem(c.Name);
+                    lvi.SubItems.Add("Level " + c.Level + " " + c.Role);
+                    if (c.Category != null && c.Category != "")
+                        lvi.Group = CreatureList.Groups[c.Category];
+                    else
+                        lvi.Group = CreatureList.Groups["Miscellaneous Creatures"];
+                    lvi.Tag = c;
 
-		#endregion
+                    items.Add(lvi);
+                }
 
-		public Creature SelectedCreature
-		{
-			get
-			{
-				if (CreatureList.SelectedItems.Count != 0)
-					return CreatureList.SelectedItems[0].Tag as Creature;
+            CreatureList.Items.Clear();
+            CreatureList.Items.AddRange(items.ToArray());
 
-				return null;
-			}
-		}
+            CreatureList.EndUpdate();
+        }
 
-		private void SearchBox_TextChanged(object sender, EventArgs e)
-		{
-			update_list();
-		}
+        private bool Match(Creature c, string query)
+        {
+            var tokens = query.Split(null);
 
-		private void SearchClearBtn_Click(object sender, EventArgs e)
-		{
-			SearchBox.Text = "";
-		}
+            foreach (var token in tokens)
+                if (!match_token(c, token))
+                    return false;
 
-		void update_list()
-		{
-			List<Creature> creatures = Session.Creatures;
+            return true;
+        }
 
-			BinarySearchTree<string> bst = new BinarySearchTree<string>();
-			foreach (Creature c in creatures)
-			{
-				if ((c.Category != null) && (c.Category != ""))
-					bst.Add(c.Category);
-			}
+        private bool match_token(Creature c, string token)
+        {
+            if (c.Name.ToLower().Contains(token.ToLower()))
+                return true;
 
-			List<string> cats = bst.SortedList;
-			cats.Add("Miscellaneous Creatures");
+            if (c.Category != null)
+                if (c.Category.ToLower().Contains(token.ToLower()))
+                    return true;
 
-			CreatureList.BeginUpdate();
+            if (c.Info.ToLower().Contains(token.ToLower()))
+                return true;
 
-			CreatureList.Groups.Clear();
-			foreach (string cat in cats)
-				CreatureList.Groups.Add(cat, cat);
+            if (c.Phenotype.ToLower().Contains(token.ToLower()))
+                return true;
 
-			List<ListViewItem> items = new List<ListViewItem>();
-			foreach (Creature c in creatures)
-			{
-				if (match(c, SearchBox.Text))
-				{
-					ListViewItem lvi = new ListViewItem(c.Name);
-					lvi.SubItems.Add("Level " + c.Level + " " + c.Role);
-					if ((c.Category != null) && (c.Category != ""))
-						lvi.Group = CreatureList.Groups[c.Category];
-					else
-						lvi.Group = CreatureList.Groups["Miscellaneous Creatures"];
-					lvi.Tag = c;
+            return false;
+        }
 
-					items.Add(lvi);
-				}
-			}
+        private void CreatureList_DoubleClick(object sender, EventArgs e)
+        {
+            if (SelectedCreature != null)
+            {
+                var card = new EncounterCard(SelectedCreature.Id);
+                var dlg = new CreatureDetailsForm(card);
+                dlg.ShowDialog();
+            }
+        }
 
-			CreatureList.Items.Clear();
-			CreatureList.Items.AddRange(items.ToArray());
+        public bool AllowNext => SelectedCreature != null;
 
-			CreatureList.EndUpdate();
-		}
+        public bool AllowBack => false;
 
-		bool match(Creature c, string query)
-		{
-			string[] tokens = query.Split(null);
+        public bool AllowFinish => false;
 
-			foreach (string token in tokens)
-			{
-				if (!match_token(c, token))
-					return false;
-			}
+        public void OnShown(object data)
+        {
+            if (_fData == null)
+            {
+                _fData = data as VariantData;
+                update_list();
+            }
+        }
 
-			return true;
-		}
+        public bool OnBack()
+        {
+            return false;
+        }
 
-		bool match_token(Creature c, string token)
-		{
-			if (c.Name.ToLower().Contains(token.ToLower()))
-				return true;
+        public bool OnNext()
+        {
+            // Set base creature
+            _fData.BaseCreature = SelectedCreature;
 
-			if (c.Category != null)
-			{
-				if (c.Category.ToLower().Contains(token.ToLower()))
-					return true;
-			}
+            if (_fData.BaseCreature.Role is Minion)
+                _fData.Templates.Clear();
 
-			if (c.Info.ToLower().Contains(token.ToLower()))
-				return true;
+            return true;
+        }
 
-			if (c.Phenotype.ToLower().Contains(token.ToLower()))
-				return true;
-
-			return false;
-		}
-
-		private void CreatureList_DoubleClick(object sender, EventArgs e)
-		{
-			if (SelectedCreature != null)
-			{
-				EncounterCard card = new EncounterCard(SelectedCreature.ID);
-				CreatureDetailsForm dlg = new CreatureDetailsForm(card);
-				dlg.ShowDialog();
-			}
-		}
-	}
+        public bool OnFinish()
+        {
+            return false;
+        }
+    }
 }

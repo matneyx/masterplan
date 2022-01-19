@@ -1,105 +1,95 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-
 using Masterplan.Data;
 using Masterplan.Tools;
 
 namespace Masterplan.UI
 {
-	partial class MapSelectForm : Form
-	{
-		public MapSelectForm(List<Map> maps, List<Guid> exclude, bool multi_select)
-		{
-			InitializeComponent();
+    internal partial class MapSelectForm : Form
+    {
+        public Map Map
+        {
+            get
+            {
+                if (MapList.SelectedItems.Count != 0)
+                    return MapList.SelectedItems[0].Tag as Map;
 
-			// Categories
-			BinarySearchTree<string> bst = new BinarySearchTree<string>();
-			foreach (Map map in maps)
-			{
-				if ((map.Category != null) && (map.Category != ""))
-					bst.Add(map.Category);
-			}
-			List<string> cats = bst.SortedList;
-			cats.Add("Miscellaneous Maps");
+                return null;
+            }
+        }
 
-			foreach (string cat in cats)
-				MapList.Groups.Add(cat, cat);
+        public List<Map> Maps
+        {
+            get
+            {
+                var maps = new List<Map>();
 
-			foreach (Map map in maps)
-			{
-				if ((exclude != null) && (exclude.Contains(map.ID)))
-					continue;
+                foreach (ListViewItem lvi in MapList.CheckedItems)
+                {
+                    var map = lvi.Tag as Map;
+                    if (map != null)
+                        maps.Add(map);
+                }
 
-				ListViewItem lvi = MapList.Items.Add(map.Name);
-				lvi.Tag = map;
+                return maps;
+            }
+        }
 
-				if ((map.Category != null) && (map.Category != ""))
-					lvi.Group = MapList.Groups[map.Category];
-				else
-					lvi.Group = MapList.Groups["Miscellaneous Maps"];
-			}
+        public MapSelectForm(List<Map> maps, List<Guid> exclude, bool multiSelect)
+        {
+            InitializeComponent();
 
-			if (multi_select)
-			{
-				MapList.CheckBoxes = true;
-			}
+            // Categories
+            var bst = new BinarySearchTree<string>();
+            foreach (var map in maps)
+                if (map.Category != null && map.Category != "")
+                    bst.Add(map.Category);
+            var cats = bst.SortedList;
+            cats.Add("Miscellaneous Maps");
 
-			Application.Idle += new EventHandler(Application_Idle);
-		}
+            foreach (var cat in cats)
+                MapList.Groups.Add(cat, cat);
 
-		~MapSelectForm()
-		{
-			Application.Idle -= Application_Idle;
-		}
+            foreach (var map in maps)
+            {
+                if (exclude != null && exclude.Contains(map.Id))
+                    continue;
 
-		void Application_Idle(object sender, EventArgs e)
-		{
-			if (MapList.CheckBoxes)
-			{
-				OKBtn.Enabled = (MapList.CheckedItems.Count != 0);
-			}
-			else
-			{
-				OKBtn.Enabled = (Map != null);
-			}
-		}
+                var lvi = MapList.Items.Add(map.Name);
+                lvi.Tag = map;
 
-		public Map Map
-		{
-			get
-			{
-				if (MapList.SelectedItems.Count != 0)
-					return MapList.SelectedItems[0].Tag as Map;
+                if (map.Category != null && map.Category != "")
+                    lvi.Group = MapList.Groups[map.Category];
+                else
+                    lvi.Group = MapList.Groups["Miscellaneous Maps"];
+            }
 
-				return null;
-			}
-		}
+            if (multiSelect) MapList.CheckBoxes = true;
 
-		public List<Map> Maps
-		{
-			get
-			{
-				List<Map> maps = new List<Map>();
+            Application.Idle += Application_Idle;
+        }
 
-				foreach (ListViewItem lvi in MapList.CheckedItems)
-				{
-					Map map = lvi.Tag as Map;
-					if (map != null)
-						maps.Add(map);
-				}
+        ~MapSelectForm()
+        {
+            Application.Idle -= Application_Idle;
+        }
 
-				return maps;
-			}
-		}
+        private void Application_Idle(object sender, EventArgs e)
+        {
+            if (MapList.CheckBoxes)
+                OKBtn.Enabled = MapList.CheckedItems.Count != 0;
+            else
+                OKBtn.Enabled = Map != null;
+        }
 
-		private void TileList_DoubleClick(object sender, EventArgs e)
-		{
-			if (Map != null)
-			{
-				DialogResult = DialogResult.OK;
-				Close();
-			}
-		}
-	}
+        private void TileList_DoubleClick(object sender, EventArgs e)
+        {
+            if (Map != null)
+            {
+                DialogResult = DialogResult.OK;
+                Close();
+            }
+        }
+    }
 }

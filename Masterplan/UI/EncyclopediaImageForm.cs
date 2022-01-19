@@ -1,74 +1,69 @@
 ﻿using System;
 using System.Windows.Forms;
-
 using Masterplan.Data;
 
 namespace Masterplan.UI
 {
-	partial class EncyclopediaImageForm : Form
-	{
-		public EncyclopediaImageForm(EncyclopediaImage img)
-		{
-			InitializeComponent();
+    internal partial class EncyclopediaImageForm : Form
+    {
+        public EncyclopediaImage Image { get; }
 
-			Application.Idle += new EventHandler(Application_Idle);
+        public EncyclopediaImageForm(EncyclopediaImage img)
+        {
+            InitializeComponent();
 
-			fImage = img.Copy();
+            Application.Idle += Application_Idle;
 
-			NameBox.Text = fImage.Name;
-			PictureBox.Image = fImage.Image;
-		}
+            Image = img.Copy();
 
-		~EncyclopediaImageForm()
-		{
-			Application.Idle -= Application_Idle;
-		}
+            NameBox.Text = Image.Name;
+            PictureBox.Image = Image.Image;
+        }
 
-		void Application_Idle(object sender, EventArgs e)
-		{
-			PasteBtn.Enabled = Clipboard.ContainsImage();
-			PlayerViewBtn.Enabled = (fImage.Image != null);
-		}
+        ~EncyclopediaImageForm()
+        {
+            Application.Idle -= Application_Idle;
+        }
 
-		public EncyclopediaImage Image
-		{
-			get { return fImage; }
-		}
-		EncyclopediaImage fImage = null;
+        private void Application_Idle(object sender, EventArgs e)
+        {
+            PasteBtn.Enabled = Clipboard.ContainsImage();
+            PlayerViewBtn.Enabled = Image.Image != null;
+        }
 
-		private void OKBtn_Click(object sender, EventArgs e)
-		{
-			fImage.Name = NameBox.Text;
-		}
+        private void OKBtn_Click(object sender, EventArgs e)
+        {
+            Image.Name = NameBox.Text;
+        }
 
-		private void BrowseBtn_Click(object sender, EventArgs e)
-		{
-			OpenFileDialog open_dlg = new OpenFileDialog();
-			open_dlg.Filter = Program.ImageFilter;
-			if (open_dlg.ShowDialog() != DialogResult.OK)
-				return;
+        private void BrowseBtn_Click(object sender, EventArgs e)
+        {
+            var openDlg = new OpenFileDialog();
+            openDlg.Filter = Program.ImageFilter;
+            if (openDlg.ShowDialog() != DialogResult.OK)
+                return;
 
-			fImage.Image = System.Drawing.Image.FromFile(open_dlg.FileName);
-			Program.SetResolution(fImage.Image);
-			PictureBox.Image = fImage.Image;
-		}
+            Image.Image = System.Drawing.Image.FromFile(openDlg.FileName);
+            Program.SetResolution(Image.Image);
+            PictureBox.Image = Image.Image;
+        }
 
-		private void PasteBtn_Click(object sender, EventArgs e)
-		{
-			if (Clipboard.ContainsImage())
-			{
-				fImage.Image = Clipboard.GetImage();
-				Program.SetResolution(fImage.Image);
-				PictureBox.Image = fImage.Image;
-			}
-		}
+        private void PasteBtn_Click(object sender, EventArgs e)
+        {
+            if (Clipboard.ContainsImage())
+            {
+                Image.Image = Clipboard.GetImage();
+                Program.SetResolution(Image.Image);
+                PictureBox.Image = Image.Image;
+            }
+        }
 
-		private void PlayerViewBtn_Click(object sender, EventArgs e)
-		{
-			if (Session.PlayerView == null)
-				Session.PlayerView = new PlayerViewForm(this);
+        private void PlayerViewBtn_Click(object sender, EventArgs e)
+        {
+            if (Session.PlayerView == null)
+                Session.PlayerView = new PlayerViewForm(this);
 
-			Session.PlayerView.ShowImage(fImage.Image);
-		}
-	}
+            Session.PlayerView.ShowImage(Image.Image);
+        }
+    }
 }

@@ -3,190 +3,176 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Printing;
 using System.Windows.Forms;
-
 using Masterplan.Controls;
 using Masterplan.Data;
 
 namespace Masterplan.Tools
 {
-	class MapPrinting
-	{
-		public static void Print(MapView mapview, bool poster, PrinterSettings settings)
-		{
-			fMap = mapview.Map;
-			fViewpoint = mapview.Viewpoint;
-			fEncounter = mapview.Encounter;
-			fShowGridlines = (mapview.ShowGrid == MapGridMode.Overlay);
-			fPosterMode = poster;
+    internal class MapPrinting
+    {
+        private static Map _fMap;
+        private static Rectangle _fViewpoint = Rectangle.Empty;
+        private static Encounter _fEncounter;
+        private static bool _fShowGridlines;
+        private static bool _fPosterMode;
 
-			PrintDocument doc = new PrintDocument();
-			doc.DocumentName = fMap.Name;
-			doc.PrinterSettings = settings;
+        private static List<Rectangle> _fPages;
 
-			fPages = null;
+        public static void Print(MapView mapview, bool poster, PrinterSettings settings)
+        {
+            _fMap = mapview.Map;
+            _fViewpoint = mapview.Viewpoint;
+            _fEncounter = mapview.Encounter;
+            _fShowGridlines = mapview.ShowGrid == MapGridMode.Overlay;
+            _fPosterMode = poster;
 
-			doc.PrintPage += new PrintPageEventHandler(print_map_page);
-			doc.Print();
-		}
+            var doc = new PrintDocument();
+            doc.DocumentName = _fMap.Name;
+            doc.PrinterSettings = settings;
 
-		static Map fMap = null;
-		static Rectangle fViewpoint = Rectangle.Empty;
-		static Encounter fEncounter = null;
-		static bool fShowGridlines = false;
-		static bool fPosterMode = false;
+            _fPages = null;
 
-		static List<Rectangle> fPages = null;
+            doc.PrintPage += print_map_page;
+            doc.Print();
+        }
 
-		static void print_map_page(object sender, PrintPageEventArgs e)
-		{
-			MapView ctrl = new MapView();
-			ctrl.Map = fMap;
-			ctrl.Viewpoint = fViewpoint;
-			ctrl.Encounter = fEncounter;
+        private static void print_map_page(object sender, PrintPageEventArgs e)
+        {
+            var ctrl = new MapView();
+            ctrl.Map = _fMap;
+            ctrl.Viewpoint = _fViewpoint;
+            ctrl.Encounter = _fEncounter;
             ctrl.LineOfSight = false;
-			ctrl.Mode = MapViewMode.Plain;
-			ctrl.Size = e.PageBounds.Size;
-			ctrl.BorderSize = 1;
+            ctrl.Mode = MapViewMode.Plain;
+            ctrl.Size = e.PageBounds.Size;
+            ctrl.BorderSize = 1;
 
-			if (fShowGridlines)
-				ctrl.ShowGrid = MapGridMode.Overlay;
+            if (_fShowGridlines)
+                ctrl.ShowGrid = MapGridMode.Overlay;
 
-			if (fPages == null)
-			{
-				if (fPosterMode)
-				{
-					int square_count_h = e.PageSettings.PaperSize.Width / 100;
-					int square_count_v = e.PageSettings.PaperSize.Height / 100;
+            if (_fPages == null)
+            {
+                if (_fPosterMode)
+                {
+                    var squareCountH = e.PageSettings.PaperSize.Width / 100;
+                    var squareCountV = e.PageSettings.PaperSize.Height / 100;
 
-					fPages = get_pages(ctrl, square_count_h, square_count_v);
-				}
-				else
-				{
-					fPages = new List<Rectangle>();
-					fPages.Add(ctrl.Viewpoint);
-				}
-			}
+                    _fPages = get_pages(ctrl, squareCountH, squareCountV);
+                }
+                else
+                {
+                    _fPages = new List<Rectangle>();
+                    _fPages.Add(ctrl.Viewpoint);
+                }
+            }
 
-			ctrl.Viewpoint = fPages[0];
-			fPages.RemoveAt(0);
+            ctrl.Viewpoint = _fPages[0];
+            _fPages.RemoveAt(0);
 
-			bool map_wider = (ctrl.LayoutData.Width > ctrl.LayoutData.Height);
-			bool page_wider = (e.PageBounds.Width > e.PageBounds.Height);
-			bool rotate = (map_wider != page_wider);
+            var mapWider = ctrl.LayoutData.Width > ctrl.LayoutData.Height;
+            var pageWider = e.PageBounds.Width > e.PageBounds.Height;
+            var rotate = mapWider != pageWider;
 
-			if (rotate)
-			{
-				ctrl.Width = e.PageBounds.Height;
-				ctrl.Height = e.PageBounds.Width;
-			}
+            if (rotate)
+            {
+                ctrl.Width = e.PageBounds.Height;
+                ctrl.Height = e.PageBounds.Width;
+            }
 
-			Bitmap bmp = new Bitmap(ctrl.Width, ctrl.Height);
-			ctrl.DrawToBitmap(bmp, new Rectangle(0, 0, bmp.Width, bmp.Height));
+            var bmp = new Bitmap(ctrl.Width, ctrl.Height);
+            ctrl.DrawToBitmap(bmp, new Rectangle(0, 0, bmp.Width, bmp.Height));
 
-			if (rotate)
-			{
-				bmp.RotateFlip(RotateFlipType.Rotate90FlipNone);
-			}
+            if (rotate) bmp.RotateFlip(RotateFlipType.Rotate90FlipNone);
 
-			e.Graphics.DrawImage(bmp, e.PageBounds);
+            e.Graphics.DrawImage(bmp, e.PageBounds);
 
-			e.HasMorePages = (fPages.Count != 0);
-		}
+            e.HasMorePages = _fPages.Count != 0;
+        }
 
-		static List<Rectangle> get_pages(MapView ctrl, int square_count_h, int square_count_v)
-		{
-			int width = Math.Max(square_count_h, square_count_v);
-			int height = Math.Min(square_count_h, square_count_v);
+        private static List<Rectangle> get_pages(MapView ctrl, int squareCountH, int squareCountV)
+        {
+            var width = Math.Max(squareCountH, squareCountV);
+            var height = Math.Min(squareCountH, squareCountV);
 
-			List<Point> squares = new List<Point>();
-			for (int x = ctrl.LayoutData.MinX; x <= ctrl.LayoutData.MaxX; ++x)
-			{
-				for (int y = ctrl.LayoutData.MinY; y <= ctrl.LayoutData.MaxY; ++y )
-				{
-					Point pt = new Point(x, y);
-					TileData td = ctrl.LayoutData.GetTileAtSquare(pt);
-					if (td != null)
-						squares.Add(pt);
-				}
-			}
+            var squares = new List<Point>();
+            for (var x = ctrl.LayoutData.MinX; x <= ctrl.LayoutData.MaxX; ++x)
+            for (var y = ctrl.LayoutData.MinY; y <= ctrl.LayoutData.MaxY; ++y)
+            {
+                var pt = new Point(x, y);
+                var td = ctrl.LayoutData.GetTileAtSquare(pt);
+                if (td != null)
+                    squares.Add(pt);
+            }
 
-			List<Rectangle> pages = new List<Rectangle>();
+            var pages = new List<Rectangle>();
 
-			for (int x = ctrl.LayoutData.MinX; x <= ctrl.LayoutData.MaxX; x += width)
-			{
-				for (int y = ctrl.LayoutData.MinY; y <= ctrl.LayoutData.MaxY; y += height)
-				{
-					Rectangle rect = new Rectangle(x, y, width, height);
+            for (var x = ctrl.LayoutData.MinX; x <= ctrl.LayoutData.MaxX; x += width)
+            for (var y = ctrl.LayoutData.MinY; y <= ctrl.LayoutData.MaxY; y += height)
+            {
+                var rect = new Rectangle(x, y, width, height);
 
-					bool contains_tile = false;
-					foreach (Point square in squares)
-					{
-						if (rect.Contains(square))
-						{
-							contains_tile = true;
-							break;
-						}
-					}
+                var containsTile = false;
+                foreach (var square in squares)
+                    if (rect.Contains(square))
+                    {
+                        containsTile = true;
+                        break;
+                    }
 
-					if (contains_tile)
-						pages.Add(rect);
-				}
-			}
+                if (containsTile)
+                    pages.Add(rect);
+            }
 
-			return pages;
-		}
-	}
+            return pages;
+        }
+    }
 
-	class BlankMap
-	{
-		public static void Print()
-		{
-			PrintDialog dlg = new PrintDialog();
-			dlg.AllowPrintToFile = false;
+    internal class BlankMap
+    {
+        public static void Print()
+        {
+            var dlg = new PrintDialog();
+            dlg.AllowPrintToFile = false;
 
-			if (dlg.ShowDialog() == DialogResult.OK)
-			{
-				PrintDocument doc = new PrintDocument();
-				doc.DocumentName = "Blank Grid";
-				doc.PrinterSettings = dlg.PrinterSettings;
+            if (dlg.ShowDialog() == DialogResult.OK)
+            {
+                var doc = new PrintDocument();
+                doc.DocumentName = "Blank Grid";
+                doc.PrinterSettings = dlg.PrinterSettings;
 
-				for (int page = 0; page != dlg.PrinterSettings.Copies; ++page)
-				{
-					doc.PrintPage += new PrintPageEventHandler(print_blank_page);
-					doc.Print();
-				}
-			}
-		}
+                for (var page = 0; page != dlg.PrinterSettings.Copies; ++page)
+                {
+                    doc.PrintPage += print_blank_page;
+                    doc.Print();
+                }
+            }
+        }
 
-		static void print_blank_page(object sender, PrintPageEventArgs e)
-		{
-			int square_count_h = e.PageSettings.PaperSize.Width / 100;
-			int square_count_v = e.PageSettings.PaperSize.Height / 100;
+        private static void print_blank_page(object sender, PrintPageEventArgs e)
+        {
+            var squareCountH = e.PageSettings.PaperSize.Width / 100;
+            var squareCountV = e.PageSettings.PaperSize.Height / 100;
 
-			int square_size_h = e.PageBounds.Width / square_count_h;
-			int square_size_v = e.PageBounds.Height / square_count_v;
-			int square_size = Math.Min(square_size_h, square_size_v);
+            var squareSizeH = e.PageBounds.Width / squareCountH;
+            var squareSizeV = e.PageBounds.Height / squareCountV;
+            var squareSize = Math.Min(squareSizeH, squareSizeV);
 
-			int width = (square_count_h * square_size) + 1;
-			int height = (square_count_v * square_size) + 1;
+            var width = squareCountH * squareSize + 1;
+            var height = squareCountV * squareSize + 1;
 
-			Bitmap img = new Bitmap(width, height);
+            var img = new Bitmap(width, height);
 
-			for (int x = 0; x != width; ++x)
-			{
-				for (int y = 0; y != height; ++y)
-				{
-					if ((x % square_size == 0) || (y % square_size == 0))
-						img.SetPixel(x, y, Color.DarkGray);
-				}
-			}
+            for (var x = 0; x != width; ++x)
+            for (var y = 0; y != height; ++y)
+                if (x % squareSize == 0 || y % squareSize == 0)
+                    img.SetPixel(x, y, Color.DarkGray);
 
-			int x_offset = (e.PageBounds.Width - width) / 2;
-			int y_offset = (e.PageBounds.Height - height) / 2;
-			Rectangle rect = new Rectangle(x_offset, y_offset, width, height);
+            var xOffset = (e.PageBounds.Width - width) / 2;
+            var yOffset = (e.PageBounds.Height - height) / 2;
+            var rect = new Rectangle(xOffset, yOffset, width, height);
 
-			e.Graphics.DrawRectangle(Pens.Black, rect);
-			e.Graphics.DrawImage(img, rect);
-		}
-	}
+            e.Graphics.DrawRectangle(Pens.Black, rect);
+            e.Graphics.DrawImage(img, rect);
+        }
+    }
 }

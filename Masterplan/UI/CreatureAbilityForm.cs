@@ -1,71 +1,66 @@
 ﻿using System;
 using System.Windows.Forms;
-
 using Masterplan.Data;
 
 namespace Masterplan.UI
 {
-	partial class CreatureAbilityForm : Form
-	{
-		public CreatureAbilityForm(ICreature c)
-		{
-			InitializeComponent();
+    internal partial class CreatureAbilityForm : Form
+    {
+        public ICreature Creature { get; }
 
-			fCreature = c;
+        public CreatureAbilityForm(ICreature c)
+        {
+            InitializeComponent();
 
-			StrBox.Value = fCreature.Strength.Score;
-			ConBox.Value = fCreature.Constitution.Score;
-			DexBox.Value = fCreature.Dexterity.Score;
-			IntBox.Value = fCreature.Intelligence.Score;
-			WisBox.Value = fCreature.Wisdom.Score;
-			ChaBox.Value = fCreature.Charisma.Score;
-		}
+            Creature = c;
 
-		public ICreature Creature
-		{
-			get { return fCreature; }
-		}
-		ICreature fCreature = null;
+            StrBox.Value = Creature.Strength.Score;
+            ConBox.Value = Creature.Constitution.Score;
+            DexBox.Value = Creature.Dexterity.Score;
+            IntBox.Value = Creature.Intelligence.Score;
+            WisBox.Value = Creature.Wisdom.Score;
+            ChaBox.Value = Creature.Charisma.Score;
+        }
 
-		private void OKBtn_Click(object sender, EventArgs e)
-		{
-			fCreature.Strength.Score = (int)StrBox.Value;
-			fCreature.Constitution.Score = (int)ConBox.Value;
-			fCreature.Dexterity.Score = (int)DexBox.Value;
-			fCreature.Intelligence.Score = (int)IntBox.Value;
-			fCreature.Wisdom.Score = (int)WisBox.Value;
-			fCreature.Charisma.Score = (int)ChaBox.Value;
-		}
+        private void OKBtn_Click(object sender, EventArgs e)
+        {
+            Creature.Strength.Score = (int)StrBox.Value;
+            Creature.Constitution.Score = (int)ConBox.Value;
+            Creature.Dexterity.Score = (int)DexBox.Value;
+            Creature.Intelligence.Score = (int)IntBox.Value;
+            Creature.Wisdom.Score = (int)WisBox.Value;
+            Creature.Charisma.Score = (int)ChaBox.Value;
+        }
 
-		private void StrBox_ValueChanged(object sender, EventArgs e)
-		{
-			update_mods();
-		}
+        private void StrBox_ValueChanged(object sender, EventArgs e)
+        {
+            update_mods();
+        }
 
-		void update_mods()
-		{
-			StrModBox.Text = get_text((int)StrBox.Value);
-			ConModBox.Text = get_text((int)ConBox.Value);
-			DexModBox.Text = get_text((int)DexBox.Value);
-			IntModBox.Text = get_text((int)IntBox.Value);
-			WisModBox.Text = get_text((int)WisBox.Value);
-			ChaModBox.Text = get_text((int)ChaBox.Value);
-		}
+        private void update_mods()
+        {
+            StrModBox.Text = get_text((int)StrBox.Value);
+            ConModBox.Text = get_text((int)ConBox.Value);
+            DexModBox.Text = get_text((int)DexBox.Value);
+            IntModBox.Text = get_text((int)IntBox.Value);
+            WisModBox.Text = get_text((int)WisBox.Value);
+            ChaModBox.Text = get_text((int)ChaBox.Value);
+        }
 
-		string get_text(int score)
-		{
-			int bonus = Ability.GetModifier(score);
-			int mod = bonus + (fCreature.Level / 2);
+        private string get_text(int score)
+        {
+            var bonus = Ability.GetModifier(score);
+            var mod = bonus + Creature.Level / 2;
 
-			string bonus_str = bonus.ToString();
-			if (bonus >= 0)
-				bonus_str = "+" + bonus_str;
+            var bonusStr = bonus.ToString();
+            if (bonus >= 0)
+                bonusStr = "+" + bonusStr;
 
-			string mod_str = mod.ToString();
-			if (mod >= 0)
-				mod_str = "+" + mod_str;
+            var modStr = mod.ToString();
+            if (mod >= 0)
+                modStr = "+" + modStr;
 
-			return bonus_str + " / " + mod_str;
-		}
-	}
+            return bonusStr + " / " + modStr;
+        }
+    }
 }

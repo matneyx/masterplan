@@ -1,41 +1,40 @@
 ﻿using System;
 using System.IO;
 using System.Windows.Forms;
-
 using Masterplan.Data;
 using Masterplan.Tools;
 
 namespace Masterplan.UI
 {
-	partial class HeroDetailsForm : Form
-	{
-		public HeroDetailsForm(Hero hero)
-		{
-			InitializeComponent();
+    internal partial class HeroDetailsForm : Form
+    {
+        private readonly Hero _fHero;
 
-			fHero = hero.Copy();
+        public HeroDetailsForm(Hero hero)
+        {
+            InitializeComponent();
 
-			Browser.DocumentText = HTML.StatBlock(fHero, null, true, false, false, Session.Preferences.TextSize);
-		}
+            _fHero = hero.Copy();
 
-		Hero fHero = null;
+            Browser.DocumentText = Html.StatBlock(_fHero, null, true, false, false, Session.Preferences.TextSize);
+        }
 
-		private void PlayerViewBtn_Click(object sender, EventArgs e)
-		{
-			if (Session.PlayerView == null)
-				Session.PlayerView = new PlayerViewForm(this);
+        private void PlayerViewBtn_Click(object sender, EventArgs e)
+        {
+            if (Session.PlayerView == null)
+                Session.PlayerView = new PlayerViewForm(this);
 
-			Session.PlayerView.ShowHero(fHero);
-		}
+            Session.PlayerView.ShowHero(_fHero);
+        }
 
-		private void ExportHTML_Click(object sender, EventArgs e)
-		{
-			SaveFileDialog dlg = new SaveFileDialog();
-			dlg.FileName = fHero.Name;
-			dlg.Filter = Program.HTMLFilter;
+        private void ExportHTML_Click(object sender, EventArgs e)
+        {
+            var dlg = new SaveFileDialog();
+            dlg.FileName = _fHero.Name;
+            dlg.Filter = Program.HtmlFilter;
 
-			if (dlg.ShowDialog() == DialogResult.OK)
-				File.WriteAllText(dlg.FileName, Browser.DocumentText);
-		}
-	}
+            if (dlg.ShowDialog() == DialogResult.OK)
+                File.WriteAllText(dlg.FileName, Browser.DocumentText);
+        }
+    }
 }

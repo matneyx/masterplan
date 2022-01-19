@@ -1,62 +1,49 @@
 ﻿using System;
 using System.Windows.Forms;
-
 using Masterplan.Data;
 
 namespace Masterplan.UI
 {
-	partial class CreatureClassForm : Form
-	{
-		public CreatureClassForm(ICreature c)
-		{
-			InitializeComponent();
+    internal partial class CreatureClassForm : Form
+    {
+        private readonly ICreature _fCreature;
 
-			// Populate size
-			foreach (CreatureSize size in Enum.GetValues(typeof(CreatureSize)))
-				SizeBox.Items.Add(size);
+        public CreatureSize CreatureSize => (CreatureSize)SizeBox.SelectedItem;
 
-			// Populate origin
-			Array origins = Enum.GetValues(typeof(CreatureOrigin));
-			foreach (CreatureOrigin origin in origins)
-				OriginBox.Items.Add(origin);
+        public CreatureOrigin Origin => (CreatureOrigin)OriginBox.SelectedItem;
 
-			// Populate type
-			Array types = Enum.GetValues(typeof(CreatureType));
-			foreach (CreatureType type in types)
-				TypeBox.Items.Add(type);
+        public CreatureType Type => (CreatureType)TypeBox.SelectedItem;
 
-			fCreature = c;
+        public string Keywords => KeywordBox.Text;
 
-			SizeBox.SelectedItem = fCreature.Size;
-			OriginBox.SelectedItem = fCreature.Origin;
-			TypeBox.SelectedItem = fCreature.Type;
-			KeywordBox.Text = fCreature.Keywords;
-		}
+        public CreatureClassForm(ICreature c)
+        {
+            InitializeComponent();
 
-		ICreature fCreature = null;
+            // Populate size
+            foreach (CreatureSize size in Enum.GetValues(typeof(CreatureSize)))
+                SizeBox.Items.Add(size);
 
-		public CreatureSize CreatureSize
-		{
-			get { return (CreatureSize)SizeBox.SelectedItem; }
-		}
+            // Populate origin
+            var origins = Enum.GetValues(typeof(CreatureOrigin));
+            foreach (CreatureOrigin origin in origins)
+                OriginBox.Items.Add(origin);
 
-		public CreatureOrigin Origin
-		{
-			get { return (CreatureOrigin)OriginBox.SelectedItem; }
-		}
+            // Populate type
+            var types = Enum.GetValues(typeof(CreatureType));
+            foreach (CreatureType type in types)
+                TypeBox.Items.Add(type);
 
-		public CreatureType Type
-		{
-			get { return (CreatureType)TypeBox.SelectedItem; }
-		}
+            _fCreature = c;
 
-		public string Keywords
-		{
-			get { return KeywordBox.Text; }
-		}
+            SizeBox.SelectedItem = _fCreature.Size;
+            OriginBox.SelectedItem = _fCreature.Origin;
+            TypeBox.SelectedItem = _fCreature.Type;
+            KeywordBox.Text = _fCreature.Keywords;
+        }
 
-		private void OKBtn_Click(object sender, EventArgs e)
-		{
-		}
-	}
+        private void OKBtn_Click(object sender, EventArgs e)
+        {
+        }
+    }
 }

@@ -1,123 +1,113 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
-
 using Masterplan.Data;
 using Masterplan.Tools.Generators;
 
 namespace Masterplan.Wizards
 {
-	partial class MapLibrariesPage : UserControl, IWizardPage
-	{
-		public MapLibrariesPage()
-		{
-			InitializeComponent();
-		}
+    internal partial class MapLibrariesPage : UserControl, IWizardPage
+    {
+        private MapBuilderData _fData;
 
-		MapBuilderData fData = null;
+        public MapLibrariesPage()
+        {
+            InitializeComponent();
+        }
 
-		#region IWizardPage Members
+        private void SelectAllBtn_Click(object sender, EventArgs e)
+        {
+            foreach (ListViewItem lvi in LibraryList.Items)
+                lvi.Checked = true;
+        }
 
-		public bool AllowNext
-		{
-			get { return (LibraryList.CheckedItems.Count != 0); }
-		}
+        private void DeselectAllBtn_Click(object sender, EventArgs e)
+        {
+            foreach (ListViewItem lvi in LibraryList.Items)
+                lvi.Checked = false;
+        }
 
-		public bool AllowBack
-		{
-			get
-			{
-				if (fData.DelveOnly)
-					return false;
+        private void set_selected_libraries()
+        {
+            _fData.Libraries.Clear();
+            foreach (ListViewItem lvi in LibraryList.CheckedItems)
+            {
+                var lib = lvi.Tag as Library;
+                _fData.Libraries.Add(lib);
+            }
+        }
 
-				return true;
-			}
-		}
+        private void InfoLinkLbl_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            var msg =
+                "In order to be used with AutoBuild, map tiles need to be categorised (as doors, stairs, etc), so that they can be placed intelligently.";
+            msg += Environment.NewLine;
+            msg += Environment.NewLine;
+            msg += "Libraries which do not have categorised tiles cannot be used, and so are not shown in the list.";
+            msg += Environment.NewLine;
+            msg += Environment.NewLine;
+            msg += "You can set tile categories in the Libraries screen.";
 
-		public bool AllowFinish
-		{
-			get { return (LibraryList.CheckedItems.Count != 0); }
-		}
+            MessageBox.Show(this, msg, "Masterplan", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
 
-		public void OnShown(object data)
-		{
-			if (fData == null)
-			{
-				fData = data as MapBuilderData;
+        public bool AllowNext => LibraryList.CheckedItems.Count != 0;
 
-				LibraryList.Items.Clear();
-				foreach (Library lib in Session.Libraries)
-				{
-					if (!lib.ShowInAutoBuild)
-						continue;
+        public bool AllowBack
+        {
+            get
+            {
+                if (_fData.DelveOnly)
+                    return false;
 
-					ListViewItem lvi = LibraryList.Items.Add(lib.Name);
-					lvi.Checked = fData.Libraries.Contains(lib);
-					lvi.Tag = lib;
-				}
+                return true;
+            }
+        }
 
-				if (LibraryList.Items.Count == 0)
-				{
-					ListViewItem lvi = LibraryList.Items.Add("(no libraries)");
-					lvi.ForeColor = SystemColors.GrayText;
+        public bool AllowFinish => LibraryList.CheckedItems.Count != 0;
 
-					LibraryList.CheckBoxes = false;
-				}
-			}
-		}
+        public void OnShown(object data)
+        {
+            if (_fData == null)
+            {
+                _fData = data as MapBuilderData;
 
-		public bool OnBack()
-		{
-			return true;
-		}
+                LibraryList.Items.Clear();
+                foreach (var lib in Session.Libraries)
+                {
+                    if (!lib.ShowInAutoBuild)
+                        continue;
 
-		public bool OnNext()
-		{
-			set_selected_libraries();
-			return true;
-		}
+                    var lvi = LibraryList.Items.Add(lib.Name);
+                    lvi.Checked = _fData.Libraries.Contains(lib);
+                    lvi.Tag = lib;
+                }
 
-		public bool OnFinish()
-		{
-			set_selected_libraries();
-			return true;
-		}
+                if (LibraryList.Items.Count == 0)
+                {
+                    var lvi = LibraryList.Items.Add("(no libraries)");
+                    lvi.ForeColor = SystemColors.GrayText;
 
-		#endregion
+                    LibraryList.CheckBoxes = false;
+                }
+            }
+        }
 
-		private void SelectAllBtn_Click(object sender, EventArgs e)
-		{
-			foreach (ListViewItem lvi in LibraryList.Items)
-				lvi.Checked = true;
-		}
+        public bool OnBack()
+        {
+            return true;
+        }
 
-		private void DeselectAllBtn_Click(object sender, EventArgs e)
-		{
-			foreach (ListViewItem lvi in LibraryList.Items)
-				lvi.Checked = false;
-		}
+        public bool OnNext()
+        {
+            set_selected_libraries();
+            return true;
+        }
 
-		void set_selected_libraries()
-		{
-			fData.Libraries.Clear();
-			foreach (ListViewItem lvi in LibraryList.CheckedItems)
-			{
-				Library lib = lvi.Tag as Library;
-				fData.Libraries.Add(lib);
-			}
-		}
-
-		private void InfoLinkLbl_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-		{
-			string msg = "In order to be used with AutoBuild, map tiles need to be categorised (as doors, stairs, etc), so that they can be placed intelligently.";
-			msg += Environment.NewLine;
-			msg += Environment.NewLine;
-			msg += "Libraries which do not have categorised tiles cannot be used, and so are not shown in the list.";
-			msg += Environment.NewLine;
-			msg += Environment.NewLine;
-			msg += "You can set tile categories in the Libraries screen.";
-
-			MessageBox.Show(this, msg, "Masterplan", MessageBoxButtons.OK, MessageBoxIcon.Information);
-		}
-	}
+        public bool OnFinish()
+        {
+            set_selected_libraries();
+            return true;
+        }
+    }
 }

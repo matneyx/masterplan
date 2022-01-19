@@ -1,164 +1,159 @@
 ﻿using System;
 using System.Windows.Forms;
-
 using Masterplan.Data;
 using Masterplan.Tools;
 
 namespace Masterplan.UI
 {
-	partial class MagicItemBuilderForm : Form
-	{
-		public MagicItemBuilderForm(MagicItem item)
-		{
-			InitializeComponent();
+    internal partial class MagicItemBuilderForm : Form
+    {
+        public MagicItem MagicItem { get; private set; }
 
-			fMagicItem = item.Copy();
+        public MagicItemBuilderForm(MagicItem item)
+        {
+            InitializeComponent();
 
-			update_statblock();
-		}
+            MagicItem = item.Copy();
 
-		public MagicItem MagicItem
-		{
-			get { return fMagicItem; }
-		}
-		MagicItem fMagicItem = null;
+            update_statblock();
+        }
 
-		private void Browser_Navigating(object sender, WebBrowserNavigatingEventArgs e)
-		{
-			if (e.Url.Scheme == "build")
-			{
-				if (e.Url.LocalPath == "profile")
-				{
-					e.Cancel = true;
+        private void Browser_Navigating(object sender, WebBrowserNavigatingEventArgs e)
+        {
+            if (e.Url.Scheme == "build")
+            {
+                if (e.Url.LocalPath == "profile")
+                {
+                    e.Cancel = true;
 
-					MagicItemProfileForm dlg = new MagicItemProfileForm(fMagicItem);
-					if (dlg.ShowDialog() == DialogResult.OK)
-					{
-						fMagicItem.Name = dlg.MagicItem.Name;
-						fMagicItem.Level = dlg.MagicItem.Level;
-						fMagicItem.Type = dlg.MagicItem.Type;
-						fMagicItem.Rarity = dlg.MagicItem.Rarity;
+                    var dlg = new MagicItemProfileForm(MagicItem);
+                    if (dlg.ShowDialog() == DialogResult.OK)
+                    {
+                        MagicItem.Name = dlg.MagicItem.Name;
+                        MagicItem.Level = dlg.MagicItem.Level;
+                        MagicItem.Type = dlg.MagicItem.Type;
+                        MagicItem.Rarity = dlg.MagicItem.Rarity;
 
-						update_statblock();
-					}
-				}
+                        update_statblock();
+                    }
+                }
 
-				if (e.Url.LocalPath == "desc")
-				{
-					e.Cancel = true;
+                if (e.Url.LocalPath == "desc")
+                {
+                    e.Cancel = true;
 
-					DetailsForm dlg = new DetailsForm(fMagicItem.Description, "Description", null);
-					if (dlg.ShowDialog() == DialogResult.OK)
-					{
-						fMagicItem.Description = dlg.Details;
-						update_statblock();
-					}
-				}
-			}
+                    var dlg = new DetailsForm(MagicItem.Description, "Description", null);
+                    if (dlg.ShowDialog() == DialogResult.OK)
+                    {
+                        MagicItem.Description = dlg.Details;
+                        update_statblock();
+                    }
+                }
+            }
 
-			if (e.Url.Scheme == "section")
-			{
-				e.Cancel = true;
+            if (e.Url.Scheme == "section")
+            {
+                e.Cancel = true;
 
-				if (e.Url.LocalPath == "new")
-				{
-					MagicItemSection section = new MagicItemSection();
-					section.Header = "New Section";
+                if (e.Url.LocalPath == "new")
+                {
+                    var section = new MagicItemSection();
+                    section.Header = "New Section";
 
-					MagicItemSectionForm dlg = new MagicItemSectionForm(section);
-					if (dlg.ShowDialog() == DialogResult.OK)
-					{
-						fMagicItem.Sections.Add(dlg.Section);
-						update_statblock();
-					}
-				}
-			}
+                    var dlg = new MagicItemSectionForm(section);
+                    if (dlg.ShowDialog() == DialogResult.OK)
+                    {
+                        MagicItem.Sections.Add(dlg.Section);
+                        update_statblock();
+                    }
+                }
+            }
 
-			if (e.Url.Scheme == "edit")
-			{
-				e.Cancel = true;
+            if (e.Url.Scheme == "edit")
+            {
+                e.Cancel = true;
 
-				int index = int.Parse(e.Url.LocalPath);
+                var index = int.Parse(e.Url.LocalPath);
 
-				MagicItemSectionForm dlg = new MagicItemSectionForm(fMagicItem.Sections[index]);
-				if (dlg.ShowDialog() == DialogResult.OK)
-				{
-					fMagicItem.Sections[index] = dlg.Section;
-					update_statblock();
-				}
-			}
+                var dlg = new MagicItemSectionForm(MagicItem.Sections[index]);
+                if (dlg.ShowDialog() == DialogResult.OK)
+                {
+                    MagicItem.Sections[index] = dlg.Section;
+                    update_statblock();
+                }
+            }
 
-			if (e.Url.Scheme == "remove")
-			{
-				e.Cancel = true;
+            if (e.Url.Scheme == "remove")
+            {
+                e.Cancel = true;
 
-				int index = int.Parse(e.Url.LocalPath);
+                var index = int.Parse(e.Url.LocalPath);
 
-				fMagicItem.Sections.RemoveAt(index);
-				update_statblock();
-			}
+                MagicItem.Sections.RemoveAt(index);
+                update_statblock();
+            }
 
-			if (e.Url.Scheme == "moveup")
-			{
-				e.Cancel = true;
+            if (e.Url.Scheme == "moveup")
+            {
+                e.Cancel = true;
 
-				int index = int.Parse(e.Url.LocalPath);
+                var index = int.Parse(e.Url.LocalPath);
 
-				MagicItemSection tmp = fMagicItem.Sections[index - 1];
-				fMagicItem.Sections[index - 1] = fMagicItem.Sections[index];
-				fMagicItem.Sections[index] = tmp;
+                var tmp = MagicItem.Sections[index - 1];
+                MagicItem.Sections[index - 1] = MagicItem.Sections[index];
+                MagicItem.Sections[index] = tmp;
 
-				update_statblock();
-			}
+                update_statblock();
+            }
 
-			if (e.Url.Scheme == "movedown")
-			{
-				e.Cancel = true;
+            if (e.Url.Scheme == "movedown")
+            {
+                e.Cancel = true;
 
-				int index = int.Parse(e.Url.LocalPath);
+                var index = int.Parse(e.Url.LocalPath);
 
-				MagicItemSection tmp = fMagicItem.Sections[index + 1];
-				fMagicItem.Sections[index + 1] = fMagicItem.Sections[index];
-				fMagicItem.Sections[index] = tmp;
+                var tmp = MagicItem.Sections[index + 1];
+                MagicItem.Sections[index + 1] = MagicItem.Sections[index];
+                MagicItem.Sections[index] = tmp;
 
-				update_statblock();
-			}
-		}
+                update_statblock();
+            }
+        }
 
-		private void OptionsVariant_Click(object sender, EventArgs e)
-		{
-			MagicItemSelectForm dlg = new MagicItemSelectForm(fMagicItem.Level);
-			if (dlg.ShowDialog() == DialogResult.OK)
-			{
-				fMagicItem = dlg.MagicItem.Copy();
-				fMagicItem.ID = Guid.NewGuid();
+        private void OptionsVariant_Click(object sender, EventArgs e)
+        {
+            var dlg = new MagicItemSelectForm(MagicItem.Level);
+            if (dlg.ShowDialog() == DialogResult.OK)
+            {
+                MagicItem = dlg.MagicItem.Copy();
+                MagicItem.Id = Guid.NewGuid();
 
-				update_statblock();
-			}
-		}
+                update_statblock();
+            }
+        }
 
-		void update_statblock()
-		{
-			StatBlockBrowser.DocumentText = HTML.MagicItem(fMagicItem, Session.Preferences.TextSize, true, true);
-		}
+        private void update_statblock()
+        {
+            StatBlockBrowser.DocumentText = Html.MagicItem(MagicItem, Session.Preferences.TextSize, true, true);
+        }
 
-		private void FileExport_Click(object sender, EventArgs e)
-		{
-			SaveFileDialog dlg = new SaveFileDialog();
-			dlg.Title = "Export Magic Item";
-			dlg.FileName = fMagicItem.Name;
-			dlg.Filter = Program.MagicItemFilter;
+        private void FileExport_Click(object sender, EventArgs e)
+        {
+            var dlg = new SaveFileDialog();
+            dlg.Title = "Export Magic Item";
+            dlg.FileName = MagicItem.Name;
+            dlg.Filter = Program.MagicItemFilter;
 
-			if (dlg.ShowDialog() == DialogResult.OK)
-			{
-				bool ok = Serialisation<MagicItem>.Save(dlg.FileName, fMagicItem, SerialisationMode.Binary);
+            if (dlg.ShowDialog() == DialogResult.OK)
+            {
+                var ok = Serialisation<MagicItem>.Save(dlg.FileName, MagicItem, SerialisationMode.Binary);
 
-				if (!ok)
-				{
-					string error = "The magic item could not be exported.";
-					MessageBox.Show(error, "Masterplan", MessageBoxButtons.OK, MessageBoxIcon.Error);
-				}
-			}
-		}
-	}
+                if (!ok)
+                {
+                    var error = "The magic item could not be exported.";
+                    MessageBox.Show(error, "Masterplan", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
+    }
 }

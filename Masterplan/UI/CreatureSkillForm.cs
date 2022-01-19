@@ -3,52 +3,53 @@ using System.Windows.Forms;
 
 namespace Masterplan.UI
 {
-	partial class CreatureSkillForm : Form
-	{
-		public CreatureSkillForm(string skill_name, string ability_name, int ability_bonus, int level_bonus, bool trained, int misc_bonus)
-		{
-			InitializeComponent();
+    internal partial class CreatureSkillForm : Form
+    {
+        private readonly int _fAbility;
+        private readonly int _fLevel;
 
-			fAbility = ability_bonus;
-			fLevel = level_bonus;
+        public bool Trained => TrainedBox.Checked;
+        public int Misc => (int)MiscBox.Value;
 
-			Text = skill_name;
-			AbilityNameLbl.Text = ability_name + " bonus:";
-			AbilityBonusLbl.Text = fAbility.ToString();
-			LevelBonusLbl.Text = fLevel.ToString();
-			TrainedBox.Checked = trained;
-			MiscBox.Value = misc_bonus;
+        public CreatureSkillForm(string skillName, string abilityName, int abilityBonus, int levelBonus, bool trained,
+            int miscBonus)
+        {
+            InitializeComponent();
 
-			update_total();
-		}
+            _fAbility = abilityBonus;
+            _fLevel = levelBonus;
 
-		int fAbility = 0;
-		int fLevel = 0;
+            Text = skillName;
+            AbilityNameLbl.Text = abilityName + " bonus:";
+            AbilityBonusLbl.Text = _fAbility.ToString();
+            LevelBonusLbl.Text = _fLevel.ToString();
+            TrainedBox.Checked = trained;
+            MiscBox.Value = miscBonus;
 
-		public bool Trained { get { return TrainedBox.Checked; } }
-		public int Misc { get { return (int)MiscBox.Value; } }
+            update_total();
+        }
 
-		private void OKBtn_Click(object sender, EventArgs e)
-		{
-		}
+        private void OKBtn_Click(object sender, EventArgs e)
+        {
+        }
 
-		void update_total()
-		{
-			int training = TrainedBox.Checked ? 5 : 0;
-			int total = fAbility + fLevel + training + Misc;
+        private void update_total()
+        {
+            var training = TrainedBox.Checked ? 5 : 0;
+            var total = _fAbility + _fLevel + training + Misc;
 
-			TrainingBonusLbl.Text = TrainedBox.Checked ? "5" : "";
-			TotalBonusLbl.Text = total.ToString();
-		}
+            TrainingBonusLbl.Text = TrainedBox.Checked ? "5" : "";
+            TotalBonusLbl.Text = total.ToString();
+        }
 
-		private void TrainedBox_CheckedChanged(object sender, EventArgs e)
-		{
-			update_total();
-		}
+        private void TrainedBox_CheckedChanged(object sender, EventArgs e)
+        {
+            update_total();
+        }
 
-		private void MiscBox_ValueChanged(object sender, EventArgs e)
-		{
-			update_total();
-		}
-	}
+        private void MiscBox_ValueChanged(object sender, EventArgs e)
+        {
+            update_total();
+        }
+    }
 }

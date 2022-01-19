@@ -1,19 +1,16 @@
 ﻿using System.Windows.Forms;
 
-namespace Masterplan.UI
+namespace Masterplan.UI.PlayerOptions
 {
-	partial class OptionDiseaseLevelForm : Form
-	{
-		public OptionDiseaseLevelForm(string level)
-		{
-			InitializeComponent();
+    internal partial class OptionDiseaseLevelForm : Form
+    {
+        public string DiseaseLevel => DetailsBox.Text;
 
-			DetailsBox.Text = level;
-		}
+        public OptionDiseaseLevelForm(string level)
+        {
+            InitializeComponent();
 
-		public string DiseaseLevel
-		{
-			get { return DetailsBox.Text; }
-		}
-	}
+            DetailsBox.Text = level;
+        }
+    }
 }

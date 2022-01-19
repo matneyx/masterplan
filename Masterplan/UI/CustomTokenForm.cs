@@ -1,110 +1,105 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
-
 using Masterplan.Data;
 using Masterplan.Tools;
 
 namespace Masterplan.UI
 {
-	partial class CustomTokenForm : Form
-	{
-		public CustomTokenForm(CustomToken ct)
-		{
-			InitializeComponent();
+    internal partial class CustomTokenForm : Form
+    {
+        public CustomToken Token { get; }
 
-			Application.Idle += new EventHandler(Application_Idle);
+        public CustomTokenForm(CustomToken ct)
+        {
+            InitializeComponent();
 
-            Array sizes = Enum.GetValues(typeof(CreatureSize));
+            Application.Idle += Application_Idle;
+
+            var sizes = Enum.GetValues(typeof(CreatureSize));
             foreach (CreatureSize size in sizes)
                 SizeBox.Items.Add(size);
 
-            fToken = ct.Copy();
+            Token = ct.Copy();
 
-			NameBox.Text = fToken.Name;
-			SizeBox.SelectedItem = fToken.TokenSize;
+            NameBox.Text = Token.Name;
+            SizeBox.SelectedItem = Token.TokenSize;
 
             update_power();
 
-            DetailsBox.Text = fToken.Details;
+            DetailsBox.Text = Token.Details;
 
-			int n = Creature.GetSize((CreatureSize)SizeBox.SelectedItem);
-			TilePanel.TileSize = new Size(n, n);
-			TilePanel.Image = fToken.Image;
-			TilePanel.Colour = fToken.Colour;
-		}
+            var n = Creature.GetSize((CreatureSize)SizeBox.SelectedItem);
+            TilePanel.TileSize = new Size(n, n);
+            TilePanel.Image = Token.Image;
+            TilePanel.Colour = Token.Colour;
+        }
 
-		~CustomTokenForm()
-		{
-			Application.Idle -= Application_Idle;
-		}
+        ~CustomTokenForm()
+        {
+            Application.Idle -= Application_Idle;
+        }
 
-		void Application_Idle(object sender, EventArgs e)
-		{
-			RemoveBtn.Enabled = (fToken.TerrainPower != null);
-			SelectBtn.Enabled = (Session.TerrainPowers.Count != 0);
-		}
+        private void Application_Idle(object sender, EventArgs e)
+        {
+            RemoveBtn.Enabled = Token.TerrainPower != null;
+            SelectBtn.Enabled = Session.TerrainPowers.Count != 0;
+        }
 
-		public CustomToken Token
-		{
-			get { return fToken; }
-		}
-		CustomToken fToken = null;
+        private void OKBtn_Click(object sender, EventArgs e)
+        {
+            Token.Name = NameBox.Text;
+            Token.TokenSize = (CreatureSize)SizeBox.SelectedItem;
+            Token.Details = DetailsBox.Text;
 
-		private void OKBtn_Click(object sender, EventArgs e)
-		{
-			fToken.Name = NameBox.Text;
-			fToken.TokenSize = (CreatureSize)SizeBox.SelectedItem;
-			fToken.Details = DetailsBox.Text;
+            Token.Image = TilePanel.Image;
+            Token.Colour = TilePanel.Colour;
+        }
 
-			fToken.Image = TilePanel.Image;
-			fToken.Colour = TilePanel.Colour;
-		}
+        private void SizeBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            var n = Creature.GetSize((CreatureSize)SizeBox.SelectedItem);
+            TilePanel.TileSize = new Size(n, n);
+        }
 
-		private void SizeBox_SelectedIndexChanged(object sender, EventArgs e)
-		{
-			int n = Creature.GetSize((CreatureSize)SizeBox.SelectedItem);
-			TilePanel.TileSize = new Size(n, n);
-		}
+        private void EditBtn_Click(object sender, EventArgs e)
+        {
+            var power = Token.TerrainPower;
+            if (power == null)
+            {
+                power = new TerrainPower();
+                power.Name = NameBox.Text;
+            }
 
-		private void EditBtn_Click(object sender, EventArgs e)
-		{
-			TerrainPower power = fToken.TerrainPower;
-			if (power == null)
-			{
-				power = new TerrainPower();
-				power.Name = NameBox.Text;
-			}
+            var dlg = new TerrainPowerForm(power);
+            if (dlg.ShowDialog() == DialogResult.OK)
+            {
+                Token.TerrainPower = dlg.Power;
+                NameBox.Text = Token.TerrainPower.Name;
 
-			TerrainPowerForm dlg = new TerrainPowerForm(power);
-			if (dlg.ShowDialog() == DialogResult.OK)
-			{
-				fToken.TerrainPower = dlg.Power;
-				NameBox.Text = fToken.TerrainPower.Name;
+                update_power();
+            }
+        }
 
-				update_power();
-			}
-		}
+        private void RemoveBtn_Click(object sender, EventArgs e)
+        {
+            Token.TerrainPower = null;
+            update_power();
+        }
 
-		private void RemoveBtn_Click(object sender, EventArgs e)
-		{
-			fToken.TerrainPower = null;
-			update_power();
-		}
+        private void SelectBtn_Click(object sender, EventArgs e)
+        {
+            var dlg = new TerrainPowerSelectForm();
+            if (dlg.ShowDialog() == DialogResult.OK)
+            {
+                Token.TerrainPower = dlg.TerrainPower.Copy();
+                update_power();
+            }
+        }
 
-		private void SelectBtn_Click(object sender, EventArgs e)
-		{
-			TerrainPowerSelectForm dlg = new TerrainPowerSelectForm();
-			if (dlg.ShowDialog() == DialogResult.OK)
-			{
-				fToken.TerrainPower = dlg.TerrainPower.Copy();
-				update_power();
-			}
-		}
-
-		void update_power()
-		{
-			PowerBrowser.DocumentText = HTML.TerrainPower(fToken.TerrainPower, Session.Preferences.TextSize);
-		}
-	}
+        private void update_power()
+        {
+            PowerBrowser.DocumentText = Html.TerrainPower(Token.TerrainPower, Session.Preferences.TextSize);
+        }
+    }
 }

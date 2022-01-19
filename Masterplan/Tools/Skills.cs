@@ -2,25 +2,25 @@
 
 namespace Masterplan.Tools
 {
-	class Skills
-	{
-		public static List<string> GetAbilityNames()
-		{
-			List<string> abilities = new List<string>();
+    internal class Skills
+    {
+        public static List<string> GetAbilityNames()
+        {
+            var abilities = new List<string>();
 
-			abilities.Add("Strength");
-			abilities.Add("Constitution");
-			abilities.Add("Dexterity");
-			abilities.Add("Intelligence");
-			abilities.Add("Wisdom");
-			abilities.Add("Charisma");
+            abilities.Add("Strength");
+            abilities.Add("Constitution");
+            abilities.Add("Dexterity");
+            abilities.Add("Intelligence");
+            abilities.Add("Wisdom");
+            abilities.Add("Charisma");
 
-			return abilities;
-		}
+            return abilities;
+        }
 
         public static List<string> GetSkillNames()
         {
-            List<string> skills = new List<string>();
+            var skills = new List<string>();
 
             skills.Add("Acrobatics");
             skills.Add("Arcana");
@@ -43,24 +43,26 @@ namespace Masterplan.Tools
             return skills;
         }
 
-        public static string GetKeyAbility(string skill_name)
+        public static string GetKeyAbility(string skillName)
         {
-            if (skill_name == "Athletics")
+            if (skillName == "Athletics")
                 return "Strength";
 
-            if (skill_name == "Endurance")
+            if (skillName == "Endurance")
                 return "Constitution";
 
-            if ((skill_name == "Acrobatics") || (skill_name == "Stealth") || (skill_name == "Thievery"))
+            if (skillName == "Acrobatics" || skillName == "Stealth" || skillName == "Thievery")
                 return "Dexterity";
 
-            if ((skill_name == "Arcana") || (skill_name == "History") || (skill_name == "Religion"))
+            if (skillName == "Arcana" || skillName == "History" || skillName == "Religion")
                 return "Intelligence";
 
-            if ((skill_name == "Dungeoneering") || (skill_name == "Heal") || (skill_name == "Insight") || (skill_name == "Nature") || (skill_name == "Perception"))
+            if (skillName == "Dungeoneering" || skillName == "Heal" || skillName == "Insight" ||
+                skillName == "Nature" || skillName == "Perception")
                 return "Wisdom";
 
-            if ((skill_name == "Bluff") || (skill_name == "Diplomacy") || (skill_name == "Intimidate") || (skill_name == "Streetwise"))
+            if (skillName == "Bluff" || skillName == "Diplomacy" || skillName == "Intimidate" ||
+                skillName == "Streetwise")
                 return "Charisma";
 
             return "";

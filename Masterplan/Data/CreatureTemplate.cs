@@ -3,301 +3,322 @@ using System.Collections.Generic;
 
 namespace Masterplan.Data
 {
-	/// <summary>
-	/// Functional or class template.
-	/// </summary>
-	public enum CreatureTemplateType
-	{
-		/// <summary>
-		/// Functional template.
-		/// </summary>
-		Functional,
+    /// <summary>
+    ///     Functional or class template.
+    /// </summary>
+    public enum CreatureTemplateType
+    {
+        /// <summary>
+        ///     Functional template.
+        /// </summary>
+        Functional,
 
-		/// <summary>
-		/// Class template.
-		/// </summary>
-		Class
-	}
+        /// <summary>
+        ///     Class template.
+        /// </summary>
+        Class
+    }
 
-	/// <summary>
-	/// Class representing a functional or class template.
-	/// </summary>
-	[Serializable]
-	public class CreatureTemplate
-	{
-		/// <summary>
-		/// Gets or sets the name of the template.
-		/// </summary>
-		public string Name
-		{
-			get { return fName; }
-			set { fName = value; }
-		}
-		string fName = "";
+    /// <summary>
+    ///     Class representing a functional or class template.
+    /// </summary>
+    [Serializable]
+    public class CreatureTemplate
+    {
+        private int _fAc;
 
-		/// <summary>
-		/// Gets or sets the unique ID of the template.
-		/// </summary>
-		public Guid ID
-		{
-			get { return fID; }
-			set { fID = value; }
-		}
-		Guid fID = Guid.NewGuid();
+        private List<Aura> _fAuras = new List<Aura>();
 
-		/// <summary>
-		/// Gets or sets the template type.
-		/// </summary>
-		public CreatureTemplateType Type
-		{
-			get { return fType; }
-			set { fType = value; }
-		}
-		CreatureTemplateType fType = CreatureTemplateType.Functional;
+        private List<CreaturePower> _fCreaturePowers = new List<CreaturePower>();
 
-		/// <summary>
-		/// Gets or sets the role the template fulfills.
-		/// </summary>
-		public RoleType Role
-		{
-			get { return fRole; }
-			set { fRole = value; }
-		}
-		RoleType fRole = RoleType.Artillery;
+        private List<DamageModifierTemplate> _fDamageModifierTemplates = new List<DamageModifierTemplate>();
 
-		/// <summary>
-		/// Gets or sets whether the template is a Leader.
-		/// </summary>
-		public bool Leader
-		{
-			get { return fLeader; }
-			set { fLeader = value; }
-		}
-		bool fLeader = false;
+        private int _fFortitude;
 
-		/// <summary>
-		/// Gets or sets special senses the template provides.
-		/// </summary>
-		public string Senses
-		{
-			get { return fSenses; }
-			set { fSenses = value; }
-		}
-		string fSenses = "";
+        private int _fHp;
 
-		/// <summary>
-		/// Gets or sets special movement the template provides.
-		/// </summary>
-		public string Movement
-		{
-			get { return fMovement; }
-			set { fMovement = value; }
-		}
-		string fMovement = "";
+        private Guid _fId = Guid.NewGuid();
 
-		/// <summary>
-		/// Gets or sets the number of HP per level the template provides.
-		/// </summary>
-		public int HP
-		{
-			get { return fHP; }
-			set { fHP = value; }
-		}
-		int fHP = 0;
+        private string _fImmune = "";
 
-		/// <summary>
-		/// Gets or sets the initiative modifier the template provides.
-		/// </summary>
-		public int Initiative
-		{
-			get { return fInitiative; }
-			set { fInitiative = value; }
-		}
-		int fInitiative = 0;
+        private int _fInitiative;
 
-		/// <summary>
-		/// Gets or sets the AC modifier the template provides.
-		/// </summary>
-		public int AC
-		{
-			get { return fAC; }
-			set { fAC = value; }
-		}
-		int fAC = 0;
+        private bool _fLeader;
 
-		/// <summary>
-		/// Gets or sets the Fortitude modifier the template provides.
-		/// </summary>
-		public int Fortitude
-		{
-			get { return fFortitude; }
-			set { fFortitude = value; }
-		}
-		int fFortitude = 0;
+        private string _fMovement = "";
 
-		/// <summary>
-		/// Gets or sets the Reflex modifier the template provides.
-		/// </summary>
-		public int Reflex
-		{
-			get { return fReflex; }
-			set { fReflex = value; }
-		}
-		int fReflex = 0;
+        private string _fName = "";
 
-		/// <summary>
-		/// Gets or sets the Will modifier the template provides.
-		/// </summary>
-		public int Will
-		{
-			get { return fWill; }
-			set { fWill = value; }
-		}
-		int fWill = 0;
+        private int _fReflex;
 
-		/// <summary>
-		/// Gets or sets the regeneration provided by the template.
-		/// </summary>
-		public Regeneration Regeneration
-		{
-			get { return fRegeneration; }
-			set { fRegeneration = value; }
-		}
-		Regeneration fRegeneration = null;
+        private Regeneration _fRegeneration;
 
-		/// <summary>
-		/// Gets or sets the list of auras provided by the template.
-		/// </summary>
-		public List<Aura> Auras
-		{
-			get { return fAuras; }
-			set { fAuras = value; }
-		}
-		List<Aura> fAuras = new List<Aura>();
+        private string _fResist = "";
 
-		/// <summary>
-		/// Gets or sets the list of powers provided by the template.
-		/// </summary>
-		public List<CreaturePower> CreaturePowers
-		{
-			get { return fCreaturePowers; }
-			set { fCreaturePowers = value; }
-		}
-		List<CreaturePower> fCreaturePowers = new List<CreaturePower>();
+        private RoleType _fRole = RoleType.Artillery;
 
-		/// <summary>
-		/// Gets or sets the list of resistances / vulnerabilities / immunities provided by the template.
-		/// </summary>
-		public List<DamageModifierTemplate> DamageModifierTemplates
-		{
-			get { return fDamageModifierTemplates; }
-			set { fDamageModifierTemplates = value; }
-		}
-		List<DamageModifierTemplate> fDamageModifierTemplates = new List<DamageModifierTemplate>();
+        private string _fSenses = "";
 
-		/// <summary>
-		/// Gets or sets the resistances provided by the template.
-		/// </summary>
-		public string Resist
-		{
-			get { return fResist; }
-			set { fResist = value; }
-		}
-		string fResist = "";
+        private string _fTactics = "";
 
-		/// <summary>
-		/// Gets or sets the vulnerabilities provided by the template.
-		/// </summary>
-		public string Vulnerable
-		{
-			get { return fVulnerable; }
-			set { fVulnerable = value; }
-		}
-		string fVulnerable = "";
+        private CreatureTemplateType _fType = CreatureTemplateType.Functional;
 
-		/// <summary>
-		/// Gets or sets the immunities provided by the template.
-		/// </summary>
-		public string Immune
-		{
-			get { return fImmune; }
-			set { fImmune = value; }
-		}
-		string fImmune = "";
+        private string _fVulnerable = "";
 
-		/// <summary>
-		/// Gets or sets the tactics.
-		/// </summary>
-		public string Tactics
-		{
-			get { return fTactics; }
-			set { fTactics = value; }
-		}
-		string fTactics = "";
+        private int _fWill;
 
-		/// <summary>
-		/// [Elite] [role] [(L)]
-		/// </summary>
-		public string Info
-		{
-			get
-			{
-				string start = (fType == CreatureTemplateType.Functional) ? "Elite " : "";
-				string leader = (fLeader) ? " (L)" : "";
+        /// <summary>
+        ///     Gets or sets the name of the template.
+        /// </summary>
+        public string Name
+        {
+            get => _fName;
+            set => _fName = value;
+        }
 
-				return start + fRole + leader;
-			}
-		}
+        /// <summary>
+        ///     Gets or sets the unique ID of the template.
+        /// </summary>
+        public Guid Id
+        {
+            get => _fId;
+            set => _fId = value;
+        }
 
-		/// <summary>
-		/// Creates a copy of the template.
-		/// </summary>
-		/// <returns>Returns the copy.</returns>
-		public CreatureTemplate Copy()
-		{
-			CreatureTemplate t = new CreatureTemplate();
+        /// <summary>
+        ///     Gets or sets the template type.
+        /// </summary>
+        public CreatureTemplateType Type
+        {
+            get => _fType;
+            set => _fType = value;
+        }
 
-			t.Name = fName;
-			t.ID = fID;
-			t.Type = fType;
-			t.Role = fRole;
-			t.Leader = fLeader;
-			t.Senses = fSenses;
-			t.Movement = fMovement;
+        /// <summary>
+        ///     Gets or sets the role the template fulfills.
+        /// </summary>
+        public RoleType Role
+        {
+            get => _fRole;
+            set => _fRole = value;
+        }
 
-			t.HP = fHP;
-			t.Initiative = fInitiative;
-			t.AC = fAC;
-			t.Fortitude = fFortitude;
-			t.Reflex = fReflex;
-			t.Will = fWill;
+        /// <summary>
+        ///     Gets or sets whether the template is a Leader.
+        /// </summary>
+        public bool Leader
+        {
+            get => _fLeader;
+            set => _fLeader = value;
+        }
 
-			t.Regeneration = (fRegeneration != null) ? fRegeneration.Copy() : null;
+        /// <summary>
+        ///     Gets or sets special senses the template provides.
+        /// </summary>
+        public string Senses
+        {
+            get => _fSenses;
+            set => _fSenses = value;
+        }
 
-			foreach (Aura aura in fAuras)
-				t.Auras.Add(aura.Copy());
+        /// <summary>
+        ///     Gets or sets special movement the template provides.
+        /// </summary>
+        public string Movement
+        {
+            get => _fMovement;
+            set => _fMovement = value;
+        }
 
-			foreach (CreaturePower cp in fCreaturePowers)
-				t.CreaturePowers.Add(cp.Copy());
+        /// <summary>
+        ///     Gets or sets the number of HP per level the template provides.
+        /// </summary>
+        public int Hp
+        {
+            get => _fHp;
+            set => _fHp = value;
+        }
 
-			foreach (DamageModifierTemplate dmt in fDamageModifierTemplates)
-				t.DamageModifierTemplates.Add(dmt.Copy());
+        /// <summary>
+        ///     Gets or sets the initiative modifier the template provides.
+        /// </summary>
+        public int Initiative
+        {
+            get => _fInitiative;
+            set => _fInitiative = value;
+        }
 
-			t.Resist = fResist;
-			t.Vulnerable = fVulnerable;
-			t.Immune = fImmune;
-			t.Tactics = fTactics;
+        /// <summary>
+        ///     Gets or sets the AC modifier the template provides.
+        /// </summary>
+        public int Ac
+        {
+            get => _fAc;
+            set => _fAc = value;
+        }
 
-			return t;
-		}
+        /// <summary>
+        ///     Gets or sets the Fortitude modifier the template provides.
+        /// </summary>
+        public int Fortitude
+        {
+            get => _fFortitude;
+            set => _fFortitude = value;
+        }
 
-		/// <summary>
-		/// Returns the name of the template.
-		/// </summary>
-		/// <returns>Returns the name of the template.</returns>
-		public override string ToString()
-		{
-			return fName;
-		}
-	}
+        /// <summary>
+        ///     Gets or sets the Reflex modifier the template provides.
+        /// </summary>
+        public int Reflex
+        {
+            get => _fReflex;
+            set => _fReflex = value;
+        }
+
+        /// <summary>
+        ///     Gets or sets the Will modifier the template provides.
+        /// </summary>
+        public int Will
+        {
+            get => _fWill;
+            set => _fWill = value;
+        }
+
+        /// <summary>
+        ///     Gets or sets the regeneration provided by the template.
+        /// </summary>
+        public Regeneration Regeneration
+        {
+            get => _fRegeneration;
+            set => _fRegeneration = value;
+        }
+
+        /// <summary>
+        ///     Gets or sets the list of auras provided by the template.
+        /// </summary>
+        public List<Aura> Auras
+        {
+            get => _fAuras;
+            set => _fAuras = value;
+        }
+
+        /// <summary>
+        ///     Gets or sets the list of powers provided by the template.
+        /// </summary>
+        public List<CreaturePower> CreaturePowers
+        {
+            get => _fCreaturePowers;
+            set => _fCreaturePowers = value;
+        }
+
+        /// <summary>
+        ///     Gets or sets the list of resistances / vulnerabilities / immunities provided by the template.
+        /// </summary>
+        public List<DamageModifierTemplate> DamageModifierTemplates
+        {
+            get => _fDamageModifierTemplates;
+            set => _fDamageModifierTemplates = value;
+        }
+
+        /// <summary>
+        ///     Gets or sets the resistances provided by the template.
+        /// </summary>
+        public string Resist
+        {
+            get => _fResist;
+            set => _fResist = value;
+        }
+
+        /// <summary>
+        ///     Gets or sets the vulnerabilities provided by the template.
+        /// </summary>
+        public string Vulnerable
+        {
+            get => _fVulnerable;
+            set => _fVulnerable = value;
+        }
+
+        /// <summary>
+        ///     Gets or sets the immunities provided by the template.
+        /// </summary>
+        public string Immune
+        {
+            get => _fImmune;
+            set => _fImmune = value;
+        }
+
+        /// <summary>
+        ///     Gets or sets the tactics.
+        /// </summary>
+        public string Tactics
+        {
+            get => _fTactics;
+            set => _fTactics = value;
+        }
+
+        /// <summary>
+        ///     [Elite] [role] [(L)]
+        /// </summary>
+        public string Info
+        {
+            get
+            {
+                var start = _fType == CreatureTemplateType.Functional ? "Elite " : "";
+                var leader = _fLeader ? " (L)" : "";
+
+                return start + _fRole + leader;
+            }
+        }
+
+        /// <summary>
+        ///     Creates a copy of the template.
+        /// </summary>
+        /// <returns>Returns the copy.</returns>
+        public CreatureTemplate Copy()
+        {
+            var t = new CreatureTemplate();
+
+            t.Name = _fName;
+            t.Id = _fId;
+            t.Type = _fType;
+            t.Role = _fRole;
+            t.Leader = _fLeader;
+            t.Senses = _fSenses;
+            t.Movement = _fMovement;
+
+            t.Hp = _fHp;
+            t.Initiative = _fInitiative;
+            t.Ac = _fAc;
+            t.Fortitude = _fFortitude;
+            t.Reflex = _fReflex;
+            t.Will = _fWill;
+
+            t.Regeneration = _fRegeneration?.Copy();
+
+            foreach (var aura in _fAuras)
+                t.Auras.Add(aura.Copy());
+
+            foreach (var cp in _fCreaturePowers)
+                t.CreaturePowers.Add(cp.Copy());
+
+            foreach (var dmt in _fDamageModifierTemplates)
+                t.DamageModifierTemplates.Add(dmt.Copy());
+
+            t.Resist = _fResist;
+            t.Vulnerable = _fVulnerable;
+            t.Immune = _fImmune;
+            t.Tactics = _fTactics;
+
+            return t;
+        }
+
+        /// <summary>
+        ///     Returns the name of the template.
+        /// </summary>
+        /// <returns>Returns the name of the template.</returns>
+        public override string ToString()
+        {
+            return _fName;
+        }
+    }
 }

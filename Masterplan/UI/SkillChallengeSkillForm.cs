@@ -1,118 +1,112 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Windows.Forms;
-
 using Masterplan.Data;
 using Masterplan.Tools;
 
 namespace Masterplan.UI
 {
-	partial class SkillChallengeSkillForm : Form
-	{
-		const string PRIMARY = "This is a primary skill for this challenge";
-		const string SECONDARY = "This is a secondary skill for this challenge";
-		const string AUTOFAIL = "This skill incurs an automatic failure";
+    internal partial class SkillChallengeSkillForm : Form
+    {
+        private const string Primary = "This is a primary skill for this challenge";
+        private const string Secondary = "This is a secondary skill for this challenge";
+        private const string Autofail = "This skill incurs an automatic failure";
 
-		public SkillChallengeSkillForm(SkillChallengeData scd)
-		{
-			InitializeComponent();
+        public SkillChallengeData SkillData { get; }
 
-			List<string> skills = Skills.GetSkillNames();
-			foreach (string skill in skills)
-				SkillBox.Items.Add(skill);
+        public SkillChallengeSkillForm(SkillChallengeData scd)
+        {
+            InitializeComponent();
 
-			DiffBox.Items.Add(Difficulty.Easy);
-			DiffBox.Items.Add(Difficulty.Moderate);
-			DiffBox.Items.Add(Difficulty.Hard);
+            var skills = Skills.GetSkillNames();
+            foreach (var skill in skills)
+                SkillBox.Items.Add(skill);
 
-			TypeBox.Items.Add(PRIMARY);
-			TypeBox.Items.Add(SECONDARY);
-			TypeBox.Items.Add(AUTOFAIL);
+            DiffBox.Items.Add(Difficulty.Easy);
+            DiffBox.Items.Add(Difficulty.Moderate);
+            DiffBox.Items.Add(Difficulty.Hard);
 
-			fSkillData = scd.Copy();
+            TypeBox.Items.Add(Primary);
+            TypeBox.Items.Add(Secondary);
+            TypeBox.Items.Add(Autofail);
 
-			SkillBox.Text = fSkillData.SkillName;
+            SkillData = scd.Copy();
 
-			switch (fSkillData.Type)
-			{
-				case SkillType.Primary:
-					TypeBox.SelectedIndex = 0;
-					break;
-				case SkillType.Secondary:
-					TypeBox.SelectedIndex = 1;
-					break;
-				case SkillType.AutoFail:
-					TypeBox.SelectedIndex = 2;
-					break;
-			}
+            SkillBox.Text = SkillData.SkillName;
 
-			DiffBox.SelectedItem = fSkillData.Difficulty;
-			ModBox.Value = fSkillData.DCModifier;
+            switch (SkillData.Type)
+            {
+                case SkillType.Primary:
+                    TypeBox.SelectedIndex = 0;
+                    break;
+                case SkillType.Secondary:
+                    TypeBox.SelectedIndex = 1;
+                    break;
+                case SkillType.AutoFail:
+                    TypeBox.SelectedIndex = 2;
+                    break;
+            }
 
-			DetailsBox.Text = fSkillData.Details;
-			SuccessBox.Text = fSkillData.Success;
-			FailureBox.Text = fSkillData.Failure;
+            DiffBox.SelectedItem = SkillData.Difficulty;
+            ModBox.Value = SkillData.DcModifier;
 
-			SuccessCountBox.Value = fSkillData.Results.Successes;
-			FailureCountBox.Value = fSkillData.Results.Fails;
-		}
+            DetailsBox.Text = SkillData.Details;
+            SuccessBox.Text = SkillData.Success;
+            FailureBox.Text = SkillData.Failure;
 
-		public SkillChallengeData SkillData
-		{
-			get { return fSkillData; }
-		}
-		SkillChallengeData fSkillData = null;
+            SuccessCountBox.Value = SkillData.Results.Successes;
+            FailureCountBox.Value = SkillData.Results.Fails;
+        }
 
-		private void OKBtn_Click(object sender, EventArgs e)
-		{
-			fSkillData.SkillName = SkillBox.Text;
+        private void OKBtn_Click(object sender, EventArgs e)
+        {
+            SkillData.SkillName = SkillBox.Text;
 
-			switch (TypeBox.SelectedIndex)
-			{
-				case 0:
-					fSkillData.Type = SkillType.Primary;
-					break;
-				case 1:
-					fSkillData.Type = SkillType.Secondary;
-					break;
-				case 2:
-					fSkillData.Type = SkillType.AutoFail;
-					break;
-			}
+            switch (TypeBox.SelectedIndex)
+            {
+                case 0:
+                    SkillData.Type = SkillType.Primary;
+                    break;
+                case 1:
+                    SkillData.Type = SkillType.Secondary;
+                    break;
+                case 2:
+                    SkillData.Type = SkillType.AutoFail;
+                    break;
+            }
 
-			fSkillData.Difficulty = (Difficulty)DiffBox.SelectedItem;
-			fSkillData.DCModifier = (int)ModBox.Value;
+            SkillData.Difficulty = (Difficulty)DiffBox.SelectedItem;
+            SkillData.DcModifier = (int)ModBox.Value;
 
-			fSkillData.Details = DetailsBox.Text;
-			fSkillData.Success = SuccessBox.Text;
-			fSkillData.Failure = FailureBox.Text;
+            SkillData.Details = DetailsBox.Text;
+            SkillData.Success = SuccessBox.Text;
+            SkillData.Failure = FailureBox.Text;
 
-			fSkillData.Results.Successes = (int)SuccessCountBox.Value;
-			fSkillData.Results.Fails = (int)FailureCountBox.Value;
-		}
+            SkillData.Results.Successes = (int)SuccessCountBox.Value;
+            SkillData.Results.Fails = (int)FailureCountBox.Value;
+        }
 
-		private void TypeBox_SelectedIndexChanged(object sender, EventArgs e)
-		{
-			bool autofail = (TypeBox.Text == AUTOFAIL);
+        private void TypeBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            var autofail = TypeBox.Text == Autofail;
 
-			DiffLbl.Enabled = (!autofail);
-			DiffBox.Enabled = (!autofail);
-			ModLbl.Enabled = (!autofail);
-			ModBox.Enabled = (!autofail);
+            DiffLbl.Enabled = !autofail;
+            DiffBox.Enabled = !autofail;
+            ModLbl.Enabled = !autofail;
+            ModBox.Enabled = !autofail;
 
-			if (autofail)
-			{
-				Pages.TabPages.Remove(SuccessPage);
-				Pages.TabPages.Remove(FailurePage);
-			}
-			else
-			{
-				if (!Pages.TabPages.Contains(SuccessPage))
-					Pages.TabPages.Add(SuccessPage);
+            if (autofail)
+            {
+                Pages.TabPages.Remove(SuccessPage);
+                Pages.TabPages.Remove(FailurePage);
+            }
+            else
+            {
+                if (!Pages.TabPages.Contains(SuccessPage))
+                    Pages.TabPages.Add(SuccessPage);
 
-				if (!Pages.TabPages.Contains(FailurePage))
-					Pages.TabPages.Add(FailurePage);
-			}
-		}
-	}
+                if (!Pages.TabPages.Contains(FailurePage))
+                    Pages.TabPages.Add(FailurePage);
+            }
+        }
+    }
 }

@@ -2,140 +2,147 @@
 
 namespace Masterplan.Data
 {
-	/// <summary>
-	/// Class representing a creature aura.
-	/// </summary>
-	[Serializable]
-	public class Aura
-	{
-		/// <summary>
-		/// Gets or sets the unique ID of the aura.
-		/// </summary>
-		public Guid ID
-		{
-			get { return fID; }
-			set { fID = value; }
-		}
-		Guid fID = Guid.NewGuid();
+    /// <summary>
+    ///     Class representing a creature aura.
+    /// </summary>
+    [Serializable]
+    public class Aura
+    {
+        private string _fDescription = "";
 
-		/// <summary>
-		/// Gets or sets the name of the aura.
-		/// </summary>
-		public string Name
-		{
-			get { return fName; }
-			set { fName = value; }
-		}
-		string fName = "";
+        private string _fDetails = "";
 
-		/// <summary>
-		/// Gets or sets the aura keywords.
-		/// </summary>
-		public string Keywords
-		{
-			get { return fKeywords; }
-			set { fKeywords = value; }
-		}
-		string fKeywords = "";
+        private bool _fExtractedData;
 
-		/// <summary>
-		/// Gets or sets the details of the aura, including the radius size.
-		/// </summary>
-		public string Details
-		{
-			get { return fDetails; }
-			set
-			{
-				fDetails = value;
-				extract();
-			}
-		}
-		string fDetails = "";
+        private Guid _fId = Guid.NewGuid();
 
-		/// <summary>
-		/// Creates a copy of the aura.
-		/// </summary>
-		/// <returns>Returns the copy.</returns>
-		public Aura Copy()
-		{
-			Aura a = new Aura();
+        private string _fKeywords = "";
 
-			a.ID = fID;
-			a.Name = fName;
-			a.Keywords = fKeywords;
-			a.Details = fDetails;
+        private string _fName = "";
 
-			return a;
-		}
+        private int _radius = int.MinValue;
 
-		internal string Description
-		{
-			get
-			{
-				if (!fExtractedData)
-					extract();
+        /// <summary>
+        ///     Gets or sets the unique ID of the aura.
+        /// </summary>
+        public Guid Id
+        {
+            get => _fId;
+            set => _fId = value;
+        }
 
-				return fDescription;
-			}
-		}
+        /// <summary>
+        ///     Gets or sets the name of the aura.
+        /// </summary>
+        public string Name
+        {
+            get => _fName;
+            set => _fName = value;
+        }
 
-		internal int Radius
-		{
-			get
-			{
-				if (!fExtractedData)
-					extract();
+        /// <summary>
+        ///     Gets or sets the aura keywords.
+        /// </summary>
+        public string Keywords
+        {
+            get => _fKeywords;
+            set => _fKeywords = value;
+        }
 
-				return fRadius;
-			}
-		}
+        /// <summary>
+        ///     Gets or sets the details of the aura, including the radius size.
+        /// </summary>
+        public string Details
+        {
+            get => _fDetails;
+            set
+            {
+                _fDetails = value;
+                Extract();
+            }
+        }
 
-		void extract()
-		{
-			string val_str = "";
+        internal string Description
+        {
+            get
+            {
+                if (!_fExtractedData)
+                    Extract();
 
-			bool started_value = false;
-			for (int n = 0; n != fDetails.Length; ++n)
-			{
-				char ch = fDetails[n];
-				started_value = char.IsDigit(ch);
+                return _fDescription;
+            }
+        }
 
-				if (!started_value && (val_str != ""))
-				{
-					fDescription = fDetails.Substring(n);
-					break;
-				}
+        internal int Radius
+        {
+            get
+            {
+                if (!_fExtractedData)
+                    Extract();
 
-				if (started_value)
-					val_str += ch;
-			}
+                return _radius;
+            }
+        }
 
-			int radius = 1;
-			try
-			{
-				radius = int.Parse(val_str);
-			}
-			catch
-			{
-				radius = 1;
-			}
+        /// <summary>
+        ///     Creates a copy of the aura.
+        /// </summary>
+        /// <returns>Returns the copy.</returns>
+        public Aura Copy()
+        {
+            var a = new Aura();
 
-			if (fDescription == null)
-				fDescription = "";
-			else
-			{
-				if (fDescription.StartsWith(":"))
-					fDescription = fDescription.Substring(1);
-				fDescription = fDescription.Trim();
-			}
+            a.Id = _fId;
+            a.Name = _fName;
+            a.Keywords = _fKeywords;
+            a.Details = _fDetails;
 
-			fRadius = radius;
-			fExtractedData = true;
-		}
+            return a;
+        }
 
-		bool fExtractedData = false;
+        private void Extract()
+        {
+            var valStr = "";
 
-		int fRadius = int.MinValue;
-		string fDescription = "";
-	}
+            var startedValue = false;
+            for (var n = 0; n != _fDetails.Length; ++n)
+            {
+                var ch = _fDetails[n];
+                startedValue = char.IsDigit(ch);
+
+                if (!startedValue && valStr != "")
+                {
+                    _fDescription = _fDetails.Substring(n);
+                    break;
+                }
+
+                if (startedValue)
+                    valStr += ch;
+            }
+
+            var radius = 1;
+            try
+            {
+                radius = int.Parse(valStr);
+            }
+            catch
+            {
+                radius = 1;
+            }
+
+            if (_fDescription == null)
+            {
+                _fDescription = "";
+            }
+            else
+            {
+                if (_fDescription.StartsWith(":"))
+                    _fDescription = _fDescription.Substring(1);
+                _fDescription = _fDescription.Trim();
+            }
+
+            _radius = radius;
+            _fExtractedData = true;
+        }
+    }
 }

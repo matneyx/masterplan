@@ -3,25 +3,22 @@ using System.Windows.Forms;
 
 namespace Masterplan.UI
 {
-	partial class LevelForm : Form
-	{
-		public LevelForm(int score)
-		{
-			InitializeComponent();
+    internal partial class LevelForm : Form
+    {
+        public int Level => (int)LevelBox.Value;
 
-			if (score == int.MinValue)
-				score = 0;
+        public LevelForm(int score)
+        {
+            InitializeComponent();
 
-			LevelBox.Value = score;
-		}
+            if (score == int.MinValue)
+                score = 0;
 
-		public int Level
-		{
-			get { return (int)LevelBox.Value; }
-		}
+            LevelBox.Value = score;
+        }
 
-		private void OKBtn_Click(object sender, EventArgs e)
-		{
-		}
-	}
+        private void OKBtn_Click(object sender, EventArgs e)
+        {
+        }
+    }
 }

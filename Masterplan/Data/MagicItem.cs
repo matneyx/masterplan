@@ -3,200 +3,205 @@ using System.Collections.Generic;
 
 namespace Masterplan.Data
 {
-	/// <summary>
-	/// Rarities for magic items.
-	/// </summary>
-	public enum MagicItemRarity
-	{
-		/// <summary>
-		/// Common items.
-		/// </summary>
-		Common,
+    /// <summary>
+    ///     Rarities for magic items.
+    /// </summary>
+    public enum MagicItemRarity
+    {
+        /// <summary>
+        ///     Common items.
+        /// </summary>
+        Common,
 
-		/// <summary>
-		/// Uncommon items.
-		/// </summary>
-		Uncommon,
+        /// <summary>
+        ///     Uncommon items.
+        /// </summary>
+        Uncommon,
 
-		/// <summary>
-		/// Rare items.
-		/// </summary>
-		Rare,
+        /// <summary>
+        ///     Rare items.
+        /// </summary>
+        Rare,
 
-		/// <summary>
-		/// Unique items.
-		/// </summary>
-		Unique
-	}
+        /// <summary>
+        ///     Unique items.
+        /// </summary>
+        Unique
+    }
 
-	/// <summary>
-	/// Class representing a magic item.
-	/// </summary>
-	[Serializable]
-	public class MagicItem : IComparable<MagicItem>
-	{
-		/// <summary>
-		/// Gets or sets the unique ID.
-		/// </summary>
-		public Guid ID
-		{
-			get { return fID; }
-			set { fID = value; }
-		}
-		Guid fID = Guid.NewGuid();
+    /// <summary>
+    ///     Class representing a magic item.
+    /// </summary>
+    [Serializable]
+    public class MagicItem : IComparable<MagicItem>
+    {
+        private string _fDescription = "";
 
-		/// <summary>
-		/// Gets or sets the name.
-		/// </summary>
-		public string Name
-		{
-			get { return fName; }
-			set { fName = value; }
-		}
-		string fName = "";
+        private Guid _fId = Guid.NewGuid();
 
-		/// <summary>
-		/// Gets or sets the item type.
-		/// </summary>
-		public string Type
-		{
-			get { return fType; }
-			set { fType = value; }
-		}
-		string fType = "Weapon";
+        private int _fLevel = 1;
 
-		/// <summary>
-		/// Gets or sets the item type.
-		/// </summary>
-		public MagicItemRarity Rarity
-		{
-			get { return fRarity; }
-			set { fRarity = value; }
-		}
-		MagicItemRarity fRarity = MagicItemRarity.Uncommon;
+        private string _fName = "";
 
-		/// <summary>
-		/// Gets or sets the item level.
-		/// </summary>
-		public int Level
-		{
-			get { return fLevel; }
-			set { fLevel = value; }
-		}
-		int fLevel = 1;
+        private MagicItemRarity _fRarity = MagicItemRarity.Uncommon;
 
-		/// <summary>
-		/// Gets or sets the description.
-		/// </summary>
-		public string Description
-		{
-			get { return fDescription; }
-			set { fDescription = value; }
-		}
-		string fDescription = "";
+        private List<MagicItemSection> _fSections = new List<MagicItemSection>();
 
-		/// <summary>
-		/// Gets or sets the description.
-		/// </summary>
-		public List<MagicItemSection> Sections
-		{
-			get { return fSections; }
-			set { fSections = value; }
-		}
-		List<MagicItemSection> fSections = new List<MagicItemSection>();
+        private string _fType = "Weapon";
 
-		/// <summary>
-		/// Level N [type]
-		/// </summary>
-		public string Info
-		{
-			get
-			{
-				return "Level " + fLevel + " " + fType.ToLower();
-			}
-		}
+        /// <summary>
+        ///     Gets or sets the unique ID.
+        /// </summary>
+        public Guid Id
+        {
+            get => _fId;
+            set => _fId = value;
+        }
 
-		/// <summary>
-		/// Creates a copy of the creature.
-		/// </summary>
-		/// <returns>Returns the copy.</returns>
-		public MagicItem Copy()
-		{
-			MagicItem mi = new MagicItem();
+        /// <summary>
+        ///     Gets or sets the name.
+        /// </summary>
+        public string Name
+        {
+            get => _fName;
+            set => _fName = value;
+        }
 
-			mi.ID = fID;
-			mi.Name = fName;
-			mi.Type = fType;
-			mi.Rarity = fRarity;
-			mi.Level = fLevel;
-			mi.Description = fDescription;
+        /// <summary>
+        ///     Gets or sets the item type.
+        /// </summary>
+        public string Type
+        {
+            get => _fType;
+            set => _fType = value;
+        }
 
-			foreach (MagicItemSection section in fSections)
-				mi.Sections.Add(section.Copy());
+        /// <summary>
+        ///     Gets or sets the item type.
+        /// </summary>
+        public MagicItemRarity Rarity
+        {
+            get => _fRarity;
+            set => _fRarity = value;
+        }
 
-			return mi;
-		}
+        /// <summary>
+        ///     Gets or sets the item level.
+        /// </summary>
+        public int Level
+        {
+            get => _fLevel;
+            set => _fLevel = value;
+        }
 
-		/// <summary>
-		/// Compares this item to another.
-		/// </summary>
-		/// <param name="rhs">The other item.</param>
-		/// <returns>Returns -1 if this item should be sorted before the other, +1 if the other should be sorted before this; 0 otherwise.</returns>
-		public int CompareTo(MagicItem rhs)
-		{
-			return fName.CompareTo(rhs.Name);
-		}
-	}
+        /// <summary>
+        ///     Gets or sets the description.
+        /// </summary>
+        public string Description
+        {
+            get => _fDescription;
+            set => _fDescription = value;
+        }
 
-	/// <summary>
-	/// Class to hold information about a magic item property or power.
-	/// </summary>
-	[Serializable]
-	public class MagicItemSection
-	{
-		/// <summary>
-		/// Gets or sets the header.
-		/// </summary>
-		public string Header
-		{
-			get { return fHeader; }
-			set { fHeader = value; }
-		}
-		string fHeader = "";
+        /// <summary>
+        ///     Gets or sets the description.
+        /// </summary>
+        public List<MagicItemSection> Sections
+        {
+            get => _fSections;
+            set => _fSections = value;
+        }
 
-		/// <summary>
-		/// Gets or sets the details.
-		/// </summary>
-		public string Details
-		{
-			get { return fDetails; }
-			set { fDetails = value; }
-		}
-		string fDetails = "";
+        /// <summary>
+        ///     Level N [type]
+        /// </summary>
+        public string Info => "Level " + _fLevel + " " + _fType.ToLower();
 
-		/// <summary>
-		/// Creates a copy of the section.
-		/// </summary>
-		/// <returns>Returns the copy.</returns>
-		public MagicItemSection Copy()
-		{
-			MagicItemSection section = new MagicItemSection();
+        /// <summary>
+        ///     Creates a copy of the creature.
+        /// </summary>
+        /// <returns>Returns the copy.</returns>
+        public MagicItem Copy()
+        {
+            var mi = new MagicItem();
 
-			section.Header = fHeader;
-			section.Details = fDetails;
+            mi.Id = _fId;
+            mi.Name = _fName;
+            mi.Type = _fType;
+            mi.Rarity = _fRarity;
+            mi.Level = _fLevel;
+            mi.Description = _fDescription;
 
-			return section;
-		}
+            foreach (var section in _fSections)
+                mi.Sections.Add(section.Copy());
 
-		/// <summary>
-		/// [header]: [details]
-		/// </summary>
-		public override string ToString()
-		{
-			if (fDetails != "")
-				return fHeader + ": " + fDetails;
-			else
-				return fHeader;
-		}
-	}
+            return mi;
+        }
+
+        /// <summary>
+        ///     Compares this item to another.
+        /// </summary>
+        /// <param name="rhs">The other item.</param>
+        /// <returns>
+        ///     Returns -1 if this item should be sorted before the other, +1 if the other should be sorted before this; 0
+        ///     otherwise.
+        /// </returns>
+        public int CompareTo(MagicItem rhs)
+        {
+            return _fName.CompareTo(rhs.Name);
+        }
+    }
+
+    /// <summary>
+    ///     Class to hold information about a magic item property or power.
+    /// </summary>
+    [Serializable]
+    public class MagicItemSection
+    {
+        private string _fDetails = "";
+
+        private string _fHeader = "";
+
+        /// <summary>
+        ///     Gets or sets the header.
+        /// </summary>
+        public string Header
+        {
+            get => _fHeader;
+            set => _fHeader = value;
+        }
+
+        /// <summary>
+        ///     Gets or sets the details.
+        /// </summary>
+        public string Details
+        {
+            get => _fDetails;
+            set => _fDetails = value;
+        }
+
+        /// <summary>
+        ///     Creates a copy of the section.
+        /// </summary>
+        /// <returns>Returns the copy.</returns>
+        public MagicItemSection Copy()
+        {
+            var section = new MagicItemSection();
+
+            section.Header = _fHeader;
+            section.Details = _fDetails;
+
+            return section;
+        }
+
+        /// <summary>
+        ///     [header]: [details]
+        /// </summary>
+        public override string ToString()
+        {
+            if (_fDetails != "")
+                return _fHeader + ": " + _fDetails;
+            return _fHeader;
+        }
+    }
 }

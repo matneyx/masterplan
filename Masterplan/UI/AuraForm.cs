@@ -1,35 +1,30 @@
 ﻿using System;
 using System.Windows.Forms;
-
 using Masterplan.Data;
 
 namespace Masterplan.UI
 {
-	partial class AuraForm : Form
-	{
-		public AuraForm(Aura aura)
-		{
-			InitializeComponent();
+    internal partial class AuraForm : Form
+    {
+        public Aura Aura { get; }
 
-			fAura = aura.Copy();
+        public AuraForm(Aura aura)
+        {
+            InitializeComponent();
 
-			NameBox.Text = fAura.Name;
-			KeywordBox.Text = fAura.Keywords;
-			SizeBox.Value = fAura.Radius;
-			DetailsBox.Text = fAura.Description;
-		}
+            Aura = aura.Copy();
 
-		public Aura Aura
-		{
-			get { return fAura; }
-		}
-		Aura fAura = null;
+            NameBox.Text = Aura.Name;
+            KeywordBox.Text = Aura.Keywords;
+            SizeBox.Value = Aura.Radius;
+            DetailsBox.Text = Aura.Description;
+        }
 
-		private void OKBtn_Click(object sender, EventArgs e)
-		{
-			fAura.Name = NameBox.Text;
-			fAura.Keywords = KeywordBox.Text;
-			fAura.Details = SizeBox.Value + ": " + DetailsBox.Text;
-		}
-	}
+        private void OKBtn_Click(object sender, EventArgs e)
+        {
+            Aura.Name = NameBox.Text;
+            Aura.Keywords = KeywordBox.Text;
+            Aura.Details = SizeBox.Value + ": " + DetailsBox.Text;
+        }
+    }
 }

@@ -2,47 +2,43 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
-
 using Masterplan.Data;
 
 namespace Masterplan.UI
 {
-	partial class TileSizeForm : Form
-	{
-		public TileSizeForm(List<Tile> tiles)
-		{
-			InitializeComponent();
+    internal partial class TileSizeForm : Form
+    {
+        private readonly List<Tile> _fTiles;
 
-			fTiles = tiles;
+        public Size TileSize { get; private set; } = new Size(2, 2);
 
-			int x = 0;
-			int y = 0;
-			foreach (Tile t in fTiles)
-			{
-				x += t.Size.Width;
-				y += t.Size.Height;
-			}
-			x /= fTiles.Count;
-			y /= fTiles.Count;
+        public TileSizeForm(List<Tile> tiles)
+        {
+            InitializeComponent();
 
-			WidthBox.Value = x;
-			HeightBox.Value = y;
-		}
+            _fTiles = tiles;
 
-		List<Tile> fTiles = null;
+            var x = 0;
+            var y = 0;
+            foreach (var t in _fTiles)
+            {
+                x += t.Size.Width;
+                y += t.Size.Height;
+            }
 
-		public Size TileSize
-		{
-			get { return fSize; }
-		}
-		Size fSize = new Size(2, 2);
+            x /= _fTiles.Count;
+            y /= _fTiles.Count;
 
-		private void OKBtn_Click(object sender, EventArgs e)
-		{
-			int width = (int)WidthBox.Value;
-			int height = (int)HeightBox.Value;
+            WidthBox.Value = x;
+            HeightBox.Value = y;
+        }
 
-			fSize = new Size(width, height);
-		}
-	}
+        private void OKBtn_Click(object sender, EventArgs e)
+        {
+            var width = (int)WidthBox.Value;
+            var height = (int)HeightBox.Value;
+
+            TileSize = new Size(width, height);
+        }
+    }
 }

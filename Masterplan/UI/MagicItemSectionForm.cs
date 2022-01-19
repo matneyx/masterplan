@@ -1,37 +1,32 @@
 ﻿using System;
 using System.Windows.Forms;
-
 using Masterplan.Data;
 
 namespace Masterplan.UI
 {
-	partial class MagicItemSectionForm : Form
-	{
-		public MagicItemSectionForm(MagicItemSection section)
-		{
-			InitializeComponent();
+    internal partial class MagicItemSectionForm : Form
+    {
+        public MagicItemSection Section { get; }
 
-			HeaderBox.Items.Add("Price");
-			HeaderBox.Items.Add("Enhancement");
-			HeaderBox.Items.Add("Property");
-			HeaderBox.Items.Add("Power");
+        public MagicItemSectionForm(MagicItemSection section)
+        {
+            InitializeComponent();
 
-			fSection = section.Copy();
+            HeaderBox.Items.Add("Price");
+            HeaderBox.Items.Add("Enhancement");
+            HeaderBox.Items.Add("Property");
+            HeaderBox.Items.Add("Power");
 
-			HeaderBox.Text = fSection.Header;
-			DetailsBox.Text = fSection.Details;
-		}
+            Section = section.Copy();
 
-		public MagicItemSection Section
-		{
-			get { return fSection; }
-		}
-		MagicItemSection fSection = null;
+            HeaderBox.Text = Section.Header;
+            DetailsBox.Text = Section.Details;
+        }
 
-		private void OKBtn_Click(object sender, EventArgs e)
-		{
-			fSection.Header = HeaderBox.Text;
-			fSection.Details = DetailsBox.Text;
-		}
-	}
+        private void OKBtn_Click(object sender, EventArgs e)
+        {
+            Section.Header = HeaderBox.Text;
+            Section.Details = DetailsBox.Text;
+        }
+    }
 }

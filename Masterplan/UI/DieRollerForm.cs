@@ -1,22 +1,21 @@
 ﻿using System.Windows.Forms;
-
 using Masterplan.Tools;
 
 namespace Masterplan.UI
 {
-	partial class DieRollerForm : Form
-	{
-		public DieRollerForm()
-		{
-			InitializeComponent();
+    internal partial class DieRollerForm : Form
+    {
+        public DiceExpression Expression
+        {
+            get => DicePanel.Expression;
+            set => DicePanel.Expression = value;
+        }
 
-			DicePanel.UpdateView();
-		}
+        public DieRollerForm()
+        {
+            InitializeComponent();
 
-		public DiceExpression Expression
-		{
-			get { return DicePanel.Expression; }
-			set { DicePanel.Expression = value; }
-		}
-	}
+            DicePanel.UpdateView();
+        }
+    }
 }

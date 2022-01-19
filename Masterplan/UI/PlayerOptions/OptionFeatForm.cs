@@ -1,40 +1,35 @@
 ﻿using System;
 using System.Windows.Forms;
-
 using Masterplan.Data;
 
-namespace Masterplan.UI
+namespace Masterplan.UI.PlayerOptions
 {
-	partial class OptionFeatForm : Form
-	{
-		public OptionFeatForm(Feat feat)
-		{
-			InitializeComponent();
+    internal partial class OptionFeatForm : Form
+    {
+        public Feat Feat { get; }
 
-			Array tiers = Enum.GetValues(typeof(Tier));
-			foreach (Tier tier in tiers)
-				TierBox.Items.Add(tier);
+        public OptionFeatForm(Feat feat)
+        {
+            InitializeComponent();
 
-			fFeat = feat.Copy();
+            var tiers = Enum.GetValues(typeof(Tier));
+            foreach (Tier tier in tiers)
+                TierBox.Items.Add(tier);
 
-			NameBox.Text = fFeat.Name;
-			PrereqBox.Text = fFeat.Prerequisites;
-			TierBox.SelectedItem = fFeat.Tier;
-			BenefitBox.Text = fFeat.Benefits;
-		}
+            Feat = feat.Copy();
 
-		public Feat Feat
-		{
-			get { return fFeat; }
-		}
-		Feat fFeat = null;
+            NameBox.Text = Feat.Name;
+            PrereqBox.Text = Feat.Prerequisites;
+            TierBox.SelectedItem = Feat.Tier;
+            BenefitBox.Text = Feat.Benefits;
+        }
 
-		private void OKBtn_Click(object sender, EventArgs e)
-		{
-			fFeat.Name = NameBox.Text;
-			fFeat.Prerequisites = PrereqBox.Text;
-			fFeat.Tier = (Tier)TierBox.SelectedItem;
-			fFeat.Benefits = BenefitBox.Text;
-		}
-	}
+        private void OKBtn_Click(object sender, EventArgs e)
+        {
+            Feat.Name = NameBox.Text;
+            Feat.Prerequisites = PrereqBox.Text;
+            Feat.Tier = (Tier)TierBox.SelectedItem;
+            Feat.Benefits = BenefitBox.Text;
+        }
+    }
 }

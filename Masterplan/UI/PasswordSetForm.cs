@@ -3,50 +3,44 @@ using System.Windows.Forms;
 
 namespace Masterplan.UI
 {
-	partial class PasswordSetForm : Form
-	{
-		public PasswordSetForm()
-		{
-			InitializeComponent();
+    internal partial class PasswordSetForm : Form
+    {
+        public string Password => PasswordBox.Text.ToLower();
 
-			Application.Idle += new EventHandler(Application_Idle);
+        public string PasswordHint => HintBox.Text;
 
-			PasswordBox.Text = Session.Project.Password;
-			RetypeBox.Text = Session.Project.Password;
-			HintBox.Text = Session.Project.PasswordHint;
+        public PasswordSetForm()
+        {
+            InitializeComponent();
 
-			ClearBtn.Visible = (Session.Project.Password != "");
-		}
+            Application.Idle += Application_Idle;
 
-		~PasswordSetForm()
-		{
-			Application.Idle -= Application_Idle;
-		}
+            PasswordBox.Text = Session.Project.Password;
+            RetypeBox.Text = Session.Project.Password;
+            HintBox.Text = Session.Project.PasswordHint;
 
-		void Application_Idle(object sender, EventArgs e)
-		{
-			OKBtn.Enabled = (PasswordBox.Text.ToLower() == RetypeBox.Text.ToLower());
-		}
+            ClearBtn.Visible = Session.Project.Password != "";
+        }
 
-		public string Password
-		{
-			get { return PasswordBox.Text.ToLower(); }
-		}
+        ~PasswordSetForm()
+        {
+            Application.Idle -= Application_Idle;
+        }
 
-		public string PasswordHint
-		{
-			get { return HintBox.Text; }
-		}
+        private void Application_Idle(object sender, EventArgs e)
+        {
+            OKBtn.Enabled = PasswordBox.Text.ToLower() == RetypeBox.Text.ToLower();
+        }
 
-		private void ClearBtn_Click(object sender, EventArgs e)
-		{
-			Session.Project.Password = "";
-			Session.Project.PasswordHint = "";
+        private void ClearBtn_Click(object sender, EventArgs e)
+        {
+            Session.Project.Password = "";
+            Session.Project.PasswordHint = "";
 
-			Session.Modified = true;
+            Session.Modified = true;
 
-			DialogResult = DialogResult.Ignore;
-			Close();
-		}
-	}
+            DialogResult = DialogResult.Ignore;
+            Close();
+        }
+    }
 }

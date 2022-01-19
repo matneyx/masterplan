@@ -1,207 +1,204 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
-
 using Masterplan.Controls;
 using Masterplan.Data;
 
 namespace Masterplan.UI
 {
-	partial class RegionalMapForm : Form
-	{
-		public RegionalMapForm(RegionalMap map, MapLocation loc)
-		{
-			InitializeComponent();
+    internal partial class RegionalMapForm : Form
+    {
+        private PointF _fRightClickLocation = PointF.Empty;
 
-			Application.Idle += new EventHandler(Application_Idle);
+        public RegionalMap Map { get; }
 
-			fMap = map.Copy();
+        public RegionalMapForm(RegionalMap map, MapLocation loc)
+        {
+            InitializeComponent();
 
-			NameBox.Text = fMap.Name;
-			MapPanel.Map = fMap;
+            Application.Idle += Application_Idle;
 
-			if (loc != null)
-			{
-				// Disable editing
+            Map = map.Copy();
 
-				NameBox.Enabled = false;
-				Toolbar.Visible = false;
+            NameBox.Text = Map.Name;
+            MapPanel.Map = Map;
 
-				OKBtn.Visible = false;
-				CancelBtn.Text = "Close";
+            if (loc != null)
+            {
+                // Disable editing
 
-				MapPanel.Mode = MapViewMode.Plain;
-				MapPanel.HighlightedLocation = loc;
-			}
-		}
+                NameBox.Enabled = false;
+                Toolbar.Visible = false;
 
-		~RegionalMapForm()
-		{
-			Application.Idle -= Application_Idle;
-		}
+                OKBtn.Visible = false;
+                CancelBtn.Text = "Close";
 
-		void Application_Idle(object sender, EventArgs e)
-		{
-			PasteBtn.Enabled = Clipboard.ContainsImage();
-			RemoveBtn.Enabled = (MapPanel.SelectedLocation != null);
-			EditBtn.Enabled = (MapPanel.SelectedLocation != null);
-			EntryBtn.Enabled = (MapPanel.SelectedLocation != null);
-		}
+                MapPanel.Mode = MapViewMode.Plain;
+                MapPanel.HighlightedLocation = loc;
+            }
+        }
 
-		public RegionalMap Map
-		{
-			get { return fMap; }
-		}
-		RegionalMap fMap = null;
+        ~RegionalMapForm()
+        {
+            Application.Idle -= Application_Idle;
+        }
 
-		private void OKBtn_Click(object sender, EventArgs e)
-		{
-			fMap.Name = NameBox.Text;
-		}
+        private void Application_Idle(object sender, EventArgs e)
+        {
+            PasteBtn.Enabled = Clipboard.ContainsImage();
+            RemoveBtn.Enabled = MapPanel.SelectedLocation != null;
+            EditBtn.Enabled = MapPanel.SelectedLocation != null;
+            EntryBtn.Enabled = MapPanel.SelectedLocation != null;
+        }
 
-		private void BrowseBtn_Click(object sender, EventArgs e)
-		{
-			OpenFileDialog open_dlg = new OpenFileDialog();
-			open_dlg.Filter = Program.ImageFilter;
-			if (open_dlg.ShowDialog() != DialogResult.OK)
-				return;
+        private void OKBtn_Click(object sender, EventArgs e)
+        {
+            Map.Name = NameBox.Text;
+        }
 
-			MapPanel.Map.Image = Image.FromFile(open_dlg.FileName);
-			Program.SetResolution(MapPanel.Map.Image);
-			MapPanel.Invalidate();
-		}
+        private void BrowseBtn_Click(object sender, EventArgs e)
+        {
+            var openDlg = new OpenFileDialog();
+            openDlg.Filter = Program.ImageFilter;
+            if (openDlg.ShowDialog() != DialogResult.OK)
+                return;
 
-		private void PasteBtn_Click(object sender, EventArgs e)
-		{
-			if (Clipboard.ContainsImage())
-			{
-				MapPanel.Map.Image = Clipboard.GetImage();
-				Program.SetResolution(MapPanel.Map.Image);
-				MapPanel.Invalidate();
-			}
-		}
+            MapPanel.Map.Image = Image.FromFile(openDlg.FileName);
+            Program.SetResolution(MapPanel.Map.Image);
+            MapPanel.Invalidate();
+        }
 
-		private void MapContext_Opening(object sender, System.ComponentModel.CancelEventArgs e)
-		{
-			set_click_location();
+        private void PasteBtn_Click(object sender, EventArgs e)
+        {
+            if (Clipboard.ContainsImage())
+            {
+                MapPanel.Map.Image = Clipboard.GetImage();
+                Program.SetResolution(MapPanel.Map.Image);
+                MapPanel.Invalidate();
+            }
+        }
 
-			MapContextAddLocation.Enabled = (fRightClickLocation != PointF.Empty);
-			MapContextRemove.Enabled = (MapPanel.SelectedLocation != null);
-			MapContextEdit.Enabled = (MapPanel.SelectedLocation != null);
-		}
+        private void MapContext_Opening(object sender, CancelEventArgs e)
+        {
+            set_click_location();
 
-		private void MapContextAddLocation_Click(object sender, EventArgs e)
-		{
-			if (fRightClickLocation == PointF.Empty)
-				return;
+            MapContextAddLocation.Enabled = _fRightClickLocation != PointF.Empty;
+            MapContextRemove.Enabled = MapPanel.SelectedLocation != null;
+            MapContextEdit.Enabled = MapPanel.SelectedLocation != null;
+        }
 
-			MapLocation loc = new MapLocation();
-			loc.Name = "New Location";
-			loc.Point = fRightClickLocation;
+        private void MapContextAddLocation_Click(object sender, EventArgs e)
+        {
+            if (_fRightClickLocation == PointF.Empty)
+                return;
 
-			MapLocationForm dlg = new MapLocationForm(loc);
-			if (dlg.ShowDialog() == DialogResult.OK)
-			{
-				fMap.Locations.Add(loc);
-				MapPanel.Invalidate();
+            var loc = new MapLocation();
+            loc.Name = "New Location";
+            loc.Point = _fRightClickLocation;
 
-				Session.Modified = true;
-			}
-		}
+            var dlg = new MapLocationForm(loc);
+            if (dlg.ShowDialog() == DialogResult.OK)
+            {
+                Map.Locations.Add(loc);
+                MapPanel.Invalidate();
 
-		private void MapContextRemove_Click(object sender, EventArgs e)
-		{
-			if (MapPanel.SelectedLocation != null)
-			{
-				MapPanel.Map.Locations.Remove(MapPanel.SelectedLocation);
-				MapPanel.Invalidate();
+                Session.Modified = true;
+            }
+        }
 
-				Session.Modified = true;
-			}
-		}
+        private void MapContextRemove_Click(object sender, EventArgs e)
+        {
+            if (MapPanel.SelectedLocation != null)
+            {
+                MapPanel.Map.Locations.Remove(MapPanel.SelectedLocation);
+                MapPanel.Invalidate();
 
-		private void MapContextEdit_Click(object sender, EventArgs e)
-		{
-			if (MapPanel.SelectedLocation != null)
-			{
-				int index = fMap.Locations.IndexOf(MapPanel.SelectedLocation);
+                Session.Modified = true;
+            }
+        }
 
-				MapLocationForm dlg = new MapLocationForm(MapPanel.SelectedLocation);
-				if (dlg.ShowDialog() == DialogResult.OK)
-				{
-					fMap.Locations[index] = dlg.MapLocation;
-					MapPanel.Invalidate();
+        private void MapContextEdit_Click(object sender, EventArgs e)
+        {
+            if (MapPanel.SelectedLocation != null)
+            {
+                var index = Map.Locations.IndexOf(MapPanel.SelectedLocation);
 
-					Session.Modified = true;
-				}
-			}
-		}
+                var dlg = new MapLocationForm(MapPanel.SelectedLocation);
+                if (dlg.ShowDialog() == DialogResult.OK)
+                {
+                    Map.Locations[index] = dlg.MapLocation;
+                    MapPanel.Invalidate();
 
-		private void MapPanel_DoubleClick(object sender, EventArgs e)
-		{
-			if (MapPanel.SelectedLocation == null)
-			{
-				set_click_location();
-				MapContextAddLocation_Click(sender, e);
-			}
-			else
-			{
-				MapContextEdit_Click(sender, e);
-			}
-		}
+                    Session.Modified = true;
+                }
+            }
+        }
 
-		PointF fRightClickLocation = PointF.Empty;
+        private void MapPanel_DoubleClick(object sender, EventArgs e)
+        {
+            if (MapPanel.SelectedLocation == null)
+            {
+                set_click_location();
+                MapContextAddLocation_Click(sender, e);
+            }
+            else
+            {
+                MapContextEdit_Click(sender, e);
+            }
+        }
 
-		void set_click_location()
-		{
-			fRightClickLocation = PointF.Empty;
+        private void set_click_location()
+        {
+            _fRightClickLocation = PointF.Empty;
 
-			Point mouse = MapPanel.PointToClient(Cursor.Position);
-			RectangleF rect = MapPanel.MapRectangle;
-			if (rect.Contains(mouse))
-			{
-				float dx = (mouse.X - rect.X) / rect.Width;
-				float dy = (mouse.Y - rect.Y) / rect.Height;
+            var mouse = MapPanel.PointToClient(Cursor.Position);
+            var rect = MapPanel.MapRectangle;
+            if (rect.Contains(mouse))
+            {
+                var dx = (mouse.X - rect.X) / rect.Width;
+                var dy = (mouse.Y - rect.Y) / rect.Height;
 
-				fRightClickLocation = new PointF(dx, dy);
-			}
-		}
+                _fRightClickLocation = new PointF(dx, dy);
+            }
+        }
 
-		private void EntryBtn_Click(object sender, EventArgs e)
-		{
-			if (MapPanel.SelectedLocation == null)
-				return;
+        private void EntryBtn_Click(object sender, EventArgs e)
+        {
+            if (MapPanel.SelectedLocation == null)
+                return;
 
-			EncyclopediaEntry entry = Session.Project.Encyclopedia.FindEntryForAttachment(MapPanel.SelectedLocation.ID);
+            var entry = Session.Project.Encyclopedia.FindEntryForAttachment(MapPanel.SelectedLocation.Id);
 
-			if (entry == null)
-			{
-				// If there is no entry, ask to create it
-				string msg = "There is no encyclopedia entry associated with this location.";
-				msg += Environment.NewLine;
-				msg += "Would you like to create one now?";
-				if (MessageBox.Show(msg, "Masterplan", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
-					return;
+            if (entry == null)
+            {
+                // If there is no entry, ask to create it
+                var msg = "There is no encyclopedia entry associated with this location.";
+                msg += Environment.NewLine;
+                msg += "Would you like to create one now?";
+                if (MessageBox.Show(msg, "Masterplan", MessageBoxButtons.YesNo, MessageBoxIcon.Question) ==
+                    DialogResult.No)
+                    return;
 
-				entry = new EncyclopediaEntry();
-				entry.Name = MapPanel.SelectedLocation.Name;
-				entry.AttachmentID = MapPanel.SelectedLocation.ID;
-				entry.Category = MapPanel.SelectedLocation.Category;
-				if (entry.Category == "")
-					entry.Category = "Places";
+                entry = new EncyclopediaEntry();
+                entry.Name = MapPanel.SelectedLocation.Name;
+                entry.AttachmentId = MapPanel.SelectedLocation.Id;
+                entry.Category = MapPanel.SelectedLocation.Category;
+                if (entry.Category == "")
+                    entry.Category = "Places";
 
-				Session.Project.Encyclopedia.Entries.Add(entry);
-				Session.Modified = true;
-			}
+                Session.Project.Encyclopedia.Entries.Add(entry);
+                Session.Modified = true;
+            }
 
-			// Edit the entry
-			int index = Session.Project.Encyclopedia.Entries.IndexOf(entry);
-			EncyclopediaEntryForm dlg = new EncyclopediaEntryForm(entry);
-			if (dlg.ShowDialog() == DialogResult.OK)
-			{
-				Session.Project.Encyclopedia.Entries[index] = dlg.Entry;
-				Session.Modified = true;
-			}
-		}
-	}
+            // Edit the entry
+            var index = Session.Project.Encyclopedia.Entries.IndexOf(entry);
+            var dlg = new EncyclopediaEntryForm(entry);
+            if (dlg.ShowDialog() == DialogResult.OK)
+            {
+                Session.Project.Encyclopedia.Entries[index] = dlg.Entry;
+                Session.Modified = true;
+            }
+        }
+    }
 }

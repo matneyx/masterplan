@@ -1,84 +1,84 @@
 ﻿using System;
 using System.IO;
 using System.Windows.Forms;
-
 using Masterplan.Data;
 using Masterplan.Tools;
 
 namespace Masterplan.UI
 {
-	partial class EncyclopediaEntryDetailsForm : Form
-	{
-		public EncyclopediaEntryDetailsForm(EncyclopediaEntry entry)
-		{
-			InitializeComponent();
+    internal partial class EncyclopediaEntryDetailsForm : Form
+    {
+        private readonly EncyclopediaEntry _fEntry;
+        private bool _fShowDmInfo;
 
-			Application.Idle += new EventHandler(Application_Idle);
+        public EncyclopediaEntryDetailsForm(EncyclopediaEntry entry)
+        {
+            InitializeComponent();
 
-			fEntry = entry;
+            Application.Idle += Application_Idle;
 
-			update_entry();
-		}
+            _fEntry = entry;
 
-		~EncyclopediaEntryDetailsForm()
-		{
-			Application.Idle -= Application_Idle;
-		}
+            update_entry();
+        }
 
-		void Application_Idle(object sender, EventArgs e)
-		{
-			DMBtn.Checked = fShowDMInfo;
-		}
+        ~EncyclopediaEntryDetailsForm()
+        {
+            Application.Idle -= Application_Idle;
+        }
 
-		EncyclopediaEntry fEntry = null;
-		bool fShowDMInfo = false;
+        private void Application_Idle(object sender, EventArgs e)
+        {
+            DMBtn.Checked = _fShowDmInfo;
+        }
 
-		private void PlayerViewBtn_Click(object sender, EventArgs e)
-		{
-			if (fEntry != null)
-			{
-				if (Session.PlayerView == null)
-					Session.PlayerView = new PlayerViewForm(this);
+        private void PlayerViewBtn_Click(object sender, EventArgs e)
+        {
+            if (_fEntry != null)
+            {
+                if (Session.PlayerView == null)
+                    Session.PlayerView = new PlayerViewForm(this);
 
-				Session.PlayerView.ShowEncyclopediaItem(fEntry);
-			}
-		}
+                Session.PlayerView.ShowEncyclopediaItem(_fEntry);
+            }
+        }
 
-		private void DMBtn_Click(object sender, EventArgs e)
-		{
-			fShowDMInfo = !fShowDMInfo;
-			update_entry();
-		}
+        private void DMBtn_Click(object sender, EventArgs e)
+        {
+            _fShowDmInfo = !_fShowDmInfo;
+            update_entry();
+        }
 
-		void update_entry()
-		{
-			Browser.DocumentText = HTML.EncyclopediaEntry(fEntry, Session.Project.Encyclopedia, Session.Preferences.TextSize, fShowDMInfo, false, false, true);
-		}
+        private void update_entry()
+        {
+            Browser.DocumentText = Html.EncyclopediaEntry(_fEntry, Session.Project.Encyclopedia,
+                Session.Preferences.TextSize, _fShowDmInfo, false, false, true);
+        }
 
-		private void Browser_Navigating(object sender, WebBrowserNavigatingEventArgs e)
-		{
-			if (e.Url.Scheme == "picture")
-			{
-				e.Cancel = true;
-				Guid id = new Guid(e.Url.LocalPath);
+        private void Browser_Navigating(object sender, WebBrowserNavigatingEventArgs e)
+        {
+            if (e.Url.Scheme == "picture")
+            {
+                e.Cancel = true;
+                var id = new Guid(e.Url.LocalPath);
 
-				EncyclopediaImage img = fEntry.FindImage(id);
-				if (img != null)
-				{
-					EncyclopediaImageForm dlg = new EncyclopediaImageForm(img);
-					dlg.ShowDialog();
-				}
-			}
-		}
+                var img = _fEntry.FindImage(id);
+                if (img != null)
+                {
+                    var dlg = new EncyclopediaImageForm(img);
+                    dlg.ShowDialog();
+                }
+            }
+        }
 
-		private void ExportHTML_Click(object sender, EventArgs e)
-		{
-			SaveFileDialog dlg = new SaveFileDialog();
-			dlg.FileName = fEntry.Name;
-			dlg.Filter = Program.HTMLFilter;
+        private void ExportHTML_Click(object sender, EventArgs e)
+        {
+            var dlg = new SaveFileDialog();
+            dlg.FileName = _fEntry.Name;
+            dlg.Filter = Program.HtmlFilter;
 
-			if (dlg.ShowDialog() == DialogResult.OK)
-				File.WriteAllText(dlg.FileName, Browser.DocumentText);
-		}
-	}
+            if (dlg.ShowDialog() == DialogResult.OK)
+                File.WriteAllText(dlg.FileName, Browser.DocumentText);
+        }
+    }
 }

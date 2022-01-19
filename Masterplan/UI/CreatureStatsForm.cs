@@ -1,141 +1,136 @@
 ﻿using System;
 using System.Windows.Forms;
-
 using Masterplan.Data;
 using Masterplan.Tools;
 
 namespace Masterplan.UI
 {
-	partial class CreatureStatsForm : Form
-	{
-		public CreatureStatsForm(ICreature c)
-		{
-			InitializeComponent();
+    internal partial class CreatureStatsForm : Form
+    {
+        private int _fAc;
 
-			Application.Idle += new EventHandler(Application_Idle);
+        private int _fHp;
+        private int _fInit;
+        private int _fNad;
 
-			fCreature = c;
+        public ICreature Creature { get; }
 
-			if ((fCreature.Role != null) && (fCreature.Role is Minion))
-			{
-				HPBox.Value = 1;
-				HPGroup.Enabled = false;
-			}
-			else
-			{
-				HPBox.Value = fCreature.HP;
-			}
+        public CreatureStatsForm(ICreature c)
+        {
+            InitializeComponent();
 
-			InitBox.Value = fCreature.Initiative;
-			ACBox.Value = fCreature.AC;
-			FortBox.Value = fCreature.Fortitude;
-			RefBox.Value = fCreature.Reflex;
-			WillBox.Value = fCreature.Will;
+            Application.Idle += Application_Idle;
 
-			update_recommendations();
-		}
+            Creature = c;
 
-		~CreatureStatsForm()
-		{
-			Application.Idle -= Application_Idle;
-		}
+            if (Creature.Role is Minion)
+            {
+                HPBox.Value = 1;
+                HPGroup.Enabled = false;
+            }
+            else
+            {
+                HPBox.Value = Creature.Hp;
+            }
 
-		void Application_Idle(object sender, EventArgs e)
-		{
-			HPRecBtn.Enabled = (HPBox.Value != fHP);
-			InitRecBtn.Enabled = (InitBox.Value != fInit);
-			ACRecBtn.Enabled = (ACBox.Value != fAC);
-			FortRecBtn.Enabled = (FortBox.Value != fNAD);
-			RefRecBtn.Enabled = (RefBox.Value != fNAD);
-			WillRecBtn.Enabled = (WillBox.Value != fNAD);
+            InitBox.Value = Creature.Initiative;
+            ACBox.Value = Creature.Ac;
+            FortBox.Value = Creature.Fortitude;
+            RefBox.Value = Creature.Reflex;
+            WillBox.Value = Creature.Will;
 
-			DefaultBtn.Enabled = (HPRecBtn.Enabled || InitRecBtn.Enabled || ACRecBtn.Enabled || FortRecBtn.Enabled || RefRecBtn.Enabled || WillRecBtn.Enabled);
-		}
+            update_recommendations();
+        }
 
-		public ICreature Creature
-		{
-			get { return fCreature; }
-		}
-		ICreature fCreature = null;
+        ~CreatureStatsForm()
+        {
+            Application.Idle -= Application_Idle;
+        }
 
-		int fHP = 0;
-		int fInit = 0;
-		int fAC = 0;
-		int fNAD = 0;
+        private void Application_Idle(object sender, EventArgs e)
+        {
+            HPRecBtn.Enabled = HPBox.Value != _fHp;
+            InitRecBtn.Enabled = InitBox.Value != _fInit;
+            ACRecBtn.Enabled = ACBox.Value != _fAc;
+            FortRecBtn.Enabled = FortBox.Value != _fNad;
+            RefRecBtn.Enabled = RefBox.Value != _fNad;
+            WillRecBtn.Enabled = WillBox.Value != _fNad;
 
-		private void OKBtn_Click(object sender, EventArgs e)
-		{
-			if (fCreature.Role is ComplexRole)
-			{
-				fCreature.HP = (int)HPBox.Value;
-			}
-			else
-			{
-				// Minion
-			}
+            DefaultBtn.Enabled = HPRecBtn.Enabled || InitRecBtn.Enabled || ACRecBtn.Enabled || FortRecBtn.Enabled ||
+                                 RefRecBtn.Enabled || WillRecBtn.Enabled;
+        }
 
-			fCreature.Initiative = (int)InitBox.Value;
-			fCreature.AC = (int)ACBox.Value;
-			fCreature.Fortitude = (int)FortBox.Value;
-			fCreature.Reflex = (int)RefBox.Value;
-			fCreature.Will = (int)WillBox.Value;
-		}
+        private void OKBtn_Click(object sender, EventArgs e)
+        {
+            if (Creature.Role is ComplexRole)
+            {
+                Creature.Hp = (int)HPBox.Value;
+            }
 
-		void update_recommendations()
-		{
-			bool minion = ((fCreature.Role != null) && (fCreature.Role is Minion));
+            Creature.Initiative = (int)InitBox.Value;
+            Creature.Ac = (int)ACBox.Value;
+            Creature.Fortitude = (int)FortBox.Value;
+            Creature.Reflex = (int)RefBox.Value;
+            Creature.Will = (int)WillBox.Value;
+        }
 
-			fHP = (minion) ? 1 : Statistics.HP(fCreature.Level, fCreature.Role as ComplexRole, fCreature.Constitution.Score);
-			fInit = Statistics.Initiative(fCreature.Level, fCreature.Role);
-			fAC = Statistics.AC(fCreature.Level, fCreature.Role);
-			fNAD = Statistics.NAD(fCreature.Level, fCreature.Role);
+        private void update_recommendations()
+        {
+            var minion = Creature.Role is Minion;
 
-			HPRecBtn.Text = (minion) ? "-" : "Recommended: " + fHP;
-			InitRecBtn.Text = "Recommended: " + fInit;
-			ACRecBtn.Text = "Recommended: " + fAC;
-			FortRecBtn.Text = "Recommended: " + fNAD;
-			RefRecBtn.Text = "Recommended: " + fNAD;
-			WillRecBtn.Text = "Recommended: " + fNAD;
-		}
+            _fHp = minion
+                ? 1
+                : Statistics.Hp(Creature.Level, Creature.Role as ComplexRole, Creature.Constitution.Score);
+            _fInit = Statistics.Initiative(Creature.Level, Creature.Role);
+            _fAc = Statistics.Ac(Creature.Level, Creature.Role);
+            _fNad = Statistics.Nad(Creature.Level, Creature.Role);
 
-		private void DefaultBtn_Click(object sender, EventArgs e)
-		{
-			HPBox.Value = fHP;
-			InitBox.Value = fInit;
-			ACBox.Value = fAC;
-			FortBox.Value = fNAD;
-			RefBox.Value = fNAD;
-			WillBox.Value = fNAD;
-		}
+            HPRecBtn.Text = minion ? "-" : "Recommended: " + _fHp;
+            InitRecBtn.Text = "Recommended: " + _fInit;
+            ACRecBtn.Text = "Recommended: " + _fAc;
+            FortRecBtn.Text = "Recommended: " + _fNad;
+            RefRecBtn.Text = "Recommended: " + _fNad;
+            WillRecBtn.Text = "Recommended: " + _fNad;
+        }
 
-		private void HPRecBtn_Click(object sender, EventArgs e)
-		{
-			HPBox.Value = fHP;
-		}
+        private void DefaultBtn_Click(object sender, EventArgs e)
+        {
+            HPBox.Value = _fHp;
+            InitBox.Value = _fInit;
+            ACBox.Value = _fAc;
+            FortBox.Value = _fNad;
+            RefBox.Value = _fNad;
+            WillBox.Value = _fNad;
+        }
 
-		private void InitRecBtn_Click(object sender, EventArgs e)
-		{
-			InitBox.Value = fInit;
-		}
+        private void HPRecBtn_Click(object sender, EventArgs e)
+        {
+            HPBox.Value = _fHp;
+        }
 
-		private void ACRecBtn_Click(object sender, EventArgs e)
-		{
-			ACBox.Value = fAC;
-		}
+        private void InitRecBtn_Click(object sender, EventArgs e)
+        {
+            InitBox.Value = _fInit;
+        }
 
-		private void FortRecBtn_Click(object sender, EventArgs e)
-		{
-			FortBox.Value = fNAD;
-		}
+        private void ACRecBtn_Click(object sender, EventArgs e)
+        {
+            ACBox.Value = _fAc;
+        }
 
-		private void RefRecBtn_Click(object sender, EventArgs e)
-		{
-			RefBox.Value = fNAD;
-		}
+        private void FortRecBtn_Click(object sender, EventArgs e)
+        {
+            FortBox.Value = _fNad;
+        }
 
-		private void WillRecBtn_Click(object sender, EventArgs e)
-		{
-			WillBox.Value = fNAD;
-		}
-	}
+        private void RefRecBtn_Click(object sender, EventArgs e)
+        {
+            RefBox.Value = _fNad;
+        }
+
+        private void WillRecBtn_Click(object sender, EventArgs e)
+        {
+            WillBox.Value = _fNad;
+        }
+    }
 }

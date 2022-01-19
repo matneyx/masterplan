@@ -6,279 +6,261 @@ using System.Drawing.Imaging;
 using System.Drawing.Text;
 using System.Reflection;
 using System.Windows.Forms;
-
+using Masterplan.Properties;
 using Masterplan.Tools;
 
 namespace Masterplan.Controls
 {
-	partial class TitlePanel : UserControl
-	{
-		public enum TitlePanelMode
-		{
-			WelcomeScreen,
-			PlayerView
-		}
+    internal partial class TitlePanel : UserControl
+    {
+        public enum TitlePanelMode
+        {
+            WelcomeScreen,
+            PlayerView
+        }
 
-		public TitlePanel()
-		{
-			InitializeComponent();
+        private const int MaxAlpha = 255;
+        private const int MaxColor = 60;
 
-			SetStyle(ControlStyles.AllPaintingInWmPaint
-				| ControlStyles.OptimizedDoubleBuffer
-				| ControlStyles.ResizeRedraw
-				| ControlStyles.UserPaint, true);
+        private readonly StringFormat _fFormat = new StringFormat();
 
-			fFormat.Alignment = StringAlignment.Center;
-			fFormat.LineAlignment = StringAlignment.Center;
-			fFormat.Trimming = StringTrimming.EllipsisWord;
+        private readonly string _fVersion = get_version_string();
 
-			FadeTimer.Enabled = true;
-		}
+        private int _fAlpha;
 
-		[Category("Appearance")]
-		public string Title
-		{
-			get { return fTitle; }
-			set { fTitle = value; }
-		}
-		string fTitle = "";
+        private TitlePanelMode _fMode = TitlePanelMode.WelcomeScreen;
+        private Rectangle _fVersionRect = Rectangle.Empty;
 
-		[Category("Layout")]
-		public TitlePanelMode Mode
-		{
-			get { return fMode; }
-			set
-			{
-				fMode = value;
-				Invalidate();
-			}
-		}
-		TitlePanelMode fMode = TitlePanelMode.WelcomeScreen;
+        private Rectangle _titleRect = Rectangle.Empty;
 
-		[Category("Behavior")]
-		public bool Zooming
-		{
-			get { return fZooming; }
-			set { fZooming = value; }
-		}
-		bool fZooming = false;
+        [Category("Appearance")] public string Title { get; set; } = "";
 
-		string fVersion = get_version_string();
+        [Category("Layout")]
+        public TitlePanelMode Mode
+        {
+            get => _fMode;
+            set
+            {
+                _fMode = value;
+                Invalidate();
+            }
+        }
 
-		Rectangle fTitleRect = Rectangle.Empty;
-		Rectangle fVersionRect = Rectangle.Empty;
+        [Category("Behavior")] public bool Zooming { get; set; }
 
-		StringFormat fFormat = new StringFormat();
+        public TitlePanel()
+        {
+            InitializeComponent();
 
-		int fAlpha = 0;
-		const int MAX_ALPHA = 255;
-		const int MAX_COLOR = 60;
+            SetStyle(ControlStyles.AllPaintingInWmPaint
+                     | ControlStyles.OptimizedDoubleBuffer
+                     | ControlStyles.ResizeRedraw
+                     | ControlStyles.UserPaint, true);
 
-		public event EventHandler FadeFinished;
+            _fFormat.Alignment = StringAlignment.Center;
+            _fFormat.LineAlignment = StringAlignment.Center;
+            _fFormat.Trimming = StringTrimming.EllipsisWord;
 
-		protected void OnFadeFinished()
-		{
-			if (FadeFinished != null)
-				FadeFinished(this, new EventArgs());
-		}
+            FadeTimer.Enabled = true;
+        }
 
-		protected override void OnResize(EventArgs e)
-		{
-			base.OnResize(e);
-			reset_view();
-		}
+        public event EventHandler FadeFinished;
 
-		protected override void OnLayout(LayoutEventArgs e)
-		{
-			base.OnLayout(e);
-			reset_view();
-		}
+        protected void OnFadeFinished()
+        {
+            FadeFinished?.Invoke(this, EventArgs.Empty);
+        }
 
-		void reset_view()
-		{
-			fTitleRect = Rectangle.Empty;
-			fVersionRect = Rectangle.Empty;
+        protected override void OnResize(EventArgs e)
+        {
+            base.OnResize(e);
+            reset_view();
+        }
 
-			Invalidate();
-		}
+        protected override void OnLayout(LayoutEventArgs e)
+        {
+            base.OnLayout(e);
+            reset_view();
+        }
 
-		protected override void OnPaint(PaintEventArgs e)
-		{
-			base.OnPaint(e);
+        private void reset_view()
+        {
+            _titleRect = Rectangle.Empty;
+            _fVersionRect = Rectangle.Empty;
 
-			try
-			{
-				e.Graphics.SmoothingMode = SmoothingMode.HighQuality;
-				e.Graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
-				e.Graphics.TextRenderingHint = TextRenderingHint.AntiAlias;
+            Invalidate();
+        }
 
-				if (fTitleRect == Rectangle.Empty)
-				{
-					Rectangle rect = ClientRectangle;
-					SizeF version_size = e.Graphics.MeasureString(fVersion, Font);
-					double version_height = version_size.Height + (Height / 10);
+        protected override void OnPaint(PaintEventArgs e)
+        {
+            base.OnPaint(e);
 
-					fTitleRect = new Rectangle(rect.Left, rect.Top, rect.Width - 1, (int)(rect.Height - version_height - 1));
-					fVersionRect = new Rectangle(rect.Left, fTitleRect.Bottom, rect.Width - 1, (int)version_height);
-				}
+            try
+            {
+                e.Graphics.SmoothingMode = SmoothingMode.HighQuality;
+                e.Graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
+                e.Graphics.TextRenderingHint = TextRenderingHint.AntiAlias;
 
-				if (fMode == TitlePanelMode.WelcomeScreen)
-				{
-					ColorMatrix cm = new ColorMatrix();
-					cm.Matrix33 = (0.25F * fAlpha) / MAX_ALPHA;
+                if (_titleRect == Rectangle.Empty)
+                {
+                    var rect = ClientRectangle;
+                    var versionSize = e.Graphics.MeasureString(_fVersion, Font);
+                    double versionHeight = versionSize.Height + Height / 10;
 
-					ImageAttributes ia = new ImageAttributes();
-					ia.SetColorMatrix(cm);
+                    _titleRect = new Rectangle(rect.Left, rect.Top, rect.Width - 1,
+                        (int)(rect.Height - versionHeight - 1));
+                    _fVersionRect = new Rectangle(rect.Left, _titleRect.Bottom, rect.Width - 1, (int)versionHeight);
+                }
 
-					Image scroll_img = Masterplan.Properties.Resources.Scroll;
+                if (_fMode == TitlePanelMode.WelcomeScreen)
+                {
+                    var cm = new ColorMatrix();
+                    cm.Matrix33 = 0.25F * _fAlpha / MaxAlpha;
 
-					int y = ClientRectangle.Y + (int)(ClientRectangle.Height * 0.1);
-					int img_height = (int)(ClientRectangle.Height * 0.8);
-					int img_width = scroll_img.Width * img_height / scroll_img.Height;
-					if (img_width > ClientRectangle.Width)
-					{
-						img_width = ClientRectangle.Width;
-						img_height = scroll_img.Height * img_width / scroll_img.Width;
-					}
-					int x = ClientRectangle.X + ((ClientRectangle.Width - img_width) / 2);
+                    var ia = new ImageAttributes();
+                    ia.SetColorMatrix(cm);
 
-					Rectangle img_rect = new Rectangle(x, y, img_width, img_height);
-					e.Graphics.DrawImage(scroll_img, img_rect, 0, 0, scroll_img.Width, scroll_img.Height, GraphicsUnit.Pixel, ia);
-				}
+                    Image scrollImg = Resources.Scroll;
 
-				using (Brush title_brush = new SolidBrush(Color.FromArgb(fAlpha, ForeColor)))
-				{
-					float text_height = fTitleRect.Height / 2F;
-					float text_width = fTitleRect.Width / fTitle.Length;
-					float text_size = Math.Min(text_height, text_width);
+                    var y = ClientRectangle.Y + (int)(ClientRectangle.Height * 0.1);
+                    var imgHeight = (int)(ClientRectangle.Height * 0.8);
+                    var imgWidth = scrollImg.Width * imgHeight / scrollImg.Height;
+                    if (imgWidth > ClientRectangle.Width)
+                    {
+                        imgWidth = ClientRectangle.Width;
+                        imgHeight = scrollImg.Height * imgWidth / scrollImg.Width;
+                    }
 
-					if (fZooming)
-					{
-						float delta = 0.1F * fAlpha / MAX_ALPHA;
-						text_size *= (0.9F + delta);
-					}
+                    var x = ClientRectangle.X + (ClientRectangle.Width - imgWidth) / 2;
 
-					if (text_height > 0)
-					{
-						using (Font title_font = new Font(Font.FontFamily, text_size))
-						{
-							e.Graphics.DrawString(fTitle, title_font, title_brush, fTitleRect, fFormat);
-						}
-					}
+                    var imgRect = new Rectangle(x, y, imgWidth, imgHeight);
+                    e.Graphics.DrawImage(scrollImg, imgRect, 0, 0, scrollImg.Width, scrollImg.Height,
+                        GraphicsUnit.Pixel, ia);
+                }
 
-					if (fMode == TitlePanelMode.WelcomeScreen)
-						e.Graphics.DrawString(fVersion, Font, title_brush, fVersionRect, fFormat);
-				}
-			}
-			catch (Exception ex)
-			{
-				LogSystem.Trace(ex);
-			}
-		}
+                using (Brush titleBrush = new SolidBrush(Color.FromArgb(_fAlpha, ForeColor)))
+                {
+                    var textHeight = _titleRect.Height / 2F;
+                    float textWidth = _titleRect.Width / Title.Length;
+                    var textSize = Math.Min(textHeight, textWidth);
 
-		private void FadeTimer_Tick(object sender, EventArgs e)
-		{
-			fAlpha = Math.Min(fAlpha + 4, MAX_ALPHA);
+                    if (Zooming)
+                    {
+                        var delta = 0.1F * _fAlpha / MaxAlpha;
+                        textSize *= 0.9F + delta;
+                    }
 
-			Invalidate();
+                    if (textHeight > 0)
+                        using (var titleFont = new Font(Font.FontFamily, textSize))
+                        {
+                            e.Graphics.DrawString(Title, titleFont, titleBrush, _titleRect, _fFormat);
+                        }
 
-			if (fAlpha == MAX_ALPHA)
-			{
-				FadeTimer.Enabled = false;
-				OnFadeFinished();
+                    if (_fMode == TitlePanelMode.WelcomeScreen)
+                        e.Graphics.DrawString(_fVersion, Font, titleBrush, _fVersionRect, _fFormat);
+                }
+            }
+            catch (Exception ex)
+            {
+                LogSystem.Trace(ex);
+            }
+        }
 
-				if (fMode == TitlePanelMode.PlayerView)
-				{
-					PulseTimer.Enabled = true;
-				}
-			}
-		}
+        private void FadeTimer_Tick(object sender, EventArgs e)
+        {
+            _fAlpha = Math.Min(_fAlpha + 4, MaxAlpha);
 
-		private void PulseTimer_Tick(object sender, EventArgs e)
-		{
-			fAlpha = Math.Max(fAlpha - 1, 0);
+            Invalidate();
 
-			if (Session.Random.Next() % 10 == 0)
-				BackColor = change_colour(BackColor);
+            if (_fAlpha == MaxAlpha)
+            {
+                FadeTimer.Enabled = false;
+                OnFadeFinished();
 
-			Invalidate();
-		}
+                if (_fMode == TitlePanelMode.PlayerView) PulseTimer.Enabled = true;
+            }
+        }
 
-		public void Wake()
-		{
-			if (PulseTimer.Enabled)
-			{
-				PulseTimer.Enabled = false;
-				FadeTimer.Enabled = true;
-			}
-		}
+        private void PulseTimer_Tick(object sender, EventArgs e)
+        {
+            _fAlpha = Math.Max(_fAlpha - 1, 0);
 
-		static string get_version_string()
-		{
-			string str = "Adventure Design Studio";
+            if (Session.Random.Next() % 10 == 0)
+                BackColor = change_colour(BackColor);
 
-			Assembly ass = Assembly.GetEntryAssembly();
-			if (ass != null)
-			{
-				Version version = ass.GetName().Version;
-				if (version != null)
-				{
-					if (str != "")
-						str += Environment.NewLine;
+            Invalidate();
+        }
 
-					str += "Version " + version.Major;
+        public void Wake()
+        {
+            if (PulseTimer.Enabled)
+            {
+                PulseTimer.Enabled = false;
+                FadeTimer.Enabled = true;
+            }
+        }
 
-					if (version.Build != 0)
-					{
-						str += "." + version.Minor + "." + version.Build;
-					}
-					else if (version.Minor != 0)
-					{
-						str += "." + version.Minor;
-					}
-				}
-			}
+        private static string get_version_string()
+        {
+            var str = "Adventure Design Studio";
 
-			if (Program.IsBeta)
-			{
-				if (str != "")
-					str += Environment.NewLine + Environment.NewLine;
+            var ass = Assembly.GetEntryAssembly();
+            if (ass != null)
+            {
+                var version = ass.GetName().Version;
+                if (version != null)
+                {
+                    if (str != "")
+                        str += Environment.NewLine;
 
-				str += "BETA";
-			}
+                    str += "Version " + version.Major;
 
-			return str;
-		}
+                    if (version.Build != 0)
+                        str += "." + version.Minor + "." + version.Build;
+                    else if (version.Minor != 0) str += "." + version.Minor;
+                }
+            }
 
-		Color change_colour(Color colour)
-		{
-			int r = colour.R;
-			int g = colour.G;
-			int b = colour.B;
+            if (Program.IsBeta)
+            {
+                if (str != "")
+                    str += Environment.NewLine + Environment.NewLine;
 
-			switch (Session.Random.Next() % 4)
-			{
-				case 0:
-					r = Math.Min(MAX_COLOR, r + 1);
-					break;
-				case 1:
-					g = Math.Min(MAX_COLOR, g + 1);
-					break;
-				case 2:
-					b = Math.Min(MAX_COLOR, b + 1);
-					break;
-				case 3:
-					r = Math.Max(0, r - 1);
-					break;
-				case 4:
-					g = Math.Max(0, g - 1);
-					break;
-				case 5:
-					b = Math.Max(0, b - 1);
-					break;
-			}
+                str += "BETA";
+            }
 
-			return Color.FromArgb(r, g, b);
-		}
-	}
+            return str;
+        }
+
+        private Color change_colour(Color colour)
+        {
+            int r = colour.R;
+            int g = colour.G;
+            int b = colour.B;
+
+            switch (Session.Random.Next() % 4)
+            {
+                case 0:
+                    r = Math.Min(MaxColor, r + 1);
+                    break;
+                case 1:
+                    g = Math.Min(MaxColor, g + 1);
+                    break;
+                case 2:
+                    b = Math.Min(MaxColor, b + 1);
+                    break;
+                case 3:
+                    r = Math.Max(0, r - 1);
+                    break;
+                case 4:
+                    g = Math.Max(0, g - 1);
+                    break;
+                case 5:
+                    b = Math.Max(0, b - 1);
+                    break;
+            }
+
+            return Color.FromArgb(r, g, b);
+        }
+    }
 }

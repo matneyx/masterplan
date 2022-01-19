@@ -1,65 +1,14 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
-
 using Masterplan.Data;
 using Masterplan.Tools;
 
 namespace Masterplan.UI
 {
-    partial class MonsterThemeForm : Form
+    internal partial class MonsterThemeForm : Form
     {
-        public MonsterThemeForm(MonsterTheme theme)
-        {
-            InitializeComponent();
-
-            Application.Idle += new EventHandler(Application_Idle);
-
-            fTheme = theme.Copy();
-
-            foreach (string skill_name in Skills.GetSkillNames())
-            {
-                ListViewItem lvi = SkillList.Items.Add(skill_name);
-
-                bool present = false;
-                foreach (Pair<string, int> pair in fTheme.SkillBonuses)
-                {
-                    if (pair.First == skill_name)
-                        present = true;
-                }
-                lvi.Checked = present;
-            }
-
-            NameBox.Text = fTheme.Name;
-
-            update_powers();
-        }
-
-        ~MonsterThemeForm()
-        {
-            Application.Idle -= Application_Idle;
-        }
-
-        void Application_Idle(object sender, EventArgs e)
-        {
-            PowerRemoveBtn.Enabled = (SelectedPower != null);
-            PowerEditBtn.Enabled = (SelectedPower != null);
-        }
-
-        public MonsterTheme Theme
-        {
-            get { return fTheme; }
-        }
-        MonsterTheme fTheme = null;
-
-        private void OKBtn_Click(object sender, EventArgs e)
-        {
-            fTheme.Name = NameBox.Text;
-
-            fTheme.SkillBonuses.Clear();
-            foreach (ListViewItem lvi in SkillList.CheckedItems)
-                fTheme.SkillBonuses.Add(new Pair<string, int>(lvi.Text, 2));
-        }
+        public MonsterTheme Theme { get; }
 
         public ThemePowerData SelectedPower
         {
@@ -72,28 +21,72 @@ namespace Masterplan.UI
             }
         }
 
+        public MonsterThemeForm(MonsterTheme theme)
+        {
+            InitializeComponent();
+
+            Application.Idle += Application_Idle;
+
+            Theme = theme.Copy();
+
+            foreach (var skillName in Skills.GetSkillNames())
+            {
+                var lvi = SkillList.Items.Add(skillName);
+
+                var present = false;
+                foreach (var pair in Theme.SkillBonuses)
+                    if (pair.First == skillName)
+                        present = true;
+                lvi.Checked = present;
+            }
+
+            NameBox.Text = Theme.Name;
+
+            update_powers();
+        }
+
+        ~MonsterThemeForm()
+        {
+            Application.Idle -= Application_Idle;
+        }
+
+        private void Application_Idle(object sender, EventArgs e)
+        {
+            PowerRemoveBtn.Enabled = SelectedPower != null;
+            PowerEditBtn.Enabled = SelectedPower != null;
+        }
+
+        private void OKBtn_Click(object sender, EventArgs e)
+        {
+            Theme.Name = NameBox.Text;
+
+            Theme.SkillBonuses.Clear();
+            foreach (ListViewItem lvi in SkillList.CheckedItems)
+                Theme.SkillBonuses.Add(new Pair<string, int>(lvi.Text, 2));
+        }
+
         private void PowerAddBtn_Click(object sender, EventArgs e)
         {
-            CreaturePower power = new CreaturePower();
+            var power = new CreaturePower();
             power.Name = "New Power";
 
-			PowerBuilderForm dlg = new PowerBuilderForm(power, null, false);
+            var dlg = new PowerBuilderForm(power, null, false);
             if (dlg.ShowDialog() == DialogResult.OK)
                 add_power(dlg.Power);
         }
 
         private void PowerBrowse_Click(object sender, EventArgs e)
         {
-            PowerBrowserForm dlg = new PowerBrowserForm(NameBox.Text, 0, null, add_power);
+            var dlg = new PowerBrowserForm(NameBox.Text, 0, null, add_power);
             dlg.ShowDialog();
         }
 
-        void add_power(CreaturePower power)
+        private void add_power(CreaturePower power)
         {
-            ThemePowerData tpd = new ThemePowerData();
+            var tpd = new ThemePowerData();
             tpd.Power = power;
 
-            fTheme.Powers.Add(tpd);
+            Theme.Powers.Add(tpd);
             update_powers();
         }
 
@@ -101,7 +94,7 @@ namespace Masterplan.UI
         {
             if (SelectedPower != null)
             {
-                fTheme.Powers.Remove(SelectedPower);
+                Theme.Powers.Remove(SelectedPower);
                 update_powers();
             }
         }
@@ -110,75 +103,71 @@ namespace Masterplan.UI
         {
             if (SelectedPower != null)
             {
-                int index = fTheme.Powers.IndexOf(SelectedPower);
+                var index = Theme.Powers.IndexOf(SelectedPower);
 
-				PowerBuilderForm dlg = new PowerBuilderForm(SelectedPower.Power, null, false);
+                var dlg = new PowerBuilderForm(SelectedPower.Power, null, false);
                 if (dlg.ShowDialog() == DialogResult.OK)
                 {
-                    fTheme.Powers[index].Power = dlg.Power;
+                    Theme.Powers[index].Power = dlg.Power;
                     update_powers();
                 }
             }
         }
 
-		private void EditClassification_Click(object sender, EventArgs e)
-		{
-			if (SelectedPower != null)
-			{
-				int index = fTheme.Powers.IndexOf(SelectedPower);
+        private void EditClassification_Click(object sender, EventArgs e)
+        {
+            if (SelectedPower != null)
+            {
+                var index = Theme.Powers.IndexOf(SelectedPower);
 
-				MonsterThemePowerForm dlg = new MonsterThemePowerForm(SelectedPower);
-				if (dlg.ShowDialog() == DialogResult.OK)
-				{
-					fTheme.Powers[index] = dlg.Power;
-					update_powers();
-				}
-			}
-		}
+                var dlg = new MonsterThemePowerForm(SelectedPower);
+                if (dlg.ShowDialog() == DialogResult.OK)
+                {
+                    Theme.Powers[index] = dlg.Power;
+                    update_powers();
+                }
+            }
+        }
 
-        void update_powers()
+        private void update_powers()
         {
             PowerList.ShowGroups = true;
 
             PowerList.Items.Clear();
-            foreach (ThemePowerData p in fTheme.Powers)
+            foreach (var p in Theme.Powers)
             {
-                string role_str = "";
-				if (p.Roles.Count == 6)
-				{
-					role_str = "(any)";
-				}
-				else
-				{
-					foreach (RoleType rt in p.Roles)
-					{
-						if (role_str != "")
-							role_str += ", ";
+                var roleStr = "";
+                if (p.Roles.Count == 6)
+                    roleStr = "(any)";
+                else
+                    foreach (var rt in p.Roles)
+                    {
+                        if (roleStr != "")
+                            roleStr += ", ";
 
-						role_str += rt.ToString();
-					}
-				}
+                        roleStr += rt.ToString();
+                    }
 
-                ListViewItem lvi = PowerList.Items.Add(p.Power.Name);
-                lvi.SubItems.Add(role_str);
+                var lvi = PowerList.Items.Add(p.Power.Name);
+                lvi.SubItems.Add(roleStr);
                 lvi.Tag = p;
 
-				switch (p.Type)
-				{
-					case PowerType.Attack:
-						lvi.Group = PowerList.Groups[0];
-						break;
-					case PowerType.Utility:
-						lvi.Group = PowerList.Groups[1];
-						break;
-				}
+                switch (p.Type)
+                {
+                    case PowerType.Attack:
+                        lvi.Group = PowerList.Groups[0];
+                        break;
+                    case PowerType.Utility:
+                        lvi.Group = PowerList.Groups[1];
+                        break;
+                }
             }
 
             if (PowerList.Items.Count == 0)
             {
                 PowerList.ShowGroups = false;
 
-                ListViewItem lvi = PowerList.Items.Add("(no powers)");
+                var lvi = PowerList.Items.Add("(no powers)");
                 lvi.ForeColor = SystemColors.GrayText;
             }
         }

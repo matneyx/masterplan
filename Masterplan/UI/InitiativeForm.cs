@@ -3,41 +3,38 @@ using System.Windows.Forms;
 
 namespace Masterplan.UI
 {
-	partial class InitiativeForm : Form
-	{
-		public InitiativeForm(int bonus, int score)
-		{
-			InitializeComponent();
+    internal partial class InitiativeForm : Form
+    {
+        public int Score => (int)InitBox.Value;
 
-			if (bonus >= 0)
-				BonusValueLbl.Text = "+" + bonus;
-			else
-				BonusValueLbl.Text = bonus.ToString();
+        public InitiativeForm(int bonus, int score)
+        {
+            InitializeComponent();
 
-			if (score == int.MinValue)
-				score = bonus + 1;
+            if (bonus >= 0)
+                BonusValueLbl.Text = "+" + bonus;
+            else
+                BonusValueLbl.Text = bonus.ToString();
 
-			InitBox.Value = score;
-		}
+            if (score == int.MinValue)
+                score = bonus + 1;
 
-		public int Score
-		{
-			get { return (int)InitBox.Value; }
-		}
+            InitBox.Value = score;
+        }
 
-		private void OKBtn_Click(object sender, EventArgs e)
-		{
-		}
+        private void OKBtn_Click(object sender, EventArgs e)
+        {
+        }
 
-		private void InitiativeForm_Shown(object sender, EventArgs e)
-		{
-			int length = 1;
-			if (InitBox.Value >= 10)
-				length = 2;
-			if (InitBox.Value >= 100)
-				length = 3;
+        private void InitiativeForm_Shown(object sender, EventArgs e)
+        {
+            var length = 1;
+            if (InitBox.Value >= 10)
+                length = 2;
+            if (InitBox.Value >= 100)
+                length = 3;
 
-			InitBox.Select(0, length);
-		}
-	}
+            InitBox.Select(0, length);
+        }
+    }
 }

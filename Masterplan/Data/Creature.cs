@@ -1,587 +1,614 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-
 using Masterplan.Tools;
 
 namespace Masterplan.Data
 {
-	/// <summary>
-	/// Enumeration containing the various string fields.
-	/// </summary>
-	enum DetailsField
-	{
-		None,
-		Senses,
-		Movement,
-		Resist,
-		Vulnerable,
-		Immune,
-		Alignment,
-		Languages,
-		Skills,
-		Equipment,
-		Description,
-		Tactics
-	}
+    /// <summary>
+    ///     Enumeration containing the various string fields.
+    /// </summary>
+    internal enum DetailsField
+    {
+        None,
+        Senses,
+        Movement,
+        Resist,
+        Vulnerable,
+        Immune,
+        Alignment,
+        Languages,
+        Skills,
+        Equipment,
+        Description,
+        Tactics
+    }
 
-	/// <summary>
-	/// Class representing a creature.
-	/// </summary>
-	[Serializable]
-	public class Creature : ICreature
-	{
-		/// <summary>
-		/// Default constructor.
-		/// </summary>
-		public Creature()
-		{
-		}
+    /// <summary>
+    ///     Class representing a creature.
+    /// </summary>
+    [Serializable]
+    public class Creature : ICreature
+    {
+        private int _fAc = 10;
 
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		/// <param name="c">The creature to copy from.</param>
-		public Creature(ICreature c)
-		{
-			CreatureHelper.CopyFields(c, this);
-		}
+        private string _fAlignment = "";
 
-		/// <summary>
-		/// Gets or sets the unique ID.
-		/// </summary>
-		public Guid ID
-		{
-			get { return fID; }
-			set { fID = value; }
-		}
-		Guid fID = Guid.NewGuid();
+        private List<Aura> _fAuras = new List<Aura>();
 
-		/// <summary>
-		/// Gets or sets the name.
-		/// </summary>
-		public string Name
-		{
-			get { return fName; }
-			set { fName = value; }
-		}
-		string fName = "";
+        private string _fCategory = "";
 
-		/// <summary>
-		/// Gets or sets the details.
-		/// </summary>
-		public string Details
-		{
-			get { return fDetails; }
-			set { fDetails = value; }
-		}
-		string fDetails = "";
+        private Ability _fCharisma = new Ability();
 
-		/// <summary>
-		/// Gets or sets the size.
-		/// </summary>
-		public CreatureSize Size
-		{
-			get { return fSize; }
-			set { fSize = value; }
-		}
-		CreatureSize fSize = CreatureSize.Medium;
+        private Ability _fConstitution = new Ability();
 
-		/// <summary>
-		/// Gets or sets the creature origin.
-		/// </summary>
-		public CreatureOrigin Origin
-		{
-			get { return fOrigin; }
-			set { fOrigin = value; }
-		}
-		CreatureOrigin fOrigin = CreatureOrigin.Natural;
+        private List<CreaturePower> _fCreaturePowers = new List<CreaturePower>();
 
-		/// <summary>
-		/// Gets or sets the creature type.
-		/// </summary>
-		public CreatureType Type
-		{
-			get { return fType; }
-			set { fType = value; }
-		}
-		CreatureType fType = CreatureType.MagicalBeast;
+        private List<DamageModifier> _fDamageModifiers = new List<DamageModifier>();
 
-		/// <summary>
-		/// Gets or sets the creature keywords.
-		/// </summary>
-		public string Keywords
-		{
-			get { return fKeywords; }
-			set { fKeywords = value; }
-		}
-		string fKeywords = "";
+        private string _fDetails = "";
 
-		/// <summary>
-		/// Gets or sets the level.
-		/// </summary>
-		public int Level
-		{
-			get { return fLevel; }
-			set { fLevel = value; }
-		}
-		int fLevel = 1;
+        private Ability _fDexterity = new Ability();
 
-		/// <summary>
-		/// Gets or sets the role.
-		/// </summary>
-		public IRole Role
-		{
-			get { return fRole; }
-			set { fRole = value; }
-		}
-		IRole fRole = new ComplexRole();
+        private string _fEquipment = "";
 
-		/// <summary>
-		/// Gets or sets the senses.
-		/// </summary>
-		public string Senses
-		{
-			get { return fSenses; }
-			set { fSenses = value; }
-		}
-		string fSenses = "";
+        private int _fFortitude = 10;
 
-		/// <summary>
-		/// Gets or sets the movement.
-		/// </summary>
-		public string Movement
-		{
-			get
-			{
-				if ((fMovement == null) || (fMovement == ""))
-					return Creature.GetSpeed(fSize) + " squares";
-				else
-					return fMovement;
-			}
-			set { fMovement = value; }
-		}
-		string fMovement = "6";
+        private int _fHp;
 
-		/// <summary>
-		/// Gets or sets the alignment.
-		/// </summary>
-		public string Alignment
-		{
-			get { return fAlignment; }
-			set { fAlignment = value; }
-		}
-		string fAlignment = "";
+        private Guid _fId = Guid.NewGuid();
 
-		/// <summary>
-		/// Gets or sets the languages.
-		/// </summary>
-		public string Languages
-		{
-			get { return fLanguages; }
-			set { fLanguages = value; }
-		}
-		string fLanguages = "";
+        private Image _fImage;
 
-		/// <summary>
-		/// Gets or sets the skills.
-		/// </summary>
-		public string Skills
-		{
-			get { return fSkills; }
-			set { fSkills = value; }
-		}
-		string fSkills = "";
+        private string _fImmune = "";
 
-		/// <summary>
-		/// Gets or sets the equipment.
-		/// </summary>
-		public string Equipment
-		{
-			get { return fEquipment; }
-			set { fEquipment = value; }
-		}
-		string fEquipment = "";
+        private int _fInitiative;
 
-		/// <summary>
-		/// Gets or sets the category.
-		/// </summary>
-		public string Category
-		{
-			get { return fCategory; }
-			set { fCategory = value; }
-		}
-		string fCategory = "";
+        private Ability _fIntelligence = new Ability();
 
-		#region Abilities
+        private string _fKeywords = "";
 
-		/// <summary>
-		/// Gets or sets the strength ability.
-		/// </summary>
-		public Ability Strength
-		{
-			get { return fStrength; }
-			set { fStrength = value; }
-		}
-		Ability fStrength = new Ability();
+        private string _fLanguages = "";
 
-		/// <summary>
-		/// Gets or sets the constitution ability.
-		/// </summary>
-		public Ability Constitution
-		{
-			get { return fConstitution; }
-			set { fConstitution = value; }
-		}
-		Ability fConstitution = new Ability();
+        private int _fLevel = 1;
 
-		/// <summary>
-		/// Gets or sets the dexterity ability.
-		/// </summary>
-		public Ability Dexterity
-		{
-			get { return fDexterity; }
-			set { fDexterity = value; }
-		}
-		Ability fDexterity = new Ability();
+        private string _fMovement = "6";
 
-		/// <summary>
-		/// Gets or sets the intelligence ability.
-		/// </summary>
-		public Ability Intelligence
-		{
-			get { return fIntelligence; }
-			set { fIntelligence = value; }
-		}
-		Ability fIntelligence = new Ability();
+        private string _fName = "";
 
-		/// <summary>
-		/// Gets or sets the wisdom ability.
-		/// </summary>
-		public Ability Wisdom
-		{
-			get { return fWisdom; }
-			set { fWisdom = value; }
-		}
-		Ability fWisdom = new Ability();
+        private CreatureOrigin _fOrigin = CreatureOrigin.Natural;
 
-		/// <summary>
-		/// Gets or sets the charisma ability.
-		/// </summary>
-		public Ability Charisma
-		{
-			get { return fCharisma; }
-			set { fCharisma = value; }
-		}
-		Ability fCharisma = new Ability();
+        private int _fReflex = 10;
 
-		#endregion
+        private Regeneration _fRegeneration;
 
-		/// <summary>
-		/// Gets or sets the HP total.
-		/// </summary>
-		public int HP
-		{
-			get { return fHP; }
-			set { fHP = value; }
-		}
-		int fHP = 0;
+        private string _fResist = "";
 
-		/// <summary>
-		/// Gets or sets the initiative bonus.
-		/// </summary>
-		public int Initiative
-		{
-			get { return fInitiative; }
-			set { fInitiative = value; }
-		}
-		int fInitiative = 0;
+        private IRole _fRole = new ComplexRole();
 
-		#region Defences
+        private string _fSenses = "";
 
-		/// <summary>
-		/// Gets or sets the AC defence.
-		/// </summary>
-		public int AC
-		{
-			get { return fAC; }
-			set { fAC = value; }
-		}
-		int fAC = 10;
+        private CreatureSize _fSize = CreatureSize.Medium;
 
-		/// <summary>
-		/// Gets or sets the Fortitude defence.
-		/// </summary>
-		public int Fortitude
-		{
-			get { return fFortitude; }
-			set { fFortitude = value; }
-		}
-		int fFortitude = 10;
+        private string _fSkills = "";
 
-		/// <summary>
-		/// Gets or sets the Reflex defence.
-		/// </summary>
-		public int Reflex
-		{
-			get { return fReflex; }
-			set { fReflex = value; }
-		}
-		int fReflex = 10;
+        private Ability _fStrength = new Ability();
 
-		/// <summary>
-		/// Gets or sets the Will defence.
-		/// </summary>
-		public int Will
-		{
-			get { return fWill; }
-			set { fWill = value; }
-		}
-		int fWill = 10;
+        private string _fTactics = "";
 
-		#endregion
+        private CreatureType _fType = CreatureType.MagicalBeast;
 
-		/// <summary>
-		/// Gets or sets the creature's regeneration.
-		/// </summary>
-		public Regeneration Regeneration
-		{
-			get { return fRegeneration; }
-			set { fRegeneration = value; }
-		}
-		Regeneration fRegeneration = null;
+        private string _fVulnerable = "";
 
-		/// <summary>
-		/// Gets or sets the list of auras.
-		/// </summary>
-		public List<Aura> Auras
-		{
-			get { return fAuras; }
-			set { fAuras = value; }
-		}
-		List<Aura> fAuras = new List<Aura>();
+        private int _fWill = 10;
 
-		/// <summary>
-		/// Gets or sets the list of powers.
-		/// </summary>
-		public List<CreaturePower> CreaturePowers
-		{
-			get { return fCreaturePowers; }
-			set { fCreaturePowers = value; }
-		}
-		List<CreaturePower> fCreaturePowers = new List<CreaturePower>();
-
-		/// <summary>
-		/// Gets or sets the list of damage modifiers.
-		/// </summary>
-		public List<DamageModifier> DamageModifiers
-		{
-			get { return fDamageModifiers; }
-			set { fDamageModifiers = value; }
-		}
-		List<DamageModifier> fDamageModifiers = new List<DamageModifier>();
-
-		/// <summary>
-		/// Gets or sets the resistances.
-		/// </summary>
-		public string Resist
-		{
-			get { return fResist; }
-			set { fResist = value; }
-		}
-		string fResist = "";
-
-		/// <summary>
-		/// Gets or sets the vulnerabilities.
-		/// </summary>
-		public string Vulnerable
-		{
-			get { return fVulnerable; }
-			set { fVulnerable = value; }
-		}
-		string fVulnerable = "";
-
-		/// <summary>
-		/// Gets or sets the immunities.
-		/// </summary>
-		public string Immune
-		{
-			get { return fImmune; }
-			set { fImmune = value; }
-		}
-		string fImmune = "";
-
-		/// <summary>
-		/// Gets or sets the tactics.
-		/// </summary>
-		public string Tactics
-		{
-			get { return fTactics; }
-			set { fTactics = value; }
-		}
-		string fTactics = "";
-
-		/// <summary>
-		/// Gets or sets the picture to display on the map.
-		/// </summary>
-		public Image Image
-		{
-			get { return fImage; }
-			set { fImage = value; }
-		}
-		Image fImage = null;
-
-		/// <summary>
-		/// Level N [role]
-		/// </summary>
-		public string Info
-		{
-			get { return "Level " + fLevel + " " + fRole; }
-		}
+        private Ability _fWisdom = new Ability();
 
         /// <summary>
-        /// [origin] [type] [keywords]
+        ///     Default constructor.
+        /// </summary>
+        public Creature()
+        {
+        }
+
+        /// <summary>
+        ///     Constructor.
+        /// </summary>
+        /// <param name="c">The creature to copy from.</param>
+        public Creature(ICreature c)
+        {
+            CreatureHelper.CopyFields(c, this);
+        }
+
+        /// <summary>
+        ///     Gets a string representation of the creature.
+        /// </summary>
+        /// <returns>Returns the name of the creature, followed by level and role.</returns>
+        public override string ToString()
+        {
+            return _fName + " (" + Info + ")";
+        }
+
+        /// <summary>
+        ///     Creates a copy of the creature.
+        /// </summary>
+        /// <returns>Returns the copy.</returns>
+        public Creature Copy()
+        {
+            var c = new Creature();
+
+            c.Id = _fId;
+            c.Name = _fName;
+            c.Details = _fDetails;
+            c.Size = _fSize;
+            c.Origin = _fOrigin;
+            c.Type = _fType;
+            c.Keywords = _fKeywords;
+            c.Level = _fLevel;
+            c.Role = _fRole.Copy();
+            c.Senses = _fSenses;
+            c.Movement = _fMovement;
+            c.Alignment = _fAlignment;
+            c.Languages = _fLanguages;
+            c.Skills = _fSkills;
+            c.Equipment = _fEquipment;
+            c.Category = _fCategory;
+
+            c.Strength = _fStrength.Copy();
+            c.Constitution = _fConstitution.Copy();
+            c.Dexterity = _fDexterity.Copy();
+            c.Intelligence = _fIntelligence.Copy();
+            c.Wisdom = _fWisdom.Copy();
+            c.Charisma = _fCharisma.Copy();
+
+            c.Hp = _fHp;
+            c.Initiative = _fInitiative;
+            c.Ac = _fAc;
+            c.Fortitude = _fFortitude;
+            c.Reflex = _fReflex;
+            c.Will = _fWill;
+
+            c.Regeneration = _fRegeneration?.Copy();
+
+            foreach (var aura in _fAuras)
+                c.Auras.Add(aura.Copy());
+
+            foreach (var cp in _fCreaturePowers)
+                c.CreaturePowers.Add(cp.Copy());
+
+            foreach (var dm in _fDamageModifiers)
+                c.DamageModifiers.Add(dm.Copy());
+
+            c.Resist = _fResist;
+            c.Vulnerable = _fVulnerable;
+            c.Immune = _fImmune;
+            c.Tactics = _fTactics;
+
+            c.Image = _fImage;
+
+            return c;
+        }
+
+        /// <summary>
+        ///     Gets the square size of a creature of the given size.
+        /// </summary>
+        /// <param name="size">The creature size.</param>
+        /// <returns>Returns the size in squares.</returns>
+        public static int GetSize(CreatureSize size)
+        {
+            switch (size)
+            {
+                case CreatureSize.Large:
+                    return 2;
+                case CreatureSize.Huge:
+                    return 3;
+                case CreatureSize.Gargantuan:
+                    return 4;
+            }
+
+            return 1;
+        }
+
+        /// <summary>
+        ///     Gets the typical speed of a creature of the given size.
+        /// </summary>
+        /// <param name="size">The creature size.</param>
+        /// <returns>Returns the spee din squares.</returns>
+        public static int GetSpeed(CreatureSize size)
+        {
+            switch (size)
+            {
+                case CreatureSize.Tiny:
+                case CreatureSize.Small:
+                    return 4;
+                case CreatureSize.Medium:
+                    return 6;
+                case CreatureSize.Large:
+                    return 6;
+                case CreatureSize.Huge:
+                    return 8;
+                case CreatureSize.Gargantuan:
+                    return 10;
+            }
+
+            return 6;
+        }
+
+        /// <summary>
+        ///     Gets or sets the unique ID.
+        /// </summary>
+        public Guid Id
+        {
+            get => _fId;
+            set => _fId = value;
+        }
+
+        /// <summary>
+        ///     Gets or sets the name.
+        /// </summary>
+        public string Name
+        {
+            get => _fName;
+            set => _fName = value;
+        }
+
+        /// <summary>
+        ///     Gets or sets the details.
+        /// </summary>
+        public string Details
+        {
+            get => _fDetails;
+            set => _fDetails = value;
+        }
+
+        /// <summary>
+        ///     Gets or sets the size.
+        /// </summary>
+        public CreatureSize Size
+        {
+            get => _fSize;
+            set => _fSize = value;
+        }
+
+        /// <summary>
+        ///     Gets or sets the creature origin.
+        /// </summary>
+        public CreatureOrigin Origin
+        {
+            get => _fOrigin;
+            set => _fOrigin = value;
+        }
+
+        /// <summary>
+        ///     Gets or sets the creature type.
+        /// </summary>
+        public CreatureType Type
+        {
+            get => _fType;
+            set => _fType = value;
+        }
+
+        /// <summary>
+        ///     Gets or sets the creature keywords.
+        /// </summary>
+        public string Keywords
+        {
+            get => _fKeywords;
+            set => _fKeywords = value;
+        }
+
+        /// <summary>
+        ///     Gets or sets the level.
+        /// </summary>
+        public int Level
+        {
+            get => _fLevel;
+            set => _fLevel = value;
+        }
+
+        /// <summary>
+        ///     Gets or sets the role.
+        /// </summary>
+        public IRole Role
+        {
+            get => _fRole;
+            set => _fRole = value;
+        }
+
+        /// <summary>
+        ///     Gets or sets the senses.
+        /// </summary>
+        public string Senses
+        {
+            get => _fSenses;
+            set => _fSenses = value;
+        }
+
+        /// <summary>
+        ///     Gets or sets the movement.
+        /// </summary>
+        public string Movement
+        {
+            get
+            {
+                if (_fMovement == null || _fMovement == "")
+                    return GetSpeed(_fSize) + " squares";
+                return _fMovement;
+            }
+            set => _fMovement = value;
+        }
+
+        /// <summary>
+        ///     Gets or sets the alignment.
+        /// </summary>
+        public string Alignment
+        {
+            get => _fAlignment;
+            set => _fAlignment = value;
+        }
+
+        /// <summary>
+        ///     Gets or sets the languages.
+        /// </summary>
+        public string Languages
+        {
+            get => _fLanguages;
+            set => _fLanguages = value;
+        }
+
+        /// <summary>
+        ///     Gets or sets the skills.
+        /// </summary>
+        public string Skills
+        {
+            get => _fSkills;
+            set => _fSkills = value;
+        }
+
+        /// <summary>
+        ///     Gets or sets the equipment.
+        /// </summary>
+        public string Equipment
+        {
+            get => _fEquipment;
+            set => _fEquipment = value;
+        }
+
+        /// <summary>
+        ///     Gets or sets the category.
+        /// </summary>
+        public string Category
+        {
+            get => _fCategory;
+            set => _fCategory = value;
+        }
+
+        /// <summary>
+        ///     Gets or sets the strength ability.
+        /// </summary>
+        public Ability Strength
+        {
+            get => _fStrength;
+            set => _fStrength = value;
+        }
+
+        /// <summary>
+        ///     Gets or sets the constitution ability.
+        /// </summary>
+        public Ability Constitution
+        {
+            get => _fConstitution;
+            set => _fConstitution = value;
+        }
+
+        /// <summary>
+        ///     Gets or sets the dexterity ability.
+        /// </summary>
+        public Ability Dexterity
+        {
+            get => _fDexterity;
+            set => _fDexterity = value;
+        }
+
+        /// <summary>
+        ///     Gets or sets the intelligence ability.
+        /// </summary>
+        public Ability Intelligence
+        {
+            get => _fIntelligence;
+            set => _fIntelligence = value;
+        }
+
+        /// <summary>
+        ///     Gets or sets the wisdom ability.
+        /// </summary>
+        public Ability Wisdom
+        {
+            get => _fWisdom;
+            set => _fWisdom = value;
+        }
+
+        /// <summary>
+        ///     Gets or sets the charisma ability.
+        /// </summary>
+        public Ability Charisma
+        {
+            get => _fCharisma;
+            set => _fCharisma = value;
+        }
+
+        /// <summary>
+        ///     Gets or sets the HP total.
+        /// </summary>
+        public int Hp
+        {
+            get => _fHp;
+            set => _fHp = value;
+        }
+
+        /// <summary>
+        ///     Gets or sets the initiative bonus.
+        /// </summary>
+        public int Initiative
+        {
+            get => _fInitiative;
+            set => _fInitiative = value;
+        }
+
+        /// <summary>
+        ///     Gets or sets the AC defence.
+        /// </summary>
+        public int Ac
+        {
+            get => _fAc;
+            set => _fAc = value;
+        }
+
+        /// <summary>
+        ///     Gets or sets the Fortitude defence.
+        /// </summary>
+        public int Fortitude
+        {
+            get => _fFortitude;
+            set => _fFortitude = value;
+        }
+
+        /// <summary>
+        ///     Gets or sets the Reflex defence.
+        /// </summary>
+        public int Reflex
+        {
+            get => _fReflex;
+            set => _fReflex = value;
+        }
+
+        /// <summary>
+        ///     Gets or sets the Will defence.
+        /// </summary>
+        public int Will
+        {
+            get => _fWill;
+            set => _fWill = value;
+        }
+
+        /// <summary>
+        ///     Gets or sets the creature's regeneration.
+        /// </summary>
+        public Regeneration Regeneration
+        {
+            get => _fRegeneration;
+            set => _fRegeneration = value;
+        }
+
+        /// <summary>
+        ///     Gets or sets the list of auras.
+        /// </summary>
+        public List<Aura> Auras
+        {
+            get => _fAuras;
+            set => _fAuras = value;
+        }
+
+        /// <summary>
+        ///     Gets or sets the list of powers.
+        /// </summary>
+        public List<CreaturePower> CreaturePowers
+        {
+            get => _fCreaturePowers;
+            set => _fCreaturePowers = value;
+        }
+
+        /// <summary>
+        ///     Gets or sets the list of damage modifiers.
+        /// </summary>
+        public List<DamageModifier> DamageModifiers
+        {
+            get => _fDamageModifiers;
+            set => _fDamageModifiers = value;
+        }
+
+        /// <summary>
+        ///     Gets or sets the resistances.
+        /// </summary>
+        public string Resist
+        {
+            get => _fResist;
+            set => _fResist = value;
+        }
+
+        /// <summary>
+        ///     Gets or sets the vulnerabilities.
+        /// </summary>
+        public string Vulnerable
+        {
+            get => _fVulnerable;
+            set => _fVulnerable = value;
+        }
+
+        /// <summary>
+        ///     Gets or sets the immunities.
+        /// </summary>
+        public string Immune
+        {
+            get => _fImmune;
+            set => _fImmune = value;
+        }
+
+        /// <summary>
+        ///     Gets or sets the tactics.
+        /// </summary>
+        public string Tactics
+        {
+            get => _fTactics;
+            set => _fTactics = value;
+        }
+
+        /// <summary>
+        ///     Gets or sets the picture to display on the map.
+        /// </summary>
+        public Image Image
+        {
+            get => _fImage;
+            set => _fImage = value;
+        }
+
+        /// <summary>
+        ///     Level N [role]
+        /// </summary>
+        public string Info => "Level " + _fLevel + " " + _fRole;
+
+        /// <summary>
+        ///     [origin] [type] [keywords]
         /// </summary>
         public string Phenotype
         {
             get
             {
-				string str = fSize + " " + fOrigin.ToString().ToLower();
+                var str = _fSize + " " + _fOrigin.ToString().ToLower();
 
-				if (fType == CreatureType.MagicalBeast)
-					str += " magical beast";
-				else
-					str += " " + fType.ToString().ToLower();
+                if (_fType == CreatureType.MagicalBeast)
+                    str += " magical beast";
+                else
+                    str += " " + _fType.ToString().ToLower();
 
-				if ((fKeywords != null) && (fKeywords != ""))
-					str += " (" + fKeywords.ToLower() + ")";
+                if (_fKeywords != null && _fKeywords != "")
+                    str += " (" + _fKeywords.ToLower() + ")";
 
-				return str;
-			}
+                return str;
+            }
         }
 
-		/// <summary>
-		/// Gets a string representation of the creature.
-		/// </summary>
-		/// <returns>Returns the name of the creature, followed by level and role.</returns>
-		public override string ToString()
-		{
-			return fName + " (" + Info + ")";
-		}
-
-		/// <summary>
-		/// Creates a copy of the creature.
-		/// </summary>
-		/// <returns>Returns the copy.</returns>
-		public Creature Copy()
-		{
-			Creature c = new Creature();
-
-			c.ID = fID;
-			c.Name = fName;
-			c.Details = fDetails;
-			c.Size = fSize;
-			c.Origin = fOrigin;
-			c.Type = fType;
-			c.Keywords = fKeywords;
-			c.Level = fLevel;
-			c.Role = fRole.Copy();
-			c.Senses = fSenses;
-			c.Movement = fMovement;
-			c.Alignment = fAlignment;
-			c.Languages = fLanguages;
-			c.Skills = fSkills;
-			c.Equipment = fEquipment;
-			c.Category = fCategory;
-
-			c.Strength = fStrength.Copy();
-			c.Constitution = fConstitution.Copy();
-			c.Dexterity = fDexterity.Copy();
-			c.Intelligence = fIntelligence.Copy();
-			c.Wisdom = fWisdom.Copy();
-			c.Charisma = fCharisma.Copy();
-
-			c.HP = fHP;
-			c.Initiative = fInitiative;
-			c.AC = fAC;
-			c.Fortitude = fFortitude;
-			c.Reflex = fReflex;
-			c.Will = fWill;
-
-			c.Regeneration = (fRegeneration != null) ? fRegeneration.Copy() : null;
-
-			foreach (Aura aura in fAuras)
-				c.Auras.Add(aura.Copy());
-
-			foreach (CreaturePower cp in fCreaturePowers)
-				c.CreaturePowers.Add(cp.Copy());
-
-			foreach (DamageModifier dm in fDamageModifiers)
-				c.DamageModifiers.Add(dm.Copy());
-
-			c.Resist = fResist;
-			c.Vulnerable = fVulnerable;
-			c.Immune = fImmune;
-			c.Tactics = fTactics;
-
-			c.Image = fImage;
-
-			return c;
-		}
-
-		/// <summary>
-		/// Compares this creature to another.
-		/// </summary>
-		/// <param name="rhs">The other creature.</param>
-		/// <returns>Returns -1 if this creature should be sorted before the other, +1 if the other should be sorted before this; 0 otherwise.</returns>
-		public int CompareTo(ICreature rhs)
-		{
-			return fName.CompareTo(rhs.Name);
-		}
-
-		/// <summary>
-		/// Gets the square size of a creature of the given size.
-		/// </summary>
-		/// <param name="size">The creature size.</param>
-		/// <returns>Returns the size in squares.</returns>
-		public static int GetSize(CreatureSize size)
-		{
-			switch (size)
-			{
-				case CreatureSize.Large:
-					return 2;
-				case CreatureSize.Huge:
-					return 3;
-				case CreatureSize.Gargantuan:
-					return 4;
-			}
-
-			return 1;
-		}
-
-		/// <summary>
-		/// Gets the typical speed of a creature of the given size.
-		/// </summary>
-		/// <param name="size">The creature size.</param>
-		/// <returns>Returns the spee din squares.</returns>
-		public static int GetSpeed(CreatureSize size)
-		{
-			switch (size)
-			{
-				case CreatureSize.Tiny:
-				case CreatureSize.Small:
-					return 4;
-				case CreatureSize.Medium:
-					return 6;
-				case CreatureSize.Large:
-					return 6;
-				case CreatureSize.Huge:
-					return 8;
-				case CreatureSize.Gargantuan:
-					return 10;
-			}
-
-			return 6;
-		}
-	}
+        /// <summary>
+        ///     Compares this creature to another.
+        /// </summary>
+        /// <param name="rhs">The other creature.</param>
+        /// <returns>
+        ///     Returns -1 if this creature should be sorted before the other, +1 if the other should be sorted before this; 0
+        ///     otherwise.
+        /// </returns>
+        public int CompareTo(ICreature rhs)
+        {
+            return _fName.CompareTo(rhs.Name);
+        }
+    }
 }

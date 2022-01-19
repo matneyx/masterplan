@@ -1,123 +1,125 @@
 ﻿using System;
 using System.Drawing;
-using System.Windows.Forms;
 using System.Drawing.Drawing2D;
 using System.Drawing.Text;
+using System.Windows.Forms;
 
 namespace Masterplan.Controls
 {
-	partial class TilePanel : UserControl
-	{
-		public TilePanel()
-		{
-			InitializeComponent();
+    internal partial class TilePanel : UserControl
+    {
+        private bool _fShowGridlines = true;
 
-			SetStyle(ControlStyles.AllPaintingInWmPaint
-				| ControlStyles.OptimizedDoubleBuffer
-				| ControlStyles.ResizeRedraw
-				| ControlStyles.UserPaint, true);
-		}
+        private Color _fTileColour = Color.White;
 
-		public Image TileImage
-		{
-			get { return fTileImage; }
-			set
-			{
-				fTileImage = value;
-				Invalidate();
-			}
-		}
-		Image fTileImage = null;
+        private Image _fTileImage;
 
-		public Color TileColour
-		{
-			get { return fTileColour; }
-			set
-			{
-				fTileColour = value;
-				Invalidate();
-			}
-		}
-		Color fTileColour = Color.White;
+        private Size _fTileSize = new Size(2, 2);
 
-		public Size TileSize
-		{
-			get { return fTileSize; }
-			set
-			{
-				fTileSize = value;
-				Invalidate();
-			}
-		}
-		Size fTileSize = new Size(2, 2);
+        public Image TileImage
+        {
+            get => _fTileImage;
+            set
+            {
+                _fTileImage = value;
+                Invalidate();
+            }
+        }
 
-		public bool ShowGridlines
-		{
-			get { return fShowGridlines; }
-			set
-			{
-				fShowGridlines = value;
-				Invalidate();
-			}
-		}
-		bool fShowGridlines = true;
+        public Color TileColour
+        {
+            get => _fTileColour;
+            set
+            {
+                _fTileColour = value;
+                Invalidate();
+            }
+        }
 
-		protected override void OnPaint(PaintEventArgs e)
-		{
-			e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
-			e.Graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
-			e.Graphics.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;
+        public Size TileSize
+        {
+            get => _fTileSize;
+            set
+            {
+                _fTileSize = value;
+                Invalidate();
+            }
+        }
 
-			e.Graphics.FillRectangle(new SolidBrush(BackColor), ClientRectangle);
+        public bool ShowGridlines
+        {
+            get => _fShowGridlines;
+            set
+            {
+                _fShowGridlines = value;
+                Invalidate();
+            }
+        }
 
-			double square_x = (double)ClientRectangle.Width / fTileSize.Width;
-			double square_y = (double)ClientRectangle.Height / fTileSize.Height;
-			float square_size = (float)Math.Min(square_x, square_y);
+        public TilePanel()
+        {
+            InitializeComponent();
 
-			float img_width = square_size * fTileSize.Width;
-			float img_height = square_size * fTileSize.Height;
+            SetStyle(ControlStyles.AllPaintingInWmPaint
+                     | ControlStyles.OptimizedDoubleBuffer
+                     | ControlStyles.ResizeRedraw
+                     | ControlStyles.UserPaint, true);
+        }
 
-			float dx = (ClientRectangle.Width - img_width) / 2;
-			float dy = (ClientRectangle.Height - img_height) / 2;
+        protected override void OnPaint(PaintEventArgs e)
+        {
+            e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
+            e.Graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
+            e.Graphics.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;
 
-			RectangleF img_rect = new RectangleF(dx, dy, img_width, img_height);
+            e.Graphics.FillRectangle(new SolidBrush(BackColor), ClientRectangle);
 
-			if (fTileImage != null)
-			{
-				e.Graphics.DrawImage(fTileImage, img_rect);
-			}
-			else
-			{
-				using (Brush b = new SolidBrush(fTileColour))
-				{
-					e.Graphics.FillRectangle(b, img_rect);
-				}
+            var squareX = (double)ClientRectangle.Width / _fTileSize.Width;
+            var squareY = (double)ClientRectangle.Height / _fTileSize.Height;
+            var squareSize = (float)Math.Min(squareX, squareY);
 
-				using (Pen p = new Pen(Color.Black, 2))
-				{
-					e.Graphics.DrawRectangle(p, img_rect.X, img_rect.Y, img_rect.Width, img_rect.Height);
-				}
-			}
+            var imgWidth = squareSize * _fTileSize.Width;
+            var imgHeight = squareSize * _fTileSize.Height;
 
-			if (fShowGridlines)
-			{
-				using (Pen p = new Pen(Color.DarkGray))
-				{
-					// Vertical gridlines
-					for (int n = 1; n != fTileSize.Width; ++n)
-					{
-						float x = dx + (n * square_size);
-						e.Graphics.DrawLine(p, x, dy, x, dy + img_height);
-					}
+            var dx = (ClientRectangle.Width - imgWidth) / 2;
+            var dy = (ClientRectangle.Height - imgHeight) / 2;
 
-					// Horizontal gridlines
-					for (int n = 1; n != fTileSize.Height; ++n)
-					{
-						float y = dy + (n * square_size);
-						e.Graphics.DrawLine(p, dx, y, dx + img_width, y);
-					}
-				}
-			}
-		}
-	}
+            var imgRect = new RectangleF(dx, dy, imgWidth, imgHeight);
+
+            if (_fTileImage != null)
+            {
+                e.Graphics.DrawImage(_fTileImage, imgRect);
+            }
+            else
+            {
+                using (Brush b = new SolidBrush(_fTileColour))
+                {
+                    e.Graphics.FillRectangle(b, imgRect);
+                }
+
+                using (var p = new Pen(Color.Black, 2))
+                {
+                    e.Graphics.DrawRectangle(p, imgRect.X, imgRect.Y, imgRect.Width, imgRect.Height);
+                }
+            }
+
+            if (_fShowGridlines)
+                using (var p = new Pen(Color.DarkGray))
+                {
+                    // Vertical gridlines
+                    for (var n = 1; n != _fTileSize.Width; ++n)
+                    {
+                        var x = dx + n * squareSize;
+                        e.Graphics.DrawLine(p, x, dy, x, dy + imgHeight);
+                    }
+
+                    // Horizontal gridlines
+                    for (var n = 1; n != _fTileSize.Height; ++n)
+                    {
+                        var y = dy + n * squareSize;
+                        e.Graphics.DrawLine(p, dx, y, dx + imgWidth, y);
+                    }
+                }
+        }
+    }
 }

@@ -1,44 +1,44 @@
 ﻿using System;
 using System.IO;
 using System.Windows.Forms;
-
 using Masterplan.Data;
 using Masterplan.Tools;
 
 namespace Masterplan.UI
 {
-	partial class CreatureDetailsForm : Form
-	{
-		public CreatureDetailsForm(EncounterCard card)
-		{
-			InitializeComponent();
+    internal partial class CreatureDetailsForm : Form
+    {
+        private readonly EncounterCard _fCard;
 
-			fCard = card;
+        public CreatureDetailsForm(EncounterCard card)
+        {
+            InitializeComponent();
 
-			Browser.DocumentText = HTML.StatBlock(fCard, null, null, true, false, true, CardMode.View, Session.Preferences.TextSize);
-		}
+            _fCard = card;
 
-		EncounterCard fCard = null;
+            Browser.DocumentText = Html.StatBlock(_fCard, null, null, true, false, true, CardMode.View,
+                Session.Preferences.TextSize);
+        }
 
-		private void PlayerViewBtn_Click(object sender, EventArgs e)
-		{
-			if (fCard != null)
-			{
-				if (Session.PlayerView == null)
-					Session.PlayerView = new PlayerViewForm(this);
+        private void PlayerViewBtn_Click(object sender, EventArgs e)
+        {
+            if (_fCard != null)
+            {
+                if (Session.PlayerView == null)
+                    Session.PlayerView = new PlayerViewForm(this);
 
-				Session.PlayerView.ShowEncounterCard(fCard);
-			}
-		}
+                Session.PlayerView.ShowEncounterCard(_fCard);
+            }
+        }
 
-		private void ExportHTML_Click(object sender, EventArgs e)
-		{
-			SaveFileDialog dlg = new SaveFileDialog();
-			dlg.FileName = fCard.Title;
-			dlg.Filter = Program.HTMLFilter;
+        private void ExportHTML_Click(object sender, EventArgs e)
+        {
+            var dlg = new SaveFileDialog();
+            dlg.FileName = _fCard.Title;
+            dlg.Filter = Program.HtmlFilter;
 
-			if (dlg.ShowDialog() == DialogResult.OK)
-				File.WriteAllText(dlg.FileName, Browser.DocumentText);
-		}
-	}
+            if (dlg.ShowDialog() == DialogResult.OK)
+                File.WriteAllText(dlg.FileName, Browser.DocumentText);
+        }
+    }
 }

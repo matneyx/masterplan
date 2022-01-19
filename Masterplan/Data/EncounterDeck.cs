@@ -3,300 +3,292 @@ using System.Collections.Generic;
 
 namespace Masterplan.Data
 {
-	/// <summary>
-	/// Enumeration for the types of cards used in an encounter deck.
-	/// </summary>
-	public enum CardCategory
-	{
-		/// <summary>
-		/// Artillery.
-		/// </summary>
-		Artillery,
+    /// <summary>
+    ///     Enumeration for the types of cards used in an encounter deck.
+    /// </summary>
+    public enum CardCategory
+    {
+        /// <summary>
+        ///     Artillery.
+        /// </summary>
+        Artillery,
 
-		/// <summary>
-		/// Controller.
-		/// </summary>
-		Controller,
+        /// <summary>
+        ///     Controller.
+        /// </summary>
+        Controller,
 
-		/// <summary>
-		/// Lurker.
-		/// </summary>
-		Lurker,
+        /// <summary>
+        ///     Lurker.
+        /// </summary>
+        Lurker,
 
-		/// <summary>
-		/// Skirmisher.
-		/// </summary>
-		Skirmisher,
+        /// <summary>
+        ///     Skirmisher.
+        /// </summary>
+        Skirmisher,
 
-		/// <summary>
-		/// Soldier or brute.
-		/// </summary>
-		SoldierBrute,
+        /// <summary>
+        ///     Soldier or brute.
+        /// </summary>
+        SoldierBrute,
 
-		/// <summary>
-		/// Minion.
-		/// </summary>
-		Minion,
+        /// <summary>
+        ///     Minion.
+        /// </summary>
+        Minion,
 
-		/// <summary>
-		/// Solo.
-		/// </summary>
-		Solo
-	}
+        /// <summary>
+        ///     Solo.
+        /// </summary>
+        Solo
+    }
 
-	/// <summary>
-	/// Class representing an encounter deck.
-	/// </summary>
-	[Serializable]
-	public class EncounterDeck
-	{
-		/// <summary>
-		/// Gets or sets the unique ID of the deck.
-		/// </summary>
-		public Guid ID
-		{
-			get { return fID; }
-			set { fID = value; }
-		}
-		Guid fID = Guid.NewGuid();
+    /// <summary>
+    ///     Class representing an encounter deck.
+    /// </summary>
+    [Serializable]
+    public class EncounterDeck
+    {
+        private List<EncounterCard> _cards = new List<EncounterCard>();
 
-		/// <summary>
-		/// Gets or sets the name of the deck.
-		/// </summary>
-		public string Name
-		{
-			get { return fName; }
-			set { fName = value; }
-		}
-		string fName = "";
+        private Guid _fId = Guid.NewGuid();
 
-		/// <summary>
-		/// Gets or sets the level of the deck.
-		/// </summary>
-		public int Level
-		{
-			get { return fLevel; }
-			set { fLevel = value; }
-		}
-		int fLevel = 1;
+        private int _fLevel = 1;
 
-		/// <summary>
-		/// Gets or sets the list of cards in the deck.
-		/// </summary>
-		public List<EncounterCard> Cards
-		{
-			get { return fCards; }
-			set { fCards = value; }
-		}
-		List<EncounterCard> fCards = new List<EncounterCard>();
+        private string _fName = "";
 
-		/// <summary>
-		/// Draws cards from the deck to create an encounter.
-		/// </summary>
-		/// <param name="enc">The encounter to add to.</param>
-		/// <returns>Returns true if the process succeeded; false otherwise.</returns>
-		public bool DrawEncounter(Encounter enc)
-		{
-			if (fCards.Count == 0)
-				return false;
+        /// <summary>
+        ///     Gets or sets the unique ID of the deck.
+        /// </summary>
+        public Guid Id
+        {
+            get => _fId;
+            set => _fId = value;
+        }
 
-			List<EncounterCard> cards = new List<EncounterCard>();
+        /// <summary>
+        ///     Gets or sets the name of the deck.
+        /// </summary>
+        public string Name
+        {
+            get => _fName;
+            set => _fName = value;
+        }
 
-			List<EncounterCard> available_cards = new List<EncounterCard>();
-			foreach (EncounterCard card in fCards)
-			{
-				if (!card.Drawn)
-					available_cards.Add(card);
-			}
+        /// <summary>
+        ///     Gets or sets the level of the deck.
+        /// </summary>
+        public int Level
+        {
+            get => _fLevel;
+            set => _fLevel = value;
+        }
 
-			int attempts = 0;
-			while (true)
-			{
-				attempts += 1;
+        /// <summary>
+        ///     Gets or sets the list of cards in the deck.
+        /// </summary>
+        public List<EncounterCard> Cards
+        {
+            get => _cards;
+            set => _cards = value;
+        }
 
-				bool lurker = false;
+        /// <summary>
+        ///     Draws cards from the deck to create an encounter.
+        /// </summary>
+        /// <param name="enc">The encounter to add to.</param>
+        /// <returns>Returns true if the process succeeded; false otherwise.</returns>
+        public bool DrawEncounter(Encounter enc)
+        {
+            if (_cards.Count == 0)
+                return false;
 
-				int hand_size = Session.Project.Party.Size;
-				while ((cards.Count < hand_size) && (available_cards.Count != 0))
-				{
-					int index = Session.Random.Next() % available_cards.Count;
-					EncounterCard card = available_cards[index];
+            var cards = new List<EncounterCard>();
 
-					cards.Add(card);
-					available_cards.Remove(card);
+            var availableCards = new List<EncounterCard>();
+            foreach (var card in _cards)
+                if (!card.Drawn)
+                    availableCards.Add(card);
 
-					// If there's a lurker, draw an extra card
-					if ((card.Category == CardCategory.Lurker) && (!lurker))
-					{
-						hand_size += 1;
-						lurker = true;
-					}
-				}
+            var attempts = 0;
+            while (true)
+            {
+                attempts += 1;
 
-				int soldier_cards = 0;
-				foreach (EncounterCard card in cards)
-				{
-					if (card.Category == CardCategory.SoldierBrute)
-						soldier_cards += 1;
-				}
+                var lurker = false;
 
-				if ((soldier_cards == 1) || (attempts == 1000))
-					break;
+                var handSize = Session.Project.Party.Size;
+                while (cards.Count < handSize && availableCards.Count != 0)
+                {
+                    var index = Session.Random.Next() % availableCards.Count;
+                    var card = availableCards[index];
 
-				available_cards.AddRange(cards);
-				cards.Clear();
-			}
+                    cards.Add(card);
+                    availableCards.Remove(card);
 
-			// If this hand contains the solo creature, take that card and return the others
-			foreach (EncounterCard c in cards)
-			{
-				if (c.Category == CardCategory.Solo)
-				{
-					cards.Remove(c);
+                    // If there's a lurker, draw an extra card
+                    if (card.Category == CardCategory.Lurker && !lurker)
+                    {
+                        handSize += 1;
+                        lurker = true;
+                    }
+                }
 
-					available_cards.AddRange(cards);
-					cards.Clear();
+                var soldierCards = 0;
+                foreach (var card in cards)
+                    if (card.Category == CardCategory.SoldierBrute)
+                        soldierCards += 1;
 
-					cards.Add(c);
+                if (soldierCards == 1 || attempts == 1000)
+                    break;
 
-					break;
-				}
-			}
+                availableCards.AddRange(cards);
+                cards.Clear();
+            }
 
-			foreach (EncounterCard card in cards)
-				card.Drawn = true;
+            // If this hand contains the solo creature, take that card and return the others
+            foreach (var c in cards)
+                if (c.Category == CardCategory.Solo)
+                {
+                    cards.Remove(c);
 
-			enc.Slots.Clear();
+                    availableCards.AddRange(cards);
+                    cards.Clear();
 
-			foreach (EncounterCard card in cards)
-			{
-				// Do we already have a card of this type?
-				EncounterSlot slot = null;
-				foreach (EncounterSlot s in enc.Slots)
-				{
-					if (s.Card.CreatureID == card.CreatureID)
-					{
-						slot = s;
-						break;
-					}
-				}
+                    cards.Add(c);
 
-				if (slot == null)
-				{
-					slot = new EncounterSlot();
-					slot.Card = card;
-					enc.Slots.Add(slot);
-				}
+                    break;
+                }
 
-				int count = 1;
-				switch (card.Category)
-				{
-					case CardCategory.SoldierBrute:
-						count = 2;
-						break;
-					case CardCategory.Minion:
-						count += 4;
-						break;
-				}
+            foreach (var card in cards)
+                card.Drawn = true;
 
-				for (int n = 0; n != count; ++n)
-				{
-					CombatData ccd = new CombatData();
-					slot.CombatData.Add(ccd);
-				}
-			}
+            enc.Slots.Clear();
 
-			foreach (EncounterSlot slot in enc.Slots)
-				slot.SetDefaultDisplayNames();
+            foreach (var card in cards)
+            {
+                // Do we already have a card of this type?
+                EncounterSlot slot = null;
+                foreach (var s in enc.Slots)
+                    if (s.Card.CreatureId == card.CreatureId)
+                    {
+                        slot = s;
+                        break;
+                    }
 
-			return true;
-		}
+                if (slot == null)
+                {
+                    slot = new EncounterSlot();
+                    slot.Card = card;
+                    enc.Slots.Add(slot);
+                }
 
-		/// <summary>
-		/// Draws cards from the deck to create a delve.
-		/// </summary>
-		/// <param name="pp">The plot point to use as the parent plot.</param>
-		/// <param name="map">The map to create the delve for.</param>
-		/// <returns>Returns true if the process succeeded; false otherwise.</returns>
-		public bool DrawDelve(PlotPoint pp, Map map)
-		{
-			foreach (MapArea area in map.Areas)
-			{
-				Encounter enc = new Encounter();
-				bool ok = DrawEncounter(enc);
-				if (!ok)
-					return false;
+                var count = 1;
+                switch (card.Category)
+                {
+                    case CardCategory.SoldierBrute:
+                        count = 2;
+                        break;
+                    case CardCategory.Minion:
+                        count += 4;
+                        break;
+                }
 
-				PlotPoint enc_point = new PlotPoint(area.Name);
-				enc_point.Element = enc;
+                for (var n = 0; n != count; ++n)
+                {
+                    var ccd = new CombatData();
+                    slot.CombatData.Add(ccd);
+                }
+            }
 
-				pp.Subplot.Points.Add(enc_point);
-			}
+            foreach (var slot in enc.Slots)
+                slot.SetDefaultDisplayNames();
 
-			return true;
-		}
+            return true;
+        }
 
-		/// <summary>
-		/// Calculates the number of cards of a given category in the deck.
-		/// </summary>
-		/// <param name="cat">The card category.</param>
-		/// <returns>Returns the number of cards.</returns>
-		public int Count(CardCategory cat)
-		{
-			int count = 0;
+        /// <summary>
+        ///     Draws cards from the deck to create a delve.
+        /// </summary>
+        /// <param name="pp">The plot point to use as the parent plot.</param>
+        /// <param name="map">The map to create the delve for.</param>
+        /// <returns>Returns true if the process succeeded; false otherwise.</returns>
+        public bool DrawDelve(PlotPoint pp, Map map)
+        {
+            foreach (var area in map.Areas)
+            {
+                var enc = new Encounter();
+                var ok = DrawEncounter(enc);
+                if (!ok)
+                    return false;
 
-			foreach (EncounterCard card in fCards)
-			{
-				if (card.Category == cat)
-					count += 1;
-			}
+                var encPoint = new PlotPoint(area.Name);
+                encPoint.Element = enc;
 
-			return count;
-		}
+                pp.Subplot.Points.Add(encPoint);
+            }
 
-		/// <summary>
-		/// Calculates the number of cards of a given level in the deck.
-		/// </summary>
-		/// <param name="level">The level.</param>
-		/// <returns>Returns the number of cards.</returns>
-		public int Count(int level)
-		{
-			int count = 0;
+            return true;
+        }
 
-			foreach (EncounterCard card in fCards)
-			{
-				if (card.Level == level)
-					count += 1;
-			}
+        /// <summary>
+        ///     Calculates the number of cards of a given category in the deck.
+        /// </summary>
+        /// <param name="cat">The card category.</param>
+        /// <returns>Returns the number of cards.</returns>
+        public int Count(CardCategory cat)
+        {
+            var count = 0;
 
-			return count;
-		}
+            foreach (var card in _cards)
+                if (card.Category == cat)
+                    count += 1;
 
-		/// <summary>
-		/// Creates a copy of the deck.
-		/// </summary>
-		/// <returns>Returns the copy.</returns>
-		public EncounterDeck Copy()
-		{
-			EncounterDeck deck = new EncounterDeck();
+            return count;
+        }
 
-			deck.ID = fID;
-			deck.Name = fName;
-			deck.Level = fLevel;
+        /// <summary>
+        ///     Calculates the number of cards of a given level in the deck.
+        /// </summary>
+        /// <param name="level">The level.</param>
+        /// <returns>Returns the number of cards.</returns>
+        public int Count(int level)
+        {
+            var count = 0;
 
-			foreach (EncounterCard card in fCards)
-				deck.Cards.Add(card.Copy());
+            foreach (var card in _cards)
+                if (card.Level == level)
+                    count += 1;
 
-			return deck;
-		}
+            return count;
+        }
 
-		/// <summary>
-		/// Returns the name of the deck.
-		/// </summary>
-		/// <returns>Returns the name of the deck.</returns>
-		public override string ToString()
-		{
-			return fName;
-		}
-	}
+        /// <summary>
+        ///     Creates a copy of the deck.
+        /// </summary>
+        /// <returns>Returns the copy.</returns>
+        public EncounterDeck Copy()
+        {
+            var deck = new EncounterDeck();
+
+            deck.Id = _fId;
+            deck.Name = _fName;
+            deck.Level = _fLevel;
+
+            foreach (var card in _cards)
+                deck.Cards.Add(card.Copy());
+
+            return deck;
+        }
+
+        /// <summary>
+        ///     Returns the name of the deck.
+        /// </summary>
+        /// <returns>Returns the name of the deck.</returns>
+        public override string ToString()
+        {
+            return _fName;
+        }
+    }
 }

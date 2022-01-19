@@ -1,41 +1,40 @@
 ﻿using System;
 using System.IO;
 using System.Windows.Forms;
-
 using Masterplan.Data;
 using Masterplan.Tools;
 
 namespace Masterplan.UI
 {
-	partial class MagicItemDetailsForm : Form
-	{
-		public MagicItemDetailsForm(MagicItem item)
-		{
-			InitializeComponent();
+    internal partial class MagicItemDetailsForm : Form
+    {
+        private readonly MagicItem _fItem;
 
-			fItem = item.Copy();
+        public MagicItemDetailsForm(MagicItem item)
+        {
+            InitializeComponent();
 
-			Browser.DocumentText = HTML.MagicItem(fItem, Session.Preferences.TextSize, false, true);
-		}
+            _fItem = item.Copy();
 
-		MagicItem fItem = null;
+            Browser.DocumentText = Html.MagicItem(_fItem, Session.Preferences.TextSize, false, true);
+        }
 
-		private void PlayerViewBtn_Click(object sender, EventArgs e)
-		{
-			if (Session.PlayerView == null)
-				Session.PlayerView = new PlayerViewForm(this);
+        private void PlayerViewBtn_Click(object sender, EventArgs e)
+        {
+            if (Session.PlayerView == null)
+                Session.PlayerView = new PlayerViewForm(this);
 
-			Session.PlayerView.ShowMagicItem(fItem);
-		}
+            Session.PlayerView.ShowMagicItem(_fItem);
+        }
 
-		private void ExportHTML_Click(object sender, EventArgs e)
-		{
-			SaveFileDialog dlg = new SaveFileDialog();
-			dlg.FileName = fItem.Name;
-			dlg.Filter = Program.HTMLFilter;
+        private void ExportHTML_Click(object sender, EventArgs e)
+        {
+            var dlg = new SaveFileDialog();
+            dlg.FileName = _fItem.Name;
+            dlg.Filter = Program.HtmlFilter;
 
-			if (dlg.ShowDialog() == DialogResult.OK)
-				File.WriteAllText(dlg.FileName, Browser.DocumentText);
-		}
-	}
+            if (dlg.ShowDialog() == DialogResult.OK)
+                File.WriteAllText(dlg.FileName, Browser.DocumentText);
+        }
+    }
 }

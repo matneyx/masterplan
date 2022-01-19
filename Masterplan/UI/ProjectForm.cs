@@ -1,67 +1,62 @@
 ﻿using System;
 using System.Windows.Forms;
-
 using Masterplan.Data;
 using Masterplan.Tools;
 
 namespace Masterplan.UI
 {
-	partial class ProjectForm : Form
-	{
-		public ProjectForm(Project p)
-		{
-			InitializeComponent();
+    internal partial class ProjectForm : Form
+    {
+        public Project Project { get; }
 
-			fProject = p;
+        public ProjectForm(Project p)
+        {
+            InitializeComponent();
 
-			NameBox.Text = fProject.Name;
-			AuthorBox.Text = fProject.Author;
+            Project = p;
 
-			SizeBox.Value = fProject.Party.Size;
-			LevelBox.Value = fProject.Party.Level;
+            NameBox.Text = Project.Name;
+            AuthorBox.Text = Project.Author;
+
+            SizeBox.Value = Project.Party.Size;
+            LevelBox.Value = Project.Party.Level;
             LevelBox_ValueChanged(null, null);
 
-            XPBox.Value = fProject.Party.XP;
-		}
+            XPBox.Value = Project.Party.Xp;
+        }
 
-		public Project Project
-		{
-			get { return fProject; }
-		}
-		Project fProject = null;
+        private void OKBtn_Click(object sender, EventArgs e)
+        {
+            Project.Name = NameBox.Text;
+            Project.Author = AuthorBox.Text;
 
-		private void OKBtn_Click(object sender, EventArgs e)
-		{
-			fProject.Name = NameBox.Text;
-			fProject.Author = AuthorBox.Text;
+            Project.Party.Size = (int)SizeBox.Value;
+            Project.Party.Level = (int)LevelBox.Value;
+            Project.Party.Xp = (int)XPBox.Value;
 
-			fProject.Party.Size = (int)SizeBox.Value;
-			fProject.Party.Level = (int)LevelBox.Value;
-            fProject.Party.XP = (int)XPBox.Value;
+            Project.Library.Name = Project.Name;
+        }
 
-			fProject.Library.Name = fProject.Name;
-		}
+        private void NameBox_TextChanged(object sender, EventArgs e)
+        {
+        }
 
-		private void NameBox_TextChanged(object sender, EventArgs e)
-		{
-		}
-
-		private void SizeBox_ValueChanged(object sender, EventArgs e)
-		{
-		}
+        private void SizeBox_ValueChanged(object sender, EventArgs e)
+        {
+        }
 
         private void LevelBox_ValueChanged(object sender, EventArgs e)
         {
-            int level = (int)LevelBox.Value;
+            var level = (int)LevelBox.Value;
 
-            XPBox.Minimum = Experience.GetHeroXP(level);
-            XPBox.Maximum = Math.Max(Experience.GetHeroXP(level + 1) - 1, XPBox.Minimum);
+            XPBox.Minimum = Experience.GetHeroXp(level);
+            XPBox.Maximum = Math.Max(Experience.GetHeroXp(level + 1) - 1, XPBox.Minimum);
 
             XPBox.Value = XPBox.Minimum;
-		}
+        }
 
-		private void XPBox_ValueChanged(object sender, EventArgs e)
-		{
-		}
-	}
+        private void XPBox_ValueChanged(object sender, EventArgs e)
+        {
+        }
+    }
 }

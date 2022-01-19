@@ -1,112 +1,97 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Windows.Forms;
-
 using Masterplan.Data;
 using Masterplan.UI;
 
 namespace Masterplan.Wizards
 {
-	partial class VariantTemplatesPage : UserControl, IWizardPage
-	{
-		public VariantTemplatesPage()
-		{
-			InitializeComponent();
-		}
+    internal partial class VariantTemplatesPage : UserControl, IWizardPage
+    {
+        private VariantData _fData;
 
-		VariantData fData = null;
+        public VariantTemplatesPage()
+        {
+            InitializeComponent();
+        }
 
-		#region IWizardPage Members
+        private void TemplateList_DoubleClick(object sender, EventArgs e)
+        {
+            if (TemplateList.SelectedItems.Count != 0)
+            {
+                var ct = TemplateList.SelectedItems[0].Tag as CreatureTemplate;
+                if (ct != null)
+                {
+                    var dlg = new CreatureTemplateDetailsForm(ct);
+                    dlg.ShowDialog();
+                }
+            }
+        }
 
-		public bool AllowNext
-		{
-			get { return true; }
-		}
+        public bool AllowNext => true;
 
-		public bool AllowBack
-		{
-			get { return true; }
-		}
+        public bool AllowBack => true;
 
-		public bool AllowFinish
-		{
-			get { return false; }
-		}
+        public bool AllowFinish => false;
 
-		public void OnShown(object data)
-		{
-			if (fData == null)
-			{
-				fData = data as VariantData;
+        public void OnShown(object data)
+        {
+            if (_fData == null)
+            {
+                _fData = data as VariantData;
 
-				List<CreatureTemplate> templates = Session.Templates;
-				foreach (CreatureTemplate ct in templates)
-				{
-					ListViewItem lvi = TemplateList.Items.Add(ct.Name);
-					lvi.SubItems.Add(ct.Info);
-					lvi.Tag = ct;
-				}
-			}
-		}
+                var templates = Session.Templates;
+                foreach (var ct in templates)
+                {
+                    var lvi = TemplateList.Items.Add(ct.Name);
+                    lvi.SubItems.Add(ct.Info);
+                    lvi.Tag = ct;
+                }
+            }
+        }
 
-		public bool OnBack()
-		{
-			return true;
-		}
+        public bool OnBack()
+        {
+            return true;
+        }
 
-		public bool OnNext()
-		{
-			int steps = 0;
-			ComplexRole role = fData.BaseCreature.Role as ComplexRole;
-			switch (role.Flag)
-			{
-				case RoleFlag.Elite:
-					steps = 1;
-					break;
-				case RoleFlag.Solo:
-					steps = 2;
-					break;
-			}
+        public bool OnNext()
+        {
+            var steps = 0;
+            var role = _fData.BaseCreature.Role as ComplexRole;
+            switch (role.Flag)
+            {
+                case RoleFlag.Elite:
+                    steps = 1;
+                    break;
+                case RoleFlag.Solo:
+                    steps = 2;
+                    break;
+            }
 
-			steps += TemplateList.CheckedItems.Count;
+            steps += TemplateList.CheckedItems.Count;
 
-			if (steps > 2)
-			{
-				string str = "You can not normally apply that many templates to this creature.";
-				str += Environment.NewLine;
-				str += "Are you sure you want to continue?";
+            if (steps > 2)
+            {
+                var str = "You can not normally apply that many templates to this creature.";
+                str += Environment.NewLine;
+                str += "Are you sure you want to continue?";
 
-				DialogResult dr = MessageBox.Show(str, "Creature Builder", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-				if (dr == DialogResult.No)
-					return false;
-			}
+                var dr = MessageBox.Show(str, "Creature Builder", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                if (dr == DialogResult.No)
+                    return false;
+            }
 
-			// Set templates
-			fData.Templates.Clear();
-			foreach (ListViewItem lvi in TemplateList.CheckedItems)
-				fData.Templates.Add(lvi.Tag as CreatureTemplate);
+            // Set templates
+            _fData.Templates.Clear();
+            foreach (ListViewItem lvi in TemplateList.CheckedItems)
+                _fData.Templates.Add(lvi.Tag as CreatureTemplate);
 
-			return true;
-		}
+            return true;
+        }
 
-		public bool OnFinish()
-		{
-			return false;
-		}
-
-		#endregion
-
-		private void TemplateList_DoubleClick(object sender, EventArgs e)
-		{
-			if (TemplateList.SelectedItems.Count != 0)
-			{
-				CreatureTemplate ct = TemplateList.SelectedItems[0].Tag as CreatureTemplate;
-				if (ct != null)
-				{
-					CreatureTemplateDetailsForm dlg = new CreatureTemplateDetailsForm(ct);
-					dlg.ShowDialog();
-				}
-			}
-		}
-	}
+        public bool OnFinish()
+        {
+            return false;
+        }
+    }
 }

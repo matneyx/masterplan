@@ -2,217 +2,207 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
-
 using Masterplan.Data;
 using Masterplan.Tools;
 
 namespace Masterplan.UI
 {
-	partial class CreatureSkillsForm : Form
-	{
-		class SkillData
-		{
-			public string SkillName;
-			public bool Trained = false;
-			public int Ability = 0;
-			public int Level = 0;
-			public int Misc = 0;
+    internal partial class CreatureSkillsForm : Form
+    {
+        private readonly ICreature _fCreature;
+        private readonly List<SkillData> _fSkills = new List<SkillData>();
 
-			public bool Show
-			{
-				get
-				{
-					return (Trained || (Misc != 0));
-				}
-			}
+        private SkillData SelectedSkill
+        {
+            get
+            {
+                if (SkillList.SelectedItems.Count != 0)
+                    return SkillList.SelectedItems[0].Tag as SkillData;
 
-			public int Total
-			{
-				get
-				{
-					int training = Trained ? 5 : 0;
-					return training + Ability + Level + Misc;
-				}
-			}
+                return null;
+            }
+        }
 
-			public override string ToString()
-			{
-				string sign = (Total < 0) ? "-" : "";
-				return SkillName + " " + sign + Total;
-			}
-		}
+        public CreatureSkillsForm(ICreature creature)
+        {
+            InitializeComponent();
 
-		public CreatureSkillsForm(ICreature creature)
-		{
-			InitializeComponent();
+            Application.Idle += Application_Idle;
 
-			Application.Idle += new EventHandler(Application_Idle);
+            _fCreature = creature;
 
-			fCreature = creature;
+            var skills = CreatureHelper.ParseSkills(_fCreature.Skills);
+            foreach (var skillName in Skills.GetSkillNames())
+            {
+                var level = _fCreature.Level / 2;
+                var ability = 0;
 
-			Dictionary<string, int> skills = CreatureHelper.ParseSkills(fCreature.Skills);
-			foreach (string skill_name in Skills.GetSkillNames())
-			{
-				int level = fCreature.Level / 2;
-				int ability = 0;
+                var abilityName = Skills.GetKeyAbility(skillName);
+                switch (abilityName)
+                {
+                    case "Strength":
+                        ability = _fCreature.Strength.Modifier;
+                        break;
+                    case "Constitution":
+                        ability = _fCreature.Constitution.Modifier;
+                        break;
+                    case "Dexterity":
+                        ability = _fCreature.Dexterity.Modifier;
+                        break;
+                    case "Intelligence":
+                        ability = _fCreature.Intelligence.Modifier;
+                        break;
+                    case "Wisdom":
+                        ability = _fCreature.Wisdom.Modifier;
+                        break;
+                    case "Charisma":
+                        ability = _fCreature.Charisma.Modifier;
+                        break;
+                }
 
-				string ability_name = Skills.GetKeyAbility(skill_name);
-				switch (ability_name)
-				{
-					case "Strength":
-						ability = fCreature.Strength.Modifier;
-						break;
-					case "Constitution":
-						ability = fCreature.Constitution.Modifier;
-						break;
-					case "Dexterity":
-						ability = fCreature.Dexterity.Modifier;
-						break;
-					case "Intelligence":
-						ability = fCreature.Intelligence.Modifier;
-						break;
-					case "Wisdom":
-						ability = fCreature.Wisdom.Modifier;
-						break;
-					case "Charisma":
-						ability = fCreature.Charisma.Modifier;
-						break;
-				}
+                var sd = new SkillData();
+                sd.SkillName = skillName;
+                sd.Ability = ability;
+                sd.Level = level;
 
-				SkillData sd = new SkillData();
-				sd.SkillName = skill_name;
-				sd.Ability = ability;
-				sd.Level = level;
+                if (skills.ContainsKey(skillName))
+                {
+                    var total = skills[skillName];
+                    var misc = total - (ability + level);
+                    if (misc > 3)
+                    {
+                        sd.Trained = true;
+                        misc -= 5;
+                    }
 
-				if (skills.ContainsKey(skill_name))
-				{
-					int total = skills[skill_name];
-					int misc = total - (ability + level);
-					if (misc > 3)
-					{
-						sd.Trained = true;
-						misc -= 5;
-					}
+                    sd.Misc = misc;
+                }
 
-					sd.Misc = misc;
-				}
+                _fSkills.Add(sd);
+            }
 
-				fSkills.Add(sd);
-			}
+            update_list();
+        }
 
-			update_list();
-		}
+        ~CreatureSkillsForm()
+        {
+            Application.Idle -= Application_Idle;
+        }
 
-		~CreatureSkillsForm()
-		{
-			Application.Idle -= Application_Idle;
-		}
+        private void Application_Idle(object sender, EventArgs e)
+        {
+            TrainedBtn.Enabled = SelectedSkill != null;
+            TrainedBtn.Checked = SelectedSkill != null && SelectedSkill.Trained;
+            EditSkillBtn.Enabled = SelectedSkill != null;
+        }
 
-		void Application_Idle(object sender, EventArgs e)
-		{
-			TrainedBtn.Enabled = (SelectedSkill != null);
-			TrainedBtn.Checked = ((SelectedSkill != null) && (SelectedSkill.Trained));
-			EditSkillBtn.Enabled = (SelectedSkill != null);
-		}
+        private void OKBtn_Click(object sender, EventArgs e)
+        {
+            var skills = "";
+            foreach (var sd in _fSkills)
+            {
+                if (!sd.Show)
+                    continue;
 
-		ICreature fCreature = null;
-		List<SkillData> fSkills = new List<SkillData>();
+                if (skills != "")
+                    skills += "; ";
 
-		SkillData SelectedSkill
-		{
-			get
-			{
-				if (SkillList.SelectedItems.Count != 0)
-					return SkillList.SelectedItems[0].Tag as SkillData;
+                skills += sd.ToString();
+            }
 
-				return null;
-			}
-		}
+            _fCreature.Skills = skills;
+        }
 
-		private void OKBtn_Click(object sender, EventArgs e)
-		{
-			string skills = "";
-			foreach (SkillData sd in fSkills)
-			{
-				if (!sd.Show)
-					continue;
+        private void update_list()
+        {
+            SkillList.BeginUpdate();
 
-				if (skills != "")
-					skills += "; ";
+            SkillList.Items.Clear();
 
-				skills += sd.ToString();
-			}
+            var items = new List<ListViewItem>();
+            foreach (var sd in _fSkills)
+            {
+                var lvi = new ListViewItem(sd.SkillName);
+                lvi.SubItems.Add(sd.Level >= 0 ? "+" + sd.Level : sd.Level.ToString());
+                lvi.SubItems.Add(sd.Ability >= 0 ? "+" + sd.Ability : sd.Ability.ToString());
+                lvi.SubItems.Add(sd.Trained ? "+5" : "");
+                if (sd.Misc != 0)
+                    lvi.SubItems.Add(sd.Misc >= 0 ? "+" + sd.Misc : sd.Misc.ToString());
+                else
+                    lvi.SubItems.Add("");
+                lvi.SubItems.Add(sd.Total >= 0 ? "+" + sd.Total : sd.Total.ToString());
 
-			fCreature.Skills = skills;
-		}
+                if (!sd.Show)
+                {
+                    lvi.ForeColor = SystemColors.GrayText;
+                    lvi.UseItemStyleForSubItems = false;
+                }
 
-		void update_list()
-		{
-			SkillList.BeginUpdate();
+                lvi.Tag = sd;
 
-			SkillList.Items.Clear();
+                items.Add(lvi);
+            }
 
-			List<ListViewItem> items = new List<ListViewItem>();
-			foreach (SkillData sd in fSkills)
-			{
-				ListViewItem lvi = new ListViewItem(sd.SkillName);
-				lvi.SubItems.Add((sd.Level >= 0) ? "+" + sd.Level.ToString() : sd.Level.ToString());
-				lvi.SubItems.Add((sd.Ability >= 0) ? "+" + sd.Ability.ToString() : sd.Ability.ToString());
-				lvi.SubItems.Add(sd.Trained ? "+5" : "");
-				if (sd.Misc != 0)
-				{
-					lvi.SubItems.Add((sd.Misc >= 0) ? "+" + sd.Misc.ToString() : sd.Misc.ToString());
-				}
-				else
-				{
-					lvi.SubItems.Add("");
-				}
-				lvi.SubItems.Add((sd.Total >= 0) ? "+" + sd.Total.ToString() : sd.Total.ToString());
+            SkillList.Items.AddRange(items.ToArray());
 
-				if (!sd.Show)
-				{
-					lvi.ForeColor = SystemColors.GrayText;
-					lvi.UseItemStyleForSubItems = false;
-				}
+            SkillList.EndUpdate();
+        }
 
-				lvi.Tag = sd;
+        private void SkillList_DoubleClick(object sender, EventArgs e)
+        {
+            TrainedBtn_Click(sender, e);
+        }
 
-				items.Add(lvi);
-			}
+        private void TrainedBtn_Click(object sender, EventArgs e)
+        {
+            if (SelectedSkill == null)
+                return;
 
-			SkillList.Items.AddRange(items.ToArray());
+            SelectedSkill.Trained = !SelectedSkill.Trained;
+            update_list();
+        }
 
-			SkillList.EndUpdate();
-		}
+        private void EditSkillBtn_Click(object sender, EventArgs e)
+        {
+            if (SelectedSkill == null)
+                return;
 
-		private void SkillList_DoubleClick(object sender, EventArgs e)
-		{
-			TrainedBtn_Click(sender, e);
-		}
+            var ability = Skills.GetKeyAbility(SelectedSkill.SkillName);
+            var dlg = new CreatureSkillForm(SelectedSkill.SkillName, ability, SelectedSkill.Ability,
+                SelectedSkill.Level, SelectedSkill.Trained, SelectedSkill.Misc);
+            if (dlg.ShowDialog() == DialogResult.OK)
+            {
+                SelectedSkill.Trained = dlg.Trained;
+                SelectedSkill.Misc = dlg.Misc;
 
-		private void TrainedBtn_Click(object sender, EventArgs e)
-		{
-			if (SelectedSkill == null)
-				return;
+                update_list();
+            }
+        }
 
-			SelectedSkill.Trained = !SelectedSkill.Trained;
-			update_list();
-		}
+        private class SkillData
+        {
+            public int Ability;
+            public int Level;
+            public int Misc;
+            public string SkillName;
+            public bool Trained;
 
-		private void EditSkillBtn_Click(object sender, EventArgs e)
-		{
-			if (SelectedSkill == null)
-				return;
+            public bool Show => Trained || Misc != 0;
 
-			string ability = Skills.GetKeyAbility(SelectedSkill.SkillName);
-			CreatureSkillForm dlg = new CreatureSkillForm(SelectedSkill.SkillName, ability, SelectedSkill.Ability, SelectedSkill.Level, SelectedSkill.Trained, SelectedSkill.Misc);
-			if (dlg.ShowDialog() == DialogResult.OK)
-			{
-				SelectedSkill.Trained = dlg.Trained;
-				SelectedSkill.Misc = dlg.Misc;
+            public int Total
+            {
+                get
+                {
+                    var training = Trained ? 5 : 0;
+                    return training + Ability + Level + Misc;
+                }
+            }
 
-				update_list();
-			}
-		}
-	}
+            public override string ToString()
+            {
+                var sign = Total < 0 ? "-" : "";
+                return SkillName + " " + sign + Total;
+            }
+        }
+    }
 }

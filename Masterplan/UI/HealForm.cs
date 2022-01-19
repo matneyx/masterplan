@@ -1,71 +1,70 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-
 using Masterplan.Data;
 using Masterplan.Tools;
 
 namespace Masterplan.UI
 {
-	partial class HealForm : Form
-	{
-		public HealForm(List<Pair<CombatData, EncounterCard>> tokens)
-		{
-			InitializeComponent();
+    internal partial class HealForm : Form
+    {
+        private readonly List<Pair<CombatData, EncounterCard>> _fTokens;
 
-			fTokens = tokens;
-		}
+        public HealForm(List<Pair<CombatData, EncounterCard>> tokens)
+        {
+            InitializeComponent();
 
-		List<Pair<CombatData, EncounterCard>> fTokens = null;
+            _fTokens = tokens;
+        }
 
-		private void DamageForm_Shown(object sender, EventArgs e)
-		{
-			SurgeBox.Select(0, 1);
-		}
+        private void DamageForm_Shown(object sender, EventArgs e)
+        {
+            SurgeBox.Select(0, 1);
+        }
 
-		private void OKBtn_Click(object sender, EventArgs e)
-		{
-			int surges = (int)SurgeBox.Value;
-			int hp = (int)HPBox.Value;
+        private void OKBtn_Click(object sender, EventArgs e)
+        {
+            var surges = (int)SurgeBox.Value;
+            var hp = (int)HPBox.Value;
 
-			foreach (Pair<CombatData, EncounterCard> token in fTokens)
-			{
-				int max_hp = 0;
-				if (token.Second != null)
-				{
-					// It's a creature
-					max_hp = token.Second.HP;
-				}
-				else
-				{
-					// It's a hero
-					Hero hero = Session.Project.FindHero(token.First.ID);
-					if (hero != null)
-						max_hp = hero.HP;
-				}
+            foreach (var token in _fTokens)
+            {
+                var maxHp = 0;
+                if (token.Second != null)
+                {
+                    // It's a creature
+                    maxHp = token.Second.Hp;
+                }
+                else
+                {
+                    // It's a hero
+                    var hero = Session.Project.FindHero(token.First.Id);
+                    if (hero != null)
+                        maxHp = hero.Hp;
+                }
 
-				int surge_value = max_hp / 4;
-				int heal_value = (surge_value * surges) + hp;
+                var surgeValue = maxHp / 4;
+                var healValue = surgeValue * surges + hp;
 
-				if (TempHPBox.Checked)
-				{
-					// Top up temp HP
-					token.First.TempHP = Math.Max(heal_value, token.First.TempHP);
-				}
-				else
-				{
-					// Start from 0 HP
-					if (token.First.Damage > max_hp)
-						token.First.Damage = max_hp;
+                if (TempHPBox.Checked)
+                {
+                    // Top up temp HP
+                    token.First.TempHp = Math.Max(healValue, token.First.TempHp);
+                }
+                else
+                {
+                    // Start from 0 HP
+                    if (token.First.Damage > maxHp)
+                        token.First.Damage = maxHp;
 
-					// Heal
-					token.First.Damage -= heal_value;
+                    // Heal
+                    token.First.Damage -= healValue;
 
-					// Don't heal past max HP
-					if (token.First.Damage < 0)
-						token.First.Damage = 0;
-				}
-			}
-		}
-	}
+                    // Don't heal past max HP
+                    if (token.First.Damage < 0)
+                        token.First.Damage = 0;
+                }
+            }
+        }
+    }
 }

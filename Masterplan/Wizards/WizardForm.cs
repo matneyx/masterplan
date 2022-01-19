@@ -3,144 +3,141 @@ using System.Windows.Forms;
 
 namespace Masterplan.Wizards
 {
-	partial class WizardForm : Form
-	{
-		public WizardForm(Wizard wiz)
-		{
-			InitializeComponent();
+    internal partial class WizardForm : Form
+    {
+        private readonly Wizard _fWizard;
 
-			fWizard = wiz;
-			Text = fWizard.Title;
+        public IWizardPage CurrentPage
+        {
+            get
+            {
+                if (ContentPnl.Controls.Count != 0)
+                    return ContentPnl.Controls[0] as IWizardPage;
 
-			// Set size
-			if (!fWizard.MaxSize.IsEmpty)
-			{
-				Width += (Math.Max(fWizard.MaxSize.Width, ContentPnl.Width) - ContentPnl.Width);
-				Height += (Math.Max(fWizard.MaxSize.Height, ContentPnl.Height) - ContentPnl.Height);
+                return null;
+            }
+        }
 
-				ImageBox.Height = ContentPnl.Height;
-			}
+        public WizardForm(Wizard wiz)
+        {
+            InitializeComponent();
 
-			Application.Idle += new EventHandler(Application_Idle);
+            _fWizard = wiz;
+            Text = _fWizard.Title;
 
-			if (fWizard.Pages.Count != 0)
-				set_page(0);
-		}
+            // Set size
+            if (!_fWizard.MaxSize.IsEmpty)
+            {
+                Width += Math.Max(_fWizard.MaxSize.Width, ContentPnl.Width) - ContentPnl.Width;
+                Height += Math.Max(_fWizard.MaxSize.Height, ContentPnl.Height) - ContentPnl.Height;
 
-		~WizardForm()
-		{
-			Application.Idle -= Application_Idle;
-		}
+                ImageBox.Height = ContentPnl.Height;
+            }
 
-		void Application_Idle(object sender, EventArgs e)
-		{
-			IWizardPage page = CurrentPage;
-			if (page != null)
-			{
-				BackBtn.Enabled = page.AllowBack;
-				NextBtn.Enabled = page.AllowNext;
-				FinishBtn.Enabled = page.AllowFinish;
+            Application.Idle += Application_Idle;
 
-				if (page.AllowFinish)
-					AcceptButton = FinishBtn;
-				else if (page.AllowNext)
-					AcceptButton = NextBtn;
-				else
-					AcceptButton = null;
-			}
-		}
+            if (_fWizard.Pages.Count != 0)
+                set_page(0);
+        }
 
-		private Wizard fWizard = null;
+        ~WizardForm()
+        {
+            Application.Idle -= Application_Idle;
+        }
 
-		public IWizardPage CurrentPage
-		{
-			get
-			{
-				if (ContentPnl.Controls.Count != 0)
-					return ContentPnl.Controls[0] as IWizardPage;
+        private void Application_Idle(object sender, EventArgs e)
+        {
+            var page = CurrentPage;
+            if (page != null)
+            {
+                BackBtn.Enabled = page.AllowBack;
+                NextBtn.Enabled = page.AllowNext;
+                FinishBtn.Enabled = page.AllowFinish;
 
-				return null;
-			}
-		}
+                if (page.AllowFinish)
+                    AcceptButton = FinishBtn;
+                else if (page.AllowNext)
+                    AcceptButton = NextBtn;
+                else
+                    AcceptButton = null;
+            }
+        }
 
-		private void BackBtn_Click(object sender, EventArgs e)
-		{
-			if (CurrentPage != null)
-			{
-				if (!CurrentPage.AllowBack)
-					return;
+        private void BackBtn_Click(object sender, EventArgs e)
+        {
+            if (CurrentPage != null)
+            {
+                if (!CurrentPage.AllowBack)
+                    return;
 
-				if (!CurrentPage.OnBack())
-					return;
+                if (!CurrentPage.OnBack())
+                    return;
 
-				int current_page = fWizard.Pages.IndexOf(CurrentPage);
-				int pageindex = fWizard.BackPageIndex(current_page);
+                var currentPage = _fWizard.Pages.IndexOf(CurrentPage);
+                var pageindex = _fWizard.BackPageIndex(currentPage);
 
-				if (pageindex == -1)
-					pageindex = current_page - 1;
+                if (pageindex == -1)
+                    pageindex = currentPage - 1;
 
-				set_page(pageindex);
-			}
-		}
+                set_page(pageindex);
+            }
+        }
 
-		private void NextBtn_Click(object sender, EventArgs e)
-		{
-			if (CurrentPage != null)
-			{
-				if (!CurrentPage.AllowNext)
-					return;
+        private void NextBtn_Click(object sender, EventArgs e)
+        {
+            if (CurrentPage != null)
+            {
+                if (!CurrentPage.AllowNext)
+                    return;
 
-				if (!CurrentPage.OnNext())
-					return;
+                if (!CurrentPage.OnNext())
+                    return;
 
-				int current_page = fWizard.Pages.IndexOf(CurrentPage);
-				int pageindex = fWizard.NextPageIndex(current_page);
+                var currentPage = _fWizard.Pages.IndexOf(CurrentPage);
+                var pageindex = _fWizard.NextPageIndex(currentPage);
 
-				if (pageindex == -1)
-					pageindex = current_page + 1;
+                if (pageindex == -1)
+                    pageindex = currentPage + 1;
 
-				set_page(pageindex);
-			}
-		}
+                set_page(pageindex);
+            }
+        }
 
-		private void FinishBtn_Click(object sender, EventArgs e)
-		{
-			if (CurrentPage != null)
-			{
-				if (!CurrentPage.AllowFinish)
-					return;
+        private void FinishBtn_Click(object sender, EventArgs e)
+        {
+            if (CurrentPage != null)
+            {
+                if (!CurrentPage.AllowFinish)
+                    return;
 
-				if (!CurrentPage.OnFinish())
-					return;
+                if (!CurrentPage.OnFinish())
+                    return;
 
-				fWizard.OnFinish();
+                _fWizard.OnFinish();
 
-				Close();
-			}
-		}
+                Close();
+            }
+        }
 
-		private void CancelBtn_Click(object sender, EventArgs e)
-		{
-			if (CurrentPage != null)
-			{
-				fWizard.OnCancel();
-			}
+        private void CancelBtn_Click(object sender, EventArgs e)
+        {
+            if (CurrentPage != null) _fWizard.OnCancel();
 
-			Close();
-		}
+            Close();
+        }
 
-		private void set_page(int pageindex)
-		{
-			IWizardPage page = fWizard.Pages[pageindex];
-			Control ctrl = page as Control;
-			if (ctrl != null)
-			{
-				ContentPnl.Controls.Clear();
-				ContentPnl.Controls.Add(ctrl);
-				ctrl.Dock = DockStyle.Fill;
+        private void set_page(int pageindex)
+        {
+            var page = _fWizard.Pages[pageindex];
+            var ctrl = page as Control;
+            if (ctrl != null)
+            {
+                ContentPnl.Controls.Clear();
+                ContentPnl.Controls.Add(ctrl);
+                ctrl.Dock = DockStyle.Fill;
 
-				page.OnShown(fWizard.Data);
-			}
-		}
-	}
+                page.OnShown(_fWizard.Data);
+            }
+        }
+    }
 }

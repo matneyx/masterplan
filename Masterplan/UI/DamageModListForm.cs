@@ -2,233 +2,220 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
-
 using Masterplan.Data;
 
 namespace Masterplan.UI
 {
-	partial class DamageModListForm : Form
-	{
-		public DamageModListForm(ICreature creature)
-		{
-			InitializeComponent();
+    internal partial class DamageModListForm : Form
+    {
+        private readonly ICreature _fCreature;
+        private readonly CreatureTemplate _fTemplate;
 
-			Application.Idle += new EventHandler(Application_Idle);
+        public List<DamageModifier> Modifiers { get; }
 
-			fCreature = creature;
+        public List<DamageModifierTemplate> ModifierTemplates { get; }
 
-			fModifiers = new List<DamageModifier>();
-			foreach (DamageModifier mod in fCreature.DamageModifiers)
-				fModifiers.Add(mod.Copy());
+        public DamageModifier SelectedDamageMod
+        {
+            get
+            {
+                if (DamageList.SelectedItems.Count != 0)
+                    return DamageList.SelectedItems[0].Tag as DamageModifier;
 
-			update_damage_list();
+                return null;
+            }
+        }
 
-			ResistBox.Text = fCreature.Resist;
-			VulnerableBox.Text = fCreature.Vulnerable;
-			ImmuneBox.Text = fCreature.Immune;
-		}
+        public DamageModifierTemplate SelectedDamageModTemplate
+        {
+            get
+            {
+                if (DamageList.SelectedItems.Count != 0)
+                    return DamageList.SelectedItems[0].Tag as DamageModifierTemplate;
 
-		public DamageModListForm(CreatureTemplate template)
-		{
-			InitializeComponent();
+                return null;
+            }
+        }
 
-			Application.Idle += new EventHandler(Application_Idle);
+        public DamageModListForm(ICreature creature)
+        {
+            InitializeComponent();
 
-			fTemplate = template;
+            Application.Idle += Application_Idle;
 
-			fModifierTemplates = new List<DamageModifierTemplate>();
-			foreach (DamageModifierTemplate mod in fTemplate.DamageModifierTemplates)
-				fModifierTemplates.Add(mod.Copy());
+            _fCreature = creature;
 
-			update_damage_list();
+            Modifiers = new List<DamageModifier>();
+            foreach (var mod in _fCreature.DamageModifiers)
+                Modifiers.Add(mod.Copy());
 
-			ResistBox.Text = fTemplate.Resist;
-			VulnerableBox.Text = fTemplate.Vulnerable;
-			ImmuneBox.Text = fTemplate.Immune;
-		}
+            update_damage_list();
 
-		~DamageModListForm()
-		{
-			Application.Idle -= Application_Idle;
-		}
+            ResistBox.Text = _fCreature.Resist;
+            VulnerableBox.Text = _fCreature.Vulnerable;
+            ImmuneBox.Text = _fCreature.Immune;
+        }
 
-		void Application_Idle(object sender, EventArgs e)
-		{
-			RemoveDmgBtn.Enabled = ((SelectedDamageMod != null) || (SelectedDamageModTemplate != null));
-			EditDmgBtn.Enabled = ((SelectedDamageMod != null) || (SelectedDamageModTemplate != null));
-		}
+        public DamageModListForm(CreatureTemplate template)
+        {
+            InitializeComponent();
 
-		ICreature fCreature = null;
-		CreatureTemplate fTemplate = null;
+            Application.Idle += Application_Idle;
 
-		public List<DamageModifier> Modifiers
-		{
-			get { return fModifiers; }
-		}
-		List<DamageModifier> fModifiers = null;
+            _fTemplate = template;
 
-		public List<DamageModifierTemplate> ModifierTemplates
-		{
-			get { return fModifierTemplates; }
-		}
-		List<DamageModifierTemplate> fModifierTemplates = null;
+            ModifierTemplates = new List<DamageModifierTemplate>();
+            foreach (var mod in _fTemplate.DamageModifierTemplates)
+                ModifierTemplates.Add(mod.Copy());
 
-		private void OKBtn_Click(object sender, EventArgs e)
-		{
-			if (fCreature != null)
-			{
-				fCreature.DamageModifiers = fModifiers;
-				fCreature.Resist = ResistBox.Text;
-				fCreature.Vulnerable = VulnerableBox.Text;
-				fCreature.Immune = ImmuneBox.Text;
-			}
+            update_damage_list();
 
-			if (fTemplate != null)
-			{
-				fTemplate.DamageModifierTemplates = fModifierTemplates;
-				fTemplate.Resist = ResistBox.Text;
-				fTemplate.Vulnerable = VulnerableBox.Text;
-				fTemplate.Immune = ImmuneBox.Text;
-			}
-		}
+            ResistBox.Text = _fTemplate.Resist;
+            VulnerableBox.Text = _fTemplate.Vulnerable;
+            ImmuneBox.Text = _fTemplate.Immune;
+        }
 
-		public DamageModifier SelectedDamageMod
-		{
-			get
-			{
-				if (DamageList.SelectedItems.Count != 0)
-					return DamageList.SelectedItems[0].Tag as DamageModifier;
+        ~DamageModListForm()
+        {
+            Application.Idle -= Application_Idle;
+        }
 
-				return null;
-			}
-		}
+        private void Application_Idle(object sender, EventArgs e)
+        {
+            RemoveDmgBtn.Enabled = SelectedDamageMod != null || SelectedDamageModTemplate != null;
+            EditDmgBtn.Enabled = SelectedDamageMod != null || SelectedDamageModTemplate != null;
+        }
 
-		public DamageModifierTemplate SelectedDamageModTemplate
-		{
-			get
-			{
-				if (DamageList.SelectedItems.Count != 0)
-					return DamageList.SelectedItems[0].Tag as DamageModifierTemplate;
+        private void OKBtn_Click(object sender, EventArgs e)
+        {
+            if (_fCreature != null)
+            {
+                _fCreature.DamageModifiers = Modifiers;
+                _fCreature.Resist = ResistBox.Text;
+                _fCreature.Vulnerable = VulnerableBox.Text;
+                _fCreature.Immune = ImmuneBox.Text;
+            }
 
-				return null;
-			}
-		}
+            if (_fTemplate != null)
+            {
+                _fTemplate.DamageModifierTemplates = ModifierTemplates;
+                _fTemplate.Resist = ResistBox.Text;
+                _fTemplate.Vulnerable = VulnerableBox.Text;
+                _fTemplate.Immune = ImmuneBox.Text;
+            }
+        }
 
-		private void AddDmgBtn_Click(object sender, EventArgs e)
-		{
-			if (fCreature != null)
-			{
-				DamageModifier dm = new DamageModifier();
+        private void AddDmgBtn_Click(object sender, EventArgs e)
+        {
+            if (_fCreature != null)
+            {
+                var dm = new DamageModifier();
 
-				DamageModifierForm dlg = new DamageModifierForm(dm);
-				if (dlg.ShowDialog() == DialogResult.OK)
-				{
-					fModifiers.Add(dlg.Modifier);
-					update_damage_list();
-				}
-			}
+                var dlg = new DamageModifierForm(dm);
+                if (dlg.ShowDialog() == DialogResult.OK)
+                {
+                    Modifiers.Add(dlg.Modifier);
+                    update_damage_list();
+                }
+            }
 
-			if (fTemplate != null)
-			{
-				DamageModifierTemplate dm = new DamageModifierTemplate();
+            if (_fTemplate != null)
+            {
+                var dm = new DamageModifierTemplate();
 
-				DamageModifierTemplateForm dlg = new DamageModifierTemplateForm(dm);
-				if (dlg.ShowDialog() == DialogResult.OK)
-				{
-					fModifierTemplates.Add(dlg.Modifier);
-					update_damage_list();
-				}
-			}
-		}
+                var dlg = new DamageModifierTemplateForm(dm);
+                if (dlg.ShowDialog() == DialogResult.OK)
+                {
+                    ModifierTemplates.Add(dlg.Modifier);
+                    update_damage_list();
+                }
+            }
+        }
 
-		private void RemoveDmgBtn_Click(object sender, EventArgs e)
-		{
-			if (SelectedDamageMod != null)
-			{
-				fModifiers.Remove(SelectedDamageMod);
-				update_damage_list();
-			}
+        private void RemoveDmgBtn_Click(object sender, EventArgs e)
+        {
+            if (SelectedDamageMod != null)
+            {
+                Modifiers.Remove(SelectedDamageMod);
+                update_damage_list();
+            }
 
-			if (SelectedDamageModTemplate != null)
-			{
-				fModifierTemplates.Remove(SelectedDamageModTemplate);
-				update_damage_list();
-			}
-		}
+            if (SelectedDamageModTemplate != null)
+            {
+                ModifierTemplates.Remove(SelectedDamageModTemplate);
+                update_damage_list();
+            }
+        }
 
-		private void EditDmgBtn_Click(object sender, EventArgs e)
-		{
-			if (SelectedDamageMod != null)
-			{
-				int index = fModifiers.IndexOf(SelectedDamageMod);
+        private void EditDmgBtn_Click(object sender, EventArgs e)
+        {
+            if (SelectedDamageMod != null)
+            {
+                var index = Modifiers.IndexOf(SelectedDamageMod);
 
-				DamageModifierForm dlg = new DamageModifierForm(SelectedDamageMod);
-				if (dlg.ShowDialog() == DialogResult.OK)
-				{
-					fModifiers[index] = dlg.Modifier;
-					update_damage_list();
-				}
-			}
+                var dlg = new DamageModifierForm(SelectedDamageMod);
+                if (dlg.ShowDialog() == DialogResult.OK)
+                {
+                    Modifiers[index] = dlg.Modifier;
+                    update_damage_list();
+                }
+            }
 
-			if (SelectedDamageModTemplate != null)
-			{
-				int index = fModifierTemplates.IndexOf(SelectedDamageModTemplate);
+            if (SelectedDamageModTemplate != null)
+            {
+                var index = ModifierTemplates.IndexOf(SelectedDamageModTemplate);
 
-				DamageModifierTemplateForm dlg = new DamageModifierTemplateForm(SelectedDamageModTemplate);
-				if (dlg.ShowDialog() == DialogResult.OK)
-				{
-					fModifierTemplates[index] = dlg.Modifier;
-					update_damage_list();
-				}
-			}
-		}
+                var dlg = new DamageModifierTemplateForm(SelectedDamageModTemplate);
+                if (dlg.ShowDialog() == DialogResult.OK)
+                {
+                    ModifierTemplates[index] = dlg.Modifier;
+                    update_damage_list();
+                }
+            }
+        }
 
-		void update_damage_list()
-		{
-			DamageList.Items.Clear();
-			DamageList.ShowGroups = true;
+        private void update_damage_list()
+        {
+            DamageList.Items.Clear();
+            DamageList.ShowGroups = true;
 
-			if (fModifiers != null)
-			{
-				foreach (DamageModifier dm in fModifiers)
-				{
-					ListViewItem lvi = DamageList.Items.Add(dm.ToString());
-					lvi.Tag = dm;
+            if (Modifiers != null)
+                foreach (var dm in Modifiers)
+                {
+                    var lvi = DamageList.Items.Add(dm.ToString());
+                    lvi.Tag = dm;
 
-					if (dm.Value == 0)
-						lvi.Group = DamageList.Groups[0];
-					if (dm.Value < 0)
-						lvi.Group = DamageList.Groups[1];
-					if (dm.Value > 0)
-						lvi.Group = DamageList.Groups[2];
-				}
-			}
+                    if (dm.Value == 0)
+                        lvi.Group = DamageList.Groups[0];
+                    if (dm.Value < 0)
+                        lvi.Group = DamageList.Groups[1];
+                    if (dm.Value > 0)
+                        lvi.Group = DamageList.Groups[2];
+                }
 
-			if (fModifierTemplates != null)
-			{
-				foreach (DamageModifierTemplate dm in fModifierTemplates)
-				{
-					ListViewItem lvi = DamageList.Items.Add(dm.ToString());
-					lvi.Tag = dm;
+            if (ModifierTemplates != null)
+                foreach (var dm in ModifierTemplates)
+                {
+                    var lvi = DamageList.Items.Add(dm.ToString());
+                    lvi.Tag = dm;
 
-					int value = dm.HeroicValue + dm.ParagonValue + dm.EpicValue;
+                    var value = dm.HeroicValue + dm.ParagonValue + dm.EpicValue;
 
-					if (value == 0)
-						lvi.Group = DamageList.Groups[0];
-					if (value < 0)
-						lvi.Group = DamageList.Groups[1];
-					if (value > 0)
-						lvi.Group = DamageList.Groups[2];
-				}
-			}
+                    if (value == 0)
+                        lvi.Group = DamageList.Groups[0];
+                    if (value < 0)
+                        lvi.Group = DamageList.Groups[1];
+                    if (value > 0)
+                        lvi.Group = DamageList.Groups[2];
+                }
 
-			if (DamageList.Items.Count == 0)
-			{
-				DamageList.ShowGroups = false;
+            if (DamageList.Items.Count == 0)
+            {
+                DamageList.ShowGroups = false;
 
-				ListViewItem lvi = DamageList.Items.Add("(none)");
-				lvi.ForeColor = SystemColors.GrayText;
-			}
-		}
-	}
+                var lvi = DamageList.Items.Add("(none)");
+                lvi.ForeColor = SystemColors.GrayText;
+            }
+        }
+    }
 }

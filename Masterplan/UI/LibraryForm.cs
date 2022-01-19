@@ -2,54 +2,51 @@
 using System.IO;
 using System.Reflection;
 using System.Windows.Forms;
-
 using Masterplan.Data;
+using Masterplan.Tools;
 
 namespace Masterplan.UI
 {
-	partial class LibraryForm : Form
-	{
-		public LibraryForm(Library lib)
-		{
-			InitializeComponent();
+    internal partial class LibraryForm : Form
+    {
+        public Library Library { get; }
 
-			fLibrary = lib;
+        public LibraryForm(Library lib)
+        {
+            InitializeComponent();
 
-			string user = SystemInformation.UserName;
-			string machine = SystemInformation.ComputerName;
-			InfoLbl.Text = "Note that when you create a library it will be usable only by this user (" + user + ") on this computer (" + machine + ").";
+            Library = lib;
 
-			NameBox.Text = fLibrary.Name;
-			NameBox_TextChanged(null, null);
-		}
+            var user = SystemInformation.UserName;
+            var machine = SystemInformation.ComputerName;
+            InfoLbl.Text = "Note that when you create a library it will be usable only by this user (" + user +
+                           ") on this computer (" + machine + ").";
 
-		public Library Library
-		{
-			get { return fLibrary; }
-		}
-		Library fLibrary = null;
+            NameBox.Text = Library.Name;
+            NameBox_TextChanged(null, null);
+        }
 
-		private void OKBtn_Click(object sender, EventArgs e)
-		{
-			fLibrary.Name = NameBox.Text;
-		}
+        private void OKBtn_Click(object sender, EventArgs e)
+        {
+            Library.Name = NameBox.Text;
+        }
 
-		private void NameBox_TextChanged(object sender, EventArgs e)
-		{
-			if (NameBox.Text == "")
-			{
-				OKBtn.Enabled = false;
-			}
-			else
-			{
-				Assembly ass = Assembly.GetEntryAssembly();
-				string dir = Tools.FileName.Directory(ass.FullName);
-				DirectoryInfo di = new DirectoryInfo(dir);
+        private void NameBox_TextChanged(object sender, EventArgs e)
+        {
+            if (NameBox.Text == "")
+            {
+                OKBtn.Enabled = false;
+            }
+            else
+            {
+                var ass = Assembly.GetEntryAssembly();
+                var dir = FileName.Directory(ass.FullName);
+                var di = new DirectoryInfo(dir);
 
-				string filename = di + NameBox.Text + ".library";
+                var filename = di + NameBox.Text + ".library";
 
-				OKBtn.Enabled = !File.Exists(filename);
-			}
-		}
-	}
+                OKBtn.Enabled = !File.Exists(filename);
+            }
+        }
+    }
 }

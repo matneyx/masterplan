@@ -1,114 +1,113 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-
 using Masterplan.Data;
 
 namespace Masterplan.UI
 {
-	partial class TokenLinkListForm : Form
-	{
-		public TokenLinkListForm(List<TokenLink> links)
-		{
-			InitializeComponent();
+    internal partial class TokenLinkListForm : Form
+    {
+        private readonly List<TokenLink> _fLinks;
 
-			Application.Idle += new EventHandler(Application_Idle);
+        public TokenLink SelectedLink
+        {
+            get
+            {
+                if (EffectList.SelectedItems.Count != 0)
+                    return EffectList.SelectedItems[0].Tag as TokenLink;
 
-			fLinks = links;
+                return null;
+            }
+        }
 
-			update_list();
-		}
+        public TokenLinkListForm(List<TokenLink> links)
+        {
+            InitializeComponent();
 
-		~TokenLinkListForm()
-		{
-			Application.Idle -= Application_Idle;
-		}
+            Application.Idle += Application_Idle;
 
-		void Application_Idle(object sender, EventArgs e)
-		{
-			RemoveBtn.Enabled = (SelectedLink != null);
-			EditBtn.Enabled = (SelectedLink != null);
-		}
+            _fLinks = links;
 
-		List<TokenLink> fLinks = null;
+            update_list();
+        }
 
-		public TokenLink SelectedLink
-		{
-			get
-			{
-				if (EffectList.SelectedItems.Count != 0)
-					return EffectList.SelectedItems[0].Tag as TokenLink;
+        ~TokenLinkListForm()
+        {
+            Application.Idle -= Application_Idle;
+        }
 
-				return null;
-			}
-		}
+        private void Application_Idle(object sender, EventArgs e)
+        {
+            RemoveBtn.Enabled = SelectedLink != null;
+            EditBtn.Enabled = SelectedLink != null;
+        }
 
-		private void RemoveBtn_Click(object sender, EventArgs e)
-		{
-			if (SelectedLink != null)
-			{
-				fLinks.Remove(SelectedLink);
-				update_list();
-			}
-		}
+        private void RemoveBtn_Click(object sender, EventArgs e)
+        {
+            if (SelectedLink != null)
+            {
+                _fLinks.Remove(SelectedLink);
+                update_list();
+            }
+        }
 
-		private void EditBtn_Click(object sender, EventArgs e)
-		{
-			if (SelectedLink != null)
-			{
-				int index = fLinks.IndexOf(SelectedLink);
+        private void EditBtn_Click(object sender, EventArgs e)
+        {
+            if (SelectedLink != null)
+            {
+                var index = _fLinks.IndexOf(SelectedLink);
 
-				TokenLinkForm dlg = new TokenLinkForm(SelectedLink);
-				if (dlg.ShowDialog() == DialogResult.OK)
-				{
-					fLinks[index] = dlg.Link;
-					update_list();
-				}
-			}
-		}
+                var dlg = new TokenLinkForm(SelectedLink);
+                if (dlg.ShowDialog() == DialogResult.OK)
+                {
+                    _fLinks[index] = dlg.Link;
+                    update_list();
+                }
+            }
+        }
 
-		void update_list()
-		{
-			EffectList.Items.Clear();
+        private void update_list()
+        {
+            EffectList.Items.Clear();
 
-			foreach (TokenLink link in fLinks)
-			{
-				string tokens = "";
-				foreach (IToken token in link.Tokens)
-				{
-					string name = "";
+            foreach (var link in _fLinks)
+            {
+                var tokens = "";
+                foreach (var token in link.Tokens)
+                {
+                    var name = "";
 
-					if (token is CreatureToken)
-					{
-						CreatureToken ct = token as CreatureToken;
-						name = ct.Data.DisplayName;
-					}
+                    if (token is CreatureToken)
+                    {
+                        var ct = token as CreatureToken;
+                        name = ct.Data.DisplayName;
+                    }
 
-					if (token is Hero)
-					{
-						Hero hero = token as Hero;
-						name = hero.Name;
-					}
+                    if (token is Hero)
+                    {
+                        var hero = token as Hero;
+                        name = hero.Name;
+                    }
 
-					if (token is CustomToken)
-					{
-						CustomToken ct = token as CustomToken;
-						name = ct.Name;
-					}
+                    if (token is CustomToken)
+                    {
+                        var ct = token as CustomToken;
+                        name = ct.Name;
+                    }
 
-					if (name == "")
-						name = "(unknown map token)";
+                    if (name == "")
+                        name = "(unknown map token)";
 
-					if (tokens != "")
-						tokens += ", ";
+                    if (tokens != "")
+                        tokens += ", ";
 
-					tokens += name;
-				}
+                    tokens += name;
+                }
 
-				ListViewItem lvi = EffectList.Items.Add(tokens);
-				lvi.SubItems.Add(link.Text);
-				lvi.Tag = link;
-			}
-		}
-	}
+                var lvi = EffectList.Items.Add(tokens);
+                lvi.SubItems.Add(link.Text);
+                lvi.Tag = link;
+            }
+        }
+    }
 }

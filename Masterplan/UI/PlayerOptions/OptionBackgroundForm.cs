@@ -1,36 +1,31 @@
 ﻿using System;
 using System.Windows.Forms;
-
 using Masterplan.Data;
 
-namespace Masterplan.UI
+namespace Masterplan.UI.PlayerOptions
 {
-	partial class OptionBackgroundForm : Form
-	{
-		public OptionBackgroundForm(PlayerBackground bg)
-		{
-			InitializeComponent();
+    internal partial class OptionBackgroundForm : Form
+    {
+        public PlayerBackground Background { get; }
 
-			fBackground = bg.Copy();
+        public OptionBackgroundForm(PlayerBackground bg)
+        {
+            InitializeComponent();
 
-			NameBox.Text = fBackground.Name;
-			SkillBox.Text = fBackground.AssociatedSkills;
-			FeatBox.Text = fBackground.RecommendedFeats;
-			DetailsBox.Text = fBackground.Details;
-		}
+            Background = bg.Copy();
 
-		public PlayerBackground Background
-		{
-			get { return fBackground; }
-		}
-		PlayerBackground fBackground = null;
+            NameBox.Text = Background.Name;
+            SkillBox.Text = Background.AssociatedSkills;
+            FeatBox.Text = Background.RecommendedFeats;
+            DetailsBox.Text = Background.Details;
+        }
 
-		private void OKBtn_Click(object sender, EventArgs e)
-		{
-			fBackground.Name = NameBox.Text;
-			fBackground.AssociatedSkills = SkillBox.Text;
-			fBackground.RecommendedFeats = FeatBox.Text;
-			fBackground.Details = DetailsBox.Text;
-		}
-	}
+        private void OKBtn_Click(object sender, EventArgs e)
+        {
+            Background.Name = NameBox.Text;
+            Background.AssociatedSkills = SkillBox.Text;
+            Background.RecommendedFeats = FeatBox.Text;
+            Background.Details = DetailsBox.Text;
+        }
+    }
 }

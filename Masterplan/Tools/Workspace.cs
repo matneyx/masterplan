@@ -1,138 +1,130 @@
 ﻿using System.Collections.Generic;
-
 using Masterplan.Data;
 
 namespace Masterplan.Tools
 {
-	class Workspace
-	{
-		public static List<List<PlotPoint>> FindLayers(Plot plot)
-		{
-			List<List<PlotPoint>> layers = new List<List<PlotPoint>>();
+    internal class Workspace
+    {
+        public static List<List<PlotPoint>> FindLayers(Plot plot)
+        {
+            var layers = new List<List<PlotPoint>>();
 
-			List<PlotPoint> unused = new List<PlotPoint>(plot.Points);
+            var unused = new List<PlotPoint>(plot.Points);
 
-			while (unused.Count > 0)
-			{
-				List<PlotPoint> layer = new List<PlotPoint>();
+            while (unused.Count > 0)
+            {
+                var layer = new List<PlotPoint>();
 
-				// Find all unused points which are not linked to by unused points
-				foreach (PlotPoint pp in unused)
-				{
-					bool top_level = true;
+                // Find all unused points which are not linked to by unused points
+                foreach (var pp in unused)
+                {
+                    var topLevel = true;
 
-					foreach (PlotPoint point in unused)
-					{
-						if (point == pp)
-							continue;
+                    foreach (var point in unused)
+                    {
+                        if (point == pp)
+                            continue;
 
-						if (point.Links.Contains(pp.ID))
-						{
-							top_level = false;
-							break;
-						}
-					}
+                        if (point.Links.Contains(pp.Id))
+                        {
+                            topLevel = false;
+                            break;
+                        }
+                    }
 
-					if (top_level)
-						layer.Add(pp);
-				}
+                    if (topLevel)
+                        layer.Add(pp);
+                }
 
-				if (layer.Count == 0)
-				{
-					// There's been a problem; just add all unused points
-					layer.AddRange(unused);
-				}
+                if (layer.Count == 0)
+                    // There's been a problem; just add all unused points
+                    layer.AddRange(unused);
 
-				layers.Add(layer);
+                layers.Add(layer);
 
-				foreach (PlotPoint pp in layer)
-					unused.Remove(pp);
-			}
+                foreach (var pp in layer)
+                    unused.Remove(pp);
+            }
 
-			return layers;
-		}
+            return layers;
+        }
 
-		public static int GetTotalXP(PlotPoint pp)
-		{
-            int xp = Session.Project.Party.XP * Session.Project.Party.Size;
+        public static int GetTotalXp(PlotPoint pp)
+        {
+            var xp = Session.Project.Party.Xp * Session.Project.Party.Size;
 
-			while (true)
-			{
-				// Add the XP value for all previous plot points in this plot
+            while (true)
+            {
+                // Add the XP value for all previous plot points in this plot
 
-				Plot plot = Session.Project.FindParent(pp);
-				if (plot == null)
-					break;
+                var plot = Session.Project.FindParent(pp);
+                if (plot == null)
+                    break;
 
-				List<List<PlotPoint>> layers = FindLayers(plot);
-				foreach (List<PlotPoint> layer in layers)
-				{
-					bool in_layer = false;
-					foreach (PlotPoint point in layer)
-					{
-						if (point.ID == pp.ID)
-						{
-							in_layer = true;
-							break;
-						}
-					}
+                var layers = FindLayers(plot);
+                foreach (var layer in layers)
+                {
+                    var inLayer = false;
+                    foreach (var point in layer)
+                        if (point.Id == pp.Id)
+                        {
+                            inLayer = true;
+                            break;
+                        }
 
-					if (in_layer)
-						break;
+                    if (inLayer)
+                        break;
 
-					int layer_xp = GetLayerXP(layer);
-					xp += layer_xp;
-				}
+                    var layerXp = GetLayerXp(layer);
+                    xp += layerXp;
+                }
 
-				pp = Session.Project.FindParent(plot);
-				if (pp == null)
-					break;
-			}
+                pp = Session.Project.FindParent(plot);
+                if (pp == null)
+                    break;
+            }
 
-			return xp;
-		}
+            return xp;
+        }
 
-		public static int GetLayerXP(List<PlotPoint> layer)
-		{
-			int gained_xp = 0;
-			int total_xp = 0;
-			int points = 0;
+        public static int GetLayerXp(List<PlotPoint> layer)
+        {
+            var gainedXp = 0;
+            var totalXp = 0;
+            var points = 0;
 
-			foreach (PlotPoint pp in layer)
-			{
-				if (pp == null)
-					continue;
+            foreach (var pp in layer)
+            {
+                if (pp == null)
+                    continue;
 
-				switch (pp.State)
-				{
-					case PlotPointState.Normal:
-						total_xp += pp.GetXP();
-						points += 1;
-						break;
-					case PlotPointState.Skipped:
-						// Do nothing
-						break;
-					case PlotPointState.Completed:
-						gained_xp += pp.GetXP();
-						break;
-				}
-			}
+                switch (pp.State)
+                {
+                    case PlotPointState.Normal:
+                        totalXp += pp.GetXp();
+                        points += 1;
+                        break;
+                    case PlotPointState.Skipped:
+                        // Do nothing
+                        break;
+                    case PlotPointState.Completed:
+                        gainedXp += pp.GetXp();
+                        break;
+                }
+            }
 
-			int predicted_xp = total_xp;
-			if (!Session.Preferences.AllXP)
-			{
-				predicted_xp = (points != 0) ? total_xp / points : 0;
-			}
+            var predictedXp = totalXp;
+            if (!Session.Preferences.AllXp) predictedXp = points != 0 ? totalXp / points : 0;
 
-			return gained_xp + predicted_xp;
-		}
+            return gainedXp + predictedXp;
+        }
 
-		public static int GetPartyLevel(PlotPoint pp)
-		{
-			int total_xp = GetTotalXP(pp);
-			int xp_per_player = total_xp / Session.Project.Party.Size;
+        public static int GetPartyLevel(PlotPoint pp)
+        {
+            var totalXp = GetTotalXp(pp);
+            var xpPerPlayer = totalXp / Session.Project.Party.Size;
 
-			return Experience.GetHeroLevel(xp_per_player);
-		}
-	}
+            return Experience.GetHeroLevel(xpPerPlayer);
+        }
+    }
 }

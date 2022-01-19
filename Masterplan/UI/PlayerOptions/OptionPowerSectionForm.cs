@@ -1,44 +1,39 @@
 ﻿using System;
 using System.Windows.Forms;
-
 using Masterplan.Data;
 
-namespace Masterplan.UI
+namespace Masterplan.UI.PlayerOptions
 {
-	partial class OptionPowerSectionForm : Form
-	{
-		public OptionPowerSectionForm(PlayerPowerSection section)
-		{
-			InitializeComponent();
+    internal partial class OptionPowerSectionForm : Form
+    {
+        public PlayerPowerSection Section { get; }
 
-			HeaderBox.Items.Add("Attack");
-			HeaderBox.Items.Add("Trigger");
-			HeaderBox.Items.Add("Effect");
-			HeaderBox.Items.Add("Aftereffect");
-			HeaderBox.Items.Add("Hit");
-			HeaderBox.Items.Add("Miss");
-			HeaderBox.Items.Add("Target");
-			HeaderBox.Items.Add("Prerequisite");
-			HeaderBox.Items.Add("Requirement");
-			HeaderBox.Items.Add("Sustain");
-			HeaderBox.Items.Add("Special");
+        public OptionPowerSectionForm(PlayerPowerSection section)
+        {
+            InitializeComponent();
 
-			fSection = section.Copy();
+            HeaderBox.Items.Add("Attack");
+            HeaderBox.Items.Add("Trigger");
+            HeaderBox.Items.Add("Effect");
+            HeaderBox.Items.Add("Aftereffect");
+            HeaderBox.Items.Add("Hit");
+            HeaderBox.Items.Add("Miss");
+            HeaderBox.Items.Add("Target");
+            HeaderBox.Items.Add("Prerequisite");
+            HeaderBox.Items.Add("Requirement");
+            HeaderBox.Items.Add("Sustain");
+            HeaderBox.Items.Add("Special");
 
-			HeaderBox.Text = fSection.Header;
-			DetailsBox.Text = fSection.Details;
-		}
+            Section = section.Copy();
 
-		public PlayerPowerSection Section
-		{
-			get { return fSection; }
-		}
-		PlayerPowerSection fSection = null;
+            HeaderBox.Text = Section.Header;
+            DetailsBox.Text = Section.Details;
+        }
 
-		private void OKBtn_Click(object sender, EventArgs e)
-		{
-			fSection.Header = HeaderBox.Text;
-			fSection.Details = DetailsBox.Text;
-		}
-	}
+        private void OKBtn_Click(object sender, EventArgs e)
+        {
+            Section.Header = HeaderBox.Text;
+            Section.Details = DetailsBox.Text;
+        }
+    }
 }

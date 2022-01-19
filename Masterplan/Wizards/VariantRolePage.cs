@@ -1,69 +1,53 @@
 ﻿using System;
 using System.Windows.Forms;
 
-using Masterplan.Data;
-
 namespace Masterplan.Wizards
 {
-	partial class VariantRolePage : UserControl, IWizardPage
-	{
-		public VariantRolePage()
-		{
-			InitializeComponent();
-		}
+    internal partial class VariantRolePage : UserControl, IWizardPage
+    {
+        private VariantData _fData;
 
-		VariantData fData = null;
+        public VariantRolePage()
+        {
+            InitializeComponent();
+        }
 
-		#region IWizardPage Members
+        private void RoleBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            _fData.SelectedRoleIndex = RoleBox.SelectedIndex;
+        }
 
-		public bool AllowNext
-		{
-			get { return true; }
-		}
+        public bool AllowNext => true;
 
-		public bool AllowBack
-		{
-			get { return true; }
-		}
+        public bool AllowBack => true;
 
-		public bool AllowFinish
-		{
-			get { return false; }
-		}
+        public bool AllowFinish => false;
 
-		public void OnShown(object data)
-		{
-			if (fData == null)
-				fData = data as VariantData;
+        public void OnShown(object data)
+        {
+            if (_fData == null)
+                _fData = data as VariantData;
 
-			RoleBox.Items.Clear();
-			foreach (RoleType role in fData.Roles)
-				RoleBox.Items.Add(role);
+            RoleBox.Items.Clear();
+            foreach (var role in _fData.Roles)
+                RoleBox.Items.Add(role);
 
-			RoleBox.SelectedIndex = fData.SelectedRoleIndex;
-		}
+            RoleBox.SelectedIndex = _fData.SelectedRoleIndex;
+        }
 
-		public bool OnBack()
-		{
-			return true;
-		}
+        public bool OnBack()
+        {
+            return true;
+        }
 
-		public bool OnNext()
-		{
+        public bool OnNext()
+        {
+            return true;
+        }
 
-			return true;
-		}
-
-		public bool OnFinish()
-		{
-			return false;
-		}
-
-		#endregion
-
-		private void RoleBox_SelectedIndexChanged(object sender, EventArgs e)
-		{
-			fData.SelectedRoleIndex = RoleBox.SelectedIndex;
-		}
-	}
+        public bool OnFinish()
+        {
+            return false;
+        }
+    }
 }

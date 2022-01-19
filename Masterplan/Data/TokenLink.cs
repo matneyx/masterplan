@@ -3,46 +3,48 @@ using System.Collections.Generic;
 
 namespace Masterplan.Data
 {
-	/// <summary>
-	/// Class representing a link between map tokens.
-	/// </summary>
-	[Serializable]
-	public class TokenLink
-	{
-		/// <summary>
-		/// Gets or sets the text of the link.
-		/// </summary>
-		public string Text
-		{
-			get { return fText; }
-			set { fText = value; }
-		}
-		string fText = "";
+    /// <summary>
+    ///     Class representing a link between map tokens.
+    /// </summary>
+    [Serializable]
+    public class TokenLink
+    {
+        private string _fText = "";
 
-		/// <summary>
-		/// Gets or sets the list of IToken objects.
-		/// </summary>
-		public List<IToken> Tokens
-		{
-			get { return fTokens; }
-			set { fTokens = value; }
-		}
-		List<IToken> fTokens = new List<IToken>();
+        private List<IToken> _fTokens = new List<IToken>();
 
-		/// <summary>
-		/// Creates a copy of the link.
-		/// </summary>
-		/// <returns>Returns the copy.</returns>
-		public TokenLink Copy()
-		{
-			TokenLink link = new TokenLink();
+        /// <summary>
+        ///     Gets or sets the text of the link.
+        /// </summary>
+        public string Text
+        {
+            get => _fText;
+            set => _fText = value;
+        }
 
-			link.Text = fText;
+        /// <summary>
+        ///     Gets or sets the list of IToken objects.
+        /// </summary>
+        public List<IToken> Tokens
+        {
+            get => _fTokens;
+            set => _fTokens = value;
+        }
 
-			foreach (IToken token in fTokens)
-				link.Tokens.Add(token);
+        /// <summary>
+        ///     Creates a copy of the link.
+        /// </summary>
+        /// <returns>Returns the copy.</returns>
+        public TokenLink Copy()
+        {
+            var link = new TokenLink();
 
-			return link;
-		}
-	}
+            link.Text = _fText;
+
+            foreach (var token in _fTokens)
+                link.Tokens.Add(token);
+
+            return link;
+        }
+    }
 }

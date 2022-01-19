@@ -1,81 +1,80 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-
 using Masterplan.Data;
 
 namespace Masterplan.UI
 {
-	partial class TileLibrarySelectForm : Form
-	{
-		public TileLibrarySelectForm(List<Library> selected_libraries)
-		{
-			InitializeComponent();
+    internal partial class TileLibrarySelectForm : Form
+    {
+        public List<Library> Libraries
+        {
+            get
+            {
+                var libs = new List<Library>();
 
-			List<Library> libraries = new List<Library>();
-			libraries.AddRange(Session.Libraries);
-			libraries.Add(Session.Project.Library);
+                foreach (ListViewItem lvi in LibraryList.CheckedItems)
+                {
+                    var lib = lvi.Tag as Library;
 
-			foreach (Library lib in libraries)
-			{
-				if (lib.Tiles.Count == 0)
-					continue;
+                    if (lib != null)
+                        libs.Add(lib);
+                }
 
-				ListViewItem lvi = LibraryList.Items.Add(lib.Name);
-				lvi.Tag = lib;
+                return libs;
+            }
+        }
 
-				lvi.Checked = selected_libraries.Contains(lib);
-			}
+        public TileLibrarySelectForm(List<Library> selectedLibraries)
+        {
+            InitializeComponent();
 
-			Application.Idle += new EventHandler(Application_Idle);
-		}
+            var libraries = new List<Library>();
+            libraries.AddRange(Session.Libraries);
+            libraries.Add(Session.Project.Library);
 
-		~TileLibrarySelectForm()
-		{
-			Application.Idle -= Application_Idle;
-		}
+            foreach (var lib in libraries)
+            {
+                if (lib.Tiles.Count == 0)
+                    continue;
 
-		void Application_Idle(object sender, EventArgs e)
-		{
-			OKBtn.Enabled = (Libraries.Count != 0);
-		}
+                var lvi = LibraryList.Items.Add(lib.Name);
+                lvi.Tag = lib;
 
-		public List<Library> Libraries
-		{
-			get
-			{
-				List<Library> libs = new List<Library>();
+                lvi.Checked = selectedLibraries.Contains(lib);
+            }
 
-				foreach (ListViewItem lvi in LibraryList.CheckedItems)
-				{
-					Library lib = lvi.Tag as Library;
+            Application.Idle += Application_Idle;
+        }
 
-					if (lib != null)
-						libs.Add(lib);
-				}
+        ~TileLibrarySelectForm()
+        {
+            Application.Idle -= Application_Idle;
+        }
 
-				return libs;
-			}
-		}
+        private void Application_Idle(object sender, EventArgs e)
+        {
+            OKBtn.Enabled = Libraries.Count != 0;
+        }
 
-		private void SelectAllBtn_Click(object sender, EventArgs e)
-		{
-			LibraryList.BeginUpdate();
+        private void SelectAllBtn_Click(object sender, EventArgs e)
+        {
+            LibraryList.BeginUpdate();
 
-			foreach (ListViewItem lvi in LibraryList.Items)
-				lvi.Checked = true;
+            foreach (ListViewItem lvi in LibraryList.Items)
+                lvi.Checked = true;
 
-			LibraryList.EndUpdate();
-		}
+            LibraryList.EndUpdate();
+        }
 
-		private void DeselectAllBtn_Click(object sender, EventArgs e)
-		{
-			LibraryList.BeginUpdate();
+        private void DeselectAllBtn_Click(object sender, EventArgs e)
+        {
+            LibraryList.BeginUpdate();
 
-			foreach (ListViewItem lvi in LibraryList.Items)
-				lvi.Checked = false;
+            foreach (ListViewItem lvi in LibraryList.Items)
+                lvi.Checked = false;
 
-			LibraryList.EndUpdate();
-		}
-	}
+            LibraryList.EndUpdate();
+        }
+    }
 }

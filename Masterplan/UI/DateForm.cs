@@ -1,107 +1,88 @@
 ﻿using System;
 using System.Windows.Forms;
-
 using Masterplan.Data;
 
 namespace Masterplan.UI
 {
-	partial class DateForm : Form
-	{
-		public DateForm(CalendarDate date)
-		{
-			InitializeComponent();
+    internal partial class DateForm : Form
+    {
+        public CalendarDate Date { get; }
 
-			// Populate calendar box
-			foreach (Calendar c in Session.Project.Calendars)
-				CalendarBox.Items.Add(c);
+        public Calendar SelectedCalendar => CalendarBox.SelectedItem as Calendar;
 
-			fDate = date.Copy();
+        public MonthInfo SelectedMonth => MonthBox.SelectedItem as MonthInfo;
 
-			Calendar cal = Session.Project.FindCalendar(fDate.CalendarID);
-			if (cal != null)
-			{
-				CalendarBox.SelectedItem = cal;
-			}
-			else
-			{
-				CalendarBox.SelectedIndex = 0;
-			}
+        public DateForm(CalendarDate date)
+        {
+            InitializeComponent();
 
-			YearBox.Value = fDate.Year;
+            // Populate calendar box
+            foreach (var c in Session.Project.Calendars)
+                CalendarBox.Items.Add(c);
 
-			MonthInfo month = SelectedCalendar.FindMonth(fDate.MonthID);
-			if (month != null)
-			{
-				MonthBox.SelectedItem = month;
-			}
-			else
-			{
-				MonthBox.SelectedIndex = 0;
-			}
+            Date = date.Copy();
 
-			DayBox.Value = fDate.DayIndex + 1;
-		}
+            var cal = Session.Project.FindCalendar(Date.CalendarId);
+            if (cal != null)
+                CalendarBox.SelectedItem = cal;
+            else
+                CalendarBox.SelectedIndex = 0;
 
-		public CalendarDate Date
-		{
-			get { return fDate; }
-		}
-		CalendarDate fDate = null;
+            YearBox.Value = Date.Year;
 
-		public Calendar SelectedCalendar
-		{
-			get { return CalendarBox.SelectedItem as Calendar; }
-		}
+            var month = SelectedCalendar.FindMonth(Date.MonthId);
+            if (month != null)
+                MonthBox.SelectedItem = month;
+            else
+                MonthBox.SelectedIndex = 0;
 
-		public MonthInfo SelectedMonth
-		{
-			get { return MonthBox.SelectedItem as MonthInfo; }
-		}
+            DayBox.Value = Date.DayIndex + 1;
+        }
 
-		private void OKBtn_Click(object sender, EventArgs e)
-		{
-			Calendar cal = CalendarBox.SelectedItem as Calendar;
-			MonthInfo month = MonthBox.SelectedItem as MonthInfo;
+        private void OKBtn_Click(object sender, EventArgs e)
+        {
+            var cal = CalendarBox.SelectedItem as Calendar;
+            var month = MonthBox.SelectedItem as MonthInfo;
 
-			fDate.CalendarID = cal.ID;
-			fDate.Year = (int)YearBox.Value;
-			fDate.MonthID = month.ID;
-			fDate.DayIndex = (int)DayBox.Value - 1;
-		}
+            Date.CalendarId = cal.Id;
+            Date.Year = (int)YearBox.Value;
+            Date.MonthId = month.Id;
+            Date.DayIndex = (int)DayBox.Value - 1;
+        }
 
-		private void CalendarBox_SelectedIndexChanged(object sender, EventArgs e)
-		{
-			MonthBox.Items.Clear();
-			foreach (MonthInfo month in SelectedCalendar.Months)
-				MonthBox.Items.Add(month);
+        private void CalendarBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            MonthBox.Items.Clear();
+            foreach (var month in SelectedCalendar.Months)
+                MonthBox.Items.Add(month);
 
-			YearBox.Value = SelectedCalendar.CampaignYear;
-			MonthBox.SelectedIndex = 0;
-		}
+            YearBox.Value = SelectedCalendar.CampaignYear;
+            MonthBox.SelectedIndex = 0;
+        }
 
-		private void YearBox_ValueChanged(object sender, EventArgs e)
-		{
-			set_days();
-		}
+        private void YearBox_ValueChanged(object sender, EventArgs e)
+        {
+            set_days();
+        }
 
-		private void MonthBox_SelectedIndexChanged(object sender, EventArgs e)
-		{
-			set_days();
-		}
+        private void MonthBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            set_days();
+        }
 
-		void set_days()
-		{
-			if (SelectedMonth == null)
-				return;
+        private void set_days()
+        {
+            if (SelectedMonth == null)
+                return;
 
-			// How many days in this month?
-			int days = SelectedMonth.DayCount;
+            // How many days in this month?
+            var days = SelectedMonth.DayCount;
 
-			int year = (int)YearBox.Value;
-			if (year % SelectedMonth.LeapPeriod == 0)
-				days += SelectedMonth.LeapModifier;
+            var year = (int)YearBox.Value;
+            if (year % SelectedMonth.LeapPeriod == 0)
+                days += SelectedMonth.LeapModifier;
 
-			DayBox.Maximum = days;
-		}
-	}
+            DayBox.Maximum = days;
+        }
+    }
 }

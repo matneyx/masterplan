@@ -1,32 +1,27 @@
 ﻿using System;
 using System.Windows.Forms;
-
 using Masterplan.Data;
 
 namespace Masterplan.UI
 {
-	partial class PartyForm : Form
-	{
-		public PartyForm(Party p)
-		{
-			InitializeComponent();
+    internal partial class PartyForm : Form
+    {
+        public Party Party { get; }
 
-			fParty = p;
+        public PartyForm(Party p)
+        {
+            InitializeComponent();
 
-			SizeBox.Value = fParty.Size;
-			LevelBox.Value = fParty.Level;
-		}
+            Party = p;
 
-		public Party Party
-		{
-			get { return fParty; }
-		}
-		Party fParty = null;
+            SizeBox.Value = Party.Size;
+            LevelBox.Value = Party.Level;
+        }
 
-		private void OKBtn_Click(object sender, EventArgs e)
-		{
-			fParty.Size = (int)SizeBox.Value;
-			fParty.Level = (int)LevelBox.Value;
-		}
-	}
+        private void OKBtn_Click(object sender, EventArgs e)
+        {
+            Party.Size = (int)SizeBox.Value;
+            Party.Level = (int)LevelBox.Value;
+        }
+    }
 }

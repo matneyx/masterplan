@@ -1,51 +1,46 @@
 ﻿using System;
 using System.Windows.Forms;
-
 using Masterplan.Data;
 
 namespace Masterplan.UI
 {
-	partial class TrapActionForm : Form
-	{
-		public TrapActionForm(TrapAttack attack)
-		{
-			InitializeComponent();
+    internal partial class TrapActionForm : Form
+    {
+        public TrapAttack Attack { get; }
 
-			Array actions = Enum.GetValues(typeof(ActionType));
-			foreach (ActionType action in actions)
-				ActionBox.Items.Add(action);
+        public TrapActionForm(TrapAttack attack)
+        {
+            InitializeComponent();
 
-			Application.Idle += new EventHandler(Application_Idle);
+            var actions = Enum.GetValues(typeof(ActionType));
+            foreach (ActionType action in actions)
+                ActionBox.Items.Add(action);
 
-			fAttack = attack.Copy();
+            Application.Idle += Application_Idle;
 
-			NameBox.Text = fAttack.Name;
-			ActionBox.SelectedItem = fAttack.Action;
-			RangeBox.Text = fAttack.Range;
-			TargetBox.Text = fAttack.Target;
-		}
+            Attack = attack.Copy();
 
-		~TrapActionForm()
-		{
-			Application.Idle -= Application_Idle;
-		}
+            NameBox.Text = Attack.Name;
+            ActionBox.SelectedItem = Attack.Action;
+            RangeBox.Text = Attack.Range;
+            TargetBox.Text = Attack.Target;
+        }
 
-		void Application_Idle(object sender, EventArgs e)
-		{
-		}
+        ~TrapActionForm()
+        {
+            Application.Idle -= Application_Idle;
+        }
 
-		public TrapAttack Attack
-		{
-			get { return fAttack; }
-		}
-		TrapAttack fAttack = null;
+        private void Application_Idle(object sender, EventArgs e)
+        {
+        }
 
-		private void OKBtn_Click(object sender, EventArgs e)
-		{
-			fAttack.Name = NameBox.Text;
-			fAttack.Action = (ActionType)ActionBox.SelectedItem;
-			fAttack.Range = RangeBox.Text;
-			fAttack.Target = TargetBox.Text;
-		}
-	}
+        private void OKBtn_Click(object sender, EventArgs e)
+        {
+            Attack.Name = NameBox.Text;
+            Attack.Action = (ActionType)ActionBox.SelectedItem;
+            Attack.Range = RangeBox.Text;
+            Attack.Target = TargetBox.Text;
+        }
+    }
 }

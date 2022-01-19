@@ -1,176 +1,161 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-
 using Masterplan.Data;
 
 namespace Masterplan.UI
 {
-	partial class CreatureProfileForm : Form
-	{
-		public CreatureProfileForm(ICreature creature)
-		{
-			InitializeComponent();
+    internal partial class CreatureProfileForm : Form
+    {
+        private IRole _fRole;
 
-			fCreature = creature;
-			fRole = creature.Role;
+        public ICreature Creature { get; }
 
-			// Populate size
-			foreach (CreatureSize size in Enum.GetValues(typeof(CreatureSize)))
-				SizeBox.Items.Add(size);
+        public CreatureProfileForm(ICreature creature)
+        {
+            InitializeComponent();
 
-			// Populate origin
-			Array origins = Enum.GetValues(typeof(CreatureOrigin));
-			foreach (CreatureOrigin origin in origins)
-				OriginBox.Items.Add(origin);
+            Creature = creature;
+            _fRole = creature.Role;
 
-			// Populate type
-			Array types = Enum.GetValues(typeof(CreatureType));
-			foreach (CreatureType type in types)
-				TypeBox.Items.Add(type);
+            // Populate size
+            foreach (CreatureSize size in Enum.GetValues(typeof(CreatureSize)))
+                SizeBox.Items.Add(size);
 
-			if (fCreature is NPC)
-			{
-				List<Guid> template_ids = new List<Guid>();
-				foreach (CreatureTemplate template in Session.Templates)
-				{
-					if (template.Type == CreatureTemplateType.Class)
-						template_ids.Add(template.ID);
-				}
+            // Populate origin
+            var origins = Enum.GetValues(typeof(CreatureOrigin));
+            foreach (CreatureOrigin origin in origins)
+                OriginBox.Items.Add(origin);
 
-				foreach (CreatureTemplate template in Session.Project.Library.Templates)
-				{
-					if (template.Type == CreatureTemplateType.Class)
-					{
-						if (template_ids.Contains(template.ID))
-							continue;
+            // Populate type
+            var types = Enum.GetValues(typeof(CreatureType));
+            foreach (CreatureType type in types)
+                TypeBox.Items.Add(type);
 
-						template_ids.Add(template.ID);
-					}
-				}
+            if (Creature is Npc)
+            {
+                var templateIds = new List<Guid>();
+                foreach (var template in Session.Templates)
+                    if (template.Type == CreatureTemplateType.Class)
+                        templateIds.Add(template.Id);
 
-				foreach (Guid template_id in template_ids)
-				{
-					CreatureTemplate template = Session.FindTemplate(template_id, SearchType.Global);
-					TemplateBox.Items.Add(template);
-				}
+                foreach (var template in Session.Project.Library.Templates)
+                    if (template.Type == CreatureTemplateType.Class)
+                    {
+                        if (templateIds.Contains(template.Id))
+                            continue;
 
-				RoleLbl.Enabled = false;
-				RoleBtn.Enabled = false;
+                        templateIds.Add(template.Id);
+                    }
 
-				CatLbl.Enabled = false;
-				CatBox.Enabled = false;
-			}
-			else if (fCreature is CustomCreature)
-			{
-				TemplateLbl.Enabled = false;
-				TemplateBox.Enabled = false;
+                foreach (var templateId in templateIds)
+                {
+                    var template = Session.FindTemplate(templateId, SearchType.Global);
+                    TemplateBox.Items.Add(template);
+                }
 
-				CatLbl.Enabled = false;
-				CatBox.Enabled = false;
-			}
-			else
-			{
-				TemplateLbl.Enabled = false;
-				TemplateBox.Enabled = false;
+                RoleLbl.Enabled = false;
+                RoleBtn.Enabled = false;
 
-				// Populate categories
-				List<string> cats = new List<string>();
-				foreach (Creature c in Session.Creatures)
-				{
-					string cat = c.Category;
-					if ((cat != "") && (!cats.Contains(cat)))
-						cats.Add(cat);
-				}
-				foreach (string cat in cats)
-					CatBox.Items.Add(cat);
-			}
+                CatLbl.Enabled = false;
+                CatBox.Enabled = false;
+            }
+            else if (Creature is CustomCreature)
+            {
+                TemplateLbl.Enabled = false;
+                TemplateBox.Enabled = false;
 
-			NameBox.Text = fCreature.Name;
-			LevelBox.Value = fCreature.Level;
-			SizeBox.SelectedItem = fCreature.Size;
-			OriginBox.SelectedItem = fCreature.Origin;
-			TypeBox.SelectedItem = fCreature.Type;
-			KeywordBox.Text = fCreature.Keywords;
+                CatLbl.Enabled = false;
+                CatBox.Enabled = false;
+            }
+            else
+            {
+                TemplateLbl.Enabled = false;
+                TemplateBox.Enabled = false;
 
-			if (fCreature is NPC)
-			{
-				NPC npc = fCreature as NPC;
-				CreatureTemplate ct = Session.FindTemplate(npc.TemplateID, SearchType.Global);
+                // Populate categories
+                var cats = new List<string>();
+                foreach (var c in Session.Creatures)
+                {
+                    var cat = c.Category;
+                    if (cat != "" && !cats.Contains(cat))
+                        cats.Add(cat);
+                }
 
-				if (ct != null)
-				{
-					TemplateBox.SelectedItem = ct;
-				}
-				else
-				{
-					TemplateBox.SelectedIndex = 0;
-				}
+                foreach (var cat in cats)
+                    CatBox.Items.Add(cat);
+            }
 
-				CatBox.Text = "NPC";
-			}
-			else if (fCreature is CustomCreature)
-			{
-				CatBox.Text = "Custom Creature";
-			}
-			else
-			{
-				RoleBtn.Text = fCreature.Role.ToString();
-				CatBox.Text = fCreature.Category;
-			}
-		}
+            NameBox.Text = Creature.Name;
+            LevelBox.Value = Creature.Level;
+            SizeBox.SelectedItem = Creature.Size;
+            OriginBox.SelectedItem = Creature.Origin;
+            TypeBox.SelectedItem = Creature.Type;
+            KeywordBox.Text = Creature.Keywords;
 
-		public ICreature Creature
-		{
-			get { return fCreature; }
-		}
-		ICreature fCreature = null;
+            if (Creature is Npc)
+            {
+                var npc = Creature as Npc;
+                var ct = Session.FindTemplate(npc.TemplateId, SearchType.Global);
 
-		IRole fRole = null;
+                if (ct != null)
+                    TemplateBox.SelectedItem = ct;
+                else
+                    TemplateBox.SelectedIndex = 0;
 
-		private void RoleBtn_Click(object sender, EventArgs e)
-		{
-			RoleForm dlg = new RoleForm(fCreature.Role, ThreatType.Creature);
-			if (dlg.ShowDialog() == DialogResult.OK)
-			{
-				fRole = dlg.Role;
-				RoleBtn.Text = fRole.ToString();
-			}
-		}
+                CatBox.Text = "NPC";
+            }
+            else if (Creature is CustomCreature)
+            {
+                CatBox.Text = "Custom Creature";
+            }
+            else
+            {
+                RoleBtn.Text = Creature.Role.ToString();
+                CatBox.Text = Creature.Category;
+            }
+        }
 
-		private void TemplateBox_SelectedIndexChanged(object sender, EventArgs e)
-		{
-			CreatureTemplate ct = TemplateBox.SelectedItem as CreatureTemplate;
-			if (ct != null)
-			{
-				RoleBtn.Text = ct.Role.ToString();
-			}
-		}
+        private void RoleBtn_Click(object sender, EventArgs e)
+        {
+            var dlg = new RoleForm(Creature.Role, ThreatType.Creature);
+            if (dlg.ShowDialog() == DialogResult.OK)
+            {
+                _fRole = dlg.Role;
+                RoleBtn.Text = _fRole.ToString();
+            }
+        }
 
-		private void OKBtn_Click(object sender, EventArgs e)
-		{
-			fCreature.Name = NameBox.Text;
-			fCreature.Level = (int)LevelBox.Value;
-			fCreature.Size = (CreatureSize)SizeBox.SelectedItem;
-			fCreature.Origin = (CreatureOrigin)OriginBox.SelectedItem;
-			fCreature.Type = (CreatureType)TypeBox.SelectedItem;
-			fCreature.Keywords = KeywordBox.Text;
+        private void TemplateBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            var ct = TemplateBox.SelectedItem as CreatureTemplate;
+            if (ct != null) RoleBtn.Text = ct.Role.ToString();
+        }
 
-			if (fCreature is NPC)
-			{
-				CreatureTemplate ct = TemplateBox.SelectedItem as CreatureTemplate;
+        private void OKBtn_Click(object sender, EventArgs e)
+        {
+            Creature.Name = NameBox.Text;
+            Creature.Level = (int)LevelBox.Value;
+            Creature.Size = (CreatureSize)SizeBox.SelectedItem;
+            Creature.Origin = (CreatureOrigin)OriginBox.SelectedItem;
+            Creature.Type = (CreatureType)TypeBox.SelectedItem;
+            Creature.Keywords = KeywordBox.Text;
 
-				NPC npc = fCreature as NPC;
-				npc.TemplateID = (ct != null) ? ct.ID : Guid.Empty;
-			}
-			else
-			{
-				fCreature.Role = fRole;
-				fCreature.Category = CatBox.Text;
+            if (Creature is Npc)
+            {
+                var ct = TemplateBox.SelectedItem as CreatureTemplate;
 
-				if (fCreature.Role is Minion)
-					fCreature.HP = 1;
-			}
-		}
-	}
+                var npc = Creature as Npc;
+                npc.TemplateId = ct?.Id ?? Guid.Empty;
+            }
+            else
+            {
+                Creature.Role = _fRole;
+                Creature.Category = CatBox.Text;
+
+                if (Creature.Role is Minion)
+                    Creature.Hp = 1;
+            }
+        }
+    }
 }

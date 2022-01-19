@@ -1,338 +1,326 @@
 ﻿using System;
 using System.Collections.Generic;
-
 using Masterplan.Data;
 
 namespace Masterplan.Tools
 {
-	class CreatureHelper
-	{
-		public static void CopyFields(ICreature copy_from, ICreature copy_to)
-		{
-			try
-			{
-				if (copy_from != null)
-				{
-					copy_to.ID = copy_from.ID;
-					copy_to.Name = copy_from.Name;
-					copy_to.Details = copy_from.Details;
-					copy_to.Size = copy_from.Size;
-					copy_to.Origin = copy_from.Origin;
-					copy_to.Type = copy_from.Type;
-					copy_to.Keywords = copy_from.Keywords;
-					copy_to.Level = copy_from.Level;
-					copy_to.Role = (copy_from.Role != null) ? copy_from.Role.Copy() : null;
-					copy_to.Senses = copy_from.Senses;
-					copy_to.Movement = copy_from.Movement;
-					copy_to.Alignment = copy_from.Alignment;
-					copy_to.Languages = copy_from.Languages;
-					copy_to.Skills = copy_from.Skills;
-					copy_to.Equipment = copy_from.Equipment;
-					copy_to.Category = copy_from.Category;
+    internal class CreatureHelper
+    {
+        public static void CopyFields(ICreature copyFrom, ICreature copyTo)
+        {
+            try
+            {
+                if (copyFrom != null)
+                {
+                    copyTo.Id = copyFrom.Id;
+                    copyTo.Name = copyFrom.Name;
+                    copyTo.Details = copyFrom.Details;
+                    copyTo.Size = copyFrom.Size;
+                    copyTo.Origin = copyFrom.Origin;
+                    copyTo.Type = copyFrom.Type;
+                    copyTo.Keywords = copyFrom.Keywords;
+                    copyTo.Level = copyFrom.Level;
+                    copyTo.Role = copyFrom.Role?.Copy();
+                    copyTo.Senses = copyFrom.Senses;
+                    copyTo.Movement = copyFrom.Movement;
+                    copyTo.Alignment = copyFrom.Alignment;
+                    copyTo.Languages = copyFrom.Languages;
+                    copyTo.Skills = copyFrom.Skills;
+                    copyTo.Equipment = copyFrom.Equipment;
+                    copyTo.Category = copyFrom.Category;
 
-					copy_to.Strength = copy_from.Strength.Copy();
-					copy_to.Constitution = copy_from.Constitution.Copy();
-					copy_to.Dexterity = copy_from.Dexterity.Copy();
-					copy_to.Intelligence = copy_from.Intelligence.Copy();
-					copy_to.Wisdom = copy_from.Wisdom.Copy();
-					copy_to.Charisma = copy_from.Charisma.Copy();
+                    copyTo.Strength = copyFrom.Strength.Copy();
+                    copyTo.Constitution = copyFrom.Constitution.Copy();
+                    copyTo.Dexterity = copyFrom.Dexterity.Copy();
+                    copyTo.Intelligence = copyFrom.Intelligence.Copy();
+                    copyTo.Wisdom = copyFrom.Wisdom.Copy();
+                    copyTo.Charisma = copyFrom.Charisma.Copy();
 
-					copy_to.HP = copy_from.HP;
-					copy_to.Initiative = copy_from.Initiative;
-					copy_to.AC = copy_from.AC;
-					copy_to.Fortitude = copy_from.Fortitude;
-					copy_to.Reflex = copy_from.Reflex;
-					copy_to.Will = copy_from.Will;
+                    copyTo.Hp = copyFrom.Hp;
+                    copyTo.Initiative = copyFrom.Initiative;
+                    copyTo.Ac = copyFrom.Ac;
+                    copyTo.Fortitude = copyFrom.Fortitude;
+                    copyTo.Reflex = copyFrom.Reflex;
+                    copyTo.Will = copyFrom.Will;
 
-					copy_to.Regeneration = (copy_from.Regeneration != null) ? copy_from.Regeneration.Copy() : null;
+                    copyTo.Regeneration = copyFrom.Regeneration?.Copy();
 
-					copy_to.Auras.Clear();
-					foreach (Aura aura in copy_from.Auras)
-						copy_to.Auras.Add(aura.Copy());
+                    copyTo.Auras.Clear();
+                    foreach (var aura in copyFrom.Auras)
+                        copyTo.Auras.Add(aura.Copy());
 
-					copy_to.CreaturePowers.Clear();
-					foreach (CreaturePower cp in copy_from.CreaturePowers)
-						copy_to.CreaturePowers.Add(cp.Copy());
+                    copyTo.CreaturePowers.Clear();
+                    foreach (var cp in copyFrom.CreaturePowers)
+                        copyTo.CreaturePowers.Add(cp.Copy());
 
-					copy_to.DamageModifiers.Clear();
-					foreach (DamageModifier dm in copy_from.DamageModifiers)
-						copy_to.DamageModifiers.Add(dm.Copy());
+                    copyTo.DamageModifiers.Clear();
+                    foreach (var dm in copyFrom.DamageModifiers)
+                        copyTo.DamageModifiers.Add(dm.Copy());
 
-					copy_to.Resist = copy_from.Resist;
-					copy_to.Vulnerable = copy_from.Vulnerable;
-					copy_to.Immune = copy_from.Immune;
-					copy_to.Tactics = copy_from.Tactics;
-				}
-			}
-			catch (Exception ex)
-			{
-				LogSystem.Trace(ex);
-			}
-		}
+                    copyTo.Resist = copyFrom.Resist;
+                    copyTo.Vulnerable = copyFrom.Vulnerable;
+                    copyTo.Immune = copyFrom.Immune;
+                    copyTo.Tactics = copyFrom.Tactics;
+                }
+            }
+            catch (Exception ex)
+            {
+                LogSystem.Trace(ex);
+            }
+        }
 
-		public static void UpdateRegen(ICreature c)
-		{
-			Aura regen_aura = FindAura(c, "Regeneration");
-			if (regen_aura == null)
-				regen_aura = FindAura(c, "Regen");
+        public static void UpdateRegen(ICreature c)
+        {
+            var regenAura = FindAura(c, "Regeneration");
+            if (regenAura == null)
+                regenAura = FindAura(c, "Regen");
 
-			if (regen_aura != null)
-			{
-				Regeneration regen = ConvertAura(regen_aura.Details);
-				if (regen != null)
-				{
-					c.Regeneration = regen;
-					c.Auras.Remove(regen_aura);
-				}
-			}
-		}
+            if (regenAura != null)
+            {
+                var regen = ConvertAura(regenAura.Details);
+                if (regen != null)
+                {
+                    c.Regeneration = regen;
+                    c.Auras.Remove(regenAura);
+                }
+            }
+        }
 
-		public static void UpdatePowerRange(ICreature c, CreaturePower power)
-		{
-			if ((power.Range != null) && (power.Range != ""))
-				return;
+        public static void UpdatePowerRange(ICreature c, CreaturePower power)
+        {
+            if (power.Range != null && power.Range != "")
+                return;
 
-			List<string> ranges = new List<string>();
-			ranges.Add("close blast");
-			ranges.Add("close burst");
-			ranges.Add("area burst");
-			ranges.Add("melee");
-			ranges.Add("ranged");
+            var ranges = new List<string>();
+            ranges.Add("close blast");
+            ranges.Add("close burst");
+            ranges.Add("area burst");
+            ranges.Add("melee");
+            ranges.Add("ranged");
 
-			string details = "";
+            var details = "";
 
-			string[] clauses = power.Details.Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries);
-			foreach (string clause in clauses)
-			{
-				bool is_range_clause = false;
-				foreach (string range in ranges)
-				{
-					if (clause.ToLower().Contains(range))
-					{
-						is_range_clause = true;
-						break;
-					}
-				}
+            var clauses = power.Details.Split(new[] { ";" }, StringSplitOptions.RemoveEmptyEntries);
+            foreach (var clause in clauses)
+            {
+                var isRangeClause = false;
+                foreach (var range in ranges)
+                    if (clause.ToLower().Contains(range))
+                    {
+                        isRangeClause = true;
+                        break;
+                    }
 
-				if (is_range_clause)
-				{
-					power.Range = clause;
-				}
-				else
-				{
-					if (details != "")
-						details += "; ";
+                if (isRangeClause)
+                {
+                    power.Range = clause;
+                }
+                else
+                {
+                    if (details != "")
+                        details += "; ";
 
-					details += clause;
-				}
-			}
+                    details += clause;
+                }
+            }
 
-			power.Details = details;
-		}
+            power.Details = details;
+        }
 
-		public static Aura FindAura(ICreature c, string name)
-		{
-			foreach (Aura a in c.Auras)
-			{
-				if (a.Name == name)
-					return a;
-			}
+        public static Aura FindAura(ICreature c, string name)
+        {
+            foreach (var a in c.Auras)
+                if (a.Name == name)
+                    return a;
 
-			return null;
-		}
+            return null;
+        }
 
-		public static Regeneration ConvertAura(string aura_details)
-		{
-			aura_details = aura_details.Trim();
+        public static Regeneration ConvertAura(string auraDetails)
+        {
+            auraDetails = auraDetails.Trim();
 
-			bool parsing_value = true;
-			string val_str = "";
-			string details = "";
+            var parsingValue = true;
+            var valStr = "";
+            var details = "";
 
-			foreach (char ch in aura_details)
-			{
-				if (!char.IsDigit(ch))
-					parsing_value = false;
+            foreach (var ch in auraDetails)
+            {
+                if (!char.IsDigit(ch))
+                    parsingValue = false;
 
-				if (parsing_value)
-					val_str += ch;
-				else
-					details += ch;
-			}
+                if (parsingValue)
+                    valStr += ch;
+                else
+                    details += ch;
+            }
 
-			details = details.Trim();
-			if (details.StartsWith("(") && details.EndsWith(")"))
-			{
-				details = details.Substring(1);
-				details = details.Substring(0, details.Length - 1);
+            details = details.Trim();
+            if (details.StartsWith("(") && details.EndsWith(")"))
+            {
+                details = details.Substring(1);
+                details = details.Substring(0, details.Length - 1);
 
-				details.Trim();
-			}
+                details.Trim();
+            }
 
-			try
-			{
-				int value = (val_str != "") ? int.Parse(val_str) : 0;
+            try
+            {
+                var value = valStr != "" ? int.Parse(valStr) : 0;
 
-				return new Regeneration(value, details);
-			}
-			catch (Exception ex)
-			{
-				LogSystem.Trace(ex);
+                return new Regeneration(value, details);
+            }
+            catch (Exception ex)
+            {
+                LogSystem.Trace(ex);
 
-				return null;
-			}
-		}
+                return null;
+            }
+        }
 
-		public static List<CreaturePower> CreaturePowersByCategory(ICreature c, CreaturePowerCategory category)
-		{
-			List<CreaturePower> powers = new List<CreaturePower>();
+        public static List<CreaturePower> CreaturePowersByCategory(ICreature c, CreaturePowerCategory category)
+        {
+            var powers = new List<CreaturePower>();
 
-			foreach (CreaturePower cp in c.CreaturePowers)
-			{
-				if (cp.Category == category)
-					powers.Add(cp);
-			}
+            foreach (var cp in c.CreaturePowers)
+                if (cp.Category == category)
+                    powers.Add(cp);
 
-			return powers;
-		}
+            return powers;
+        }
 
-		public static void AdjustCreatureLevel(ICreature creature, int delta)
-		{
-			// HP
-			if (creature.Role is ComplexRole)
-			{
-				ComplexRole role = creature.Role as ComplexRole;
+        public static void AdjustCreatureLevel(ICreature creature, int delta)
+        {
+            // HP
+            if (creature.Role is ComplexRole)
+            {
+                var role = creature.Role as ComplexRole;
 
-				int hp = 8;
-				switch (role.Type)
-				{
-					case RoleType.Artillery:
-					case RoleType.Lurker:
-						hp = 6;
-						break;
-					case RoleType.Brute:
-						hp = 10;
-						break;
-				}
+                var hp = 8;
+                switch (role.Type)
+                {
+                    case RoleType.Artillery:
+                    case RoleType.Lurker:
+                        hp = 6;
+                        break;
+                    case RoleType.Brute:
+                        hp = 10;
+                        break;
+                }
 
-				switch (role.Flag)
-				{
-					case RoleFlag.Elite:
-						hp *= 2;
-						break;
-					case RoleFlag.Solo:
-						hp *= 5;
-						break;
-				}
+                switch (role.Flag)
+                {
+                    case RoleFlag.Elite:
+                        hp *= 2;
+                        break;
+                    case RoleFlag.Solo:
+                        hp *= 5;
+                        break;
+                }
 
-				creature.HP += hp * delta;
-				creature.HP = Math.Max(creature.HP, 1);
-			}
+                creature.Hp += hp * delta;
+                creature.Hp = Math.Max(creature.Hp, 1);
+            }
 
-			// Init
-			int init_bonus = creature.Initiative - (creature.Level / 2);
-			creature.Initiative = init_bonus + ((creature.Level + delta) / 2);
+            // Init
+            var initBonus = creature.Initiative - creature.Level / 2;
+            creature.Initiative = initBonus + (creature.Level + delta) / 2;
 
-			// Defences
-			creature.AC += delta;
-			creature.Fortitude += delta;
-			creature.Reflex += delta;
-			creature.Will += delta;
+            // Defences
+            creature.Ac += delta;
+            creature.Fortitude += delta;
+            creature.Reflex += delta;
+            creature.Will += delta;
 
-			// Powers
-			foreach (CreaturePower cp in creature.CreaturePowers)
-				AdjustPowerLevel(cp, delta);
+            // Powers
+            foreach (var cp in creature.CreaturePowers)
+                AdjustPowerLevel(cp, delta);
 
-			// Skills
-			if (creature.Skills != "")
-			{
-				// Parse string
-				Dictionary<string, int> skill_list = CreatureHelper.ParseSkills(creature.Skills);
+            // Skills
+            if (creature.Skills != "")
+            {
+                // Parse string
+                var skillList = ParseSkills(creature.Skills);
 
-				// Sort
-				BinarySearchTree<string> bst = new BinarySearchTree<string>();
-				foreach (string skill_name in skill_list.Keys)
-					bst.Add(skill_name);
+                // Sort
+                var bst = new BinarySearchTree<string>();
+                foreach (var skillName in skillList.Keys)
+                    bst.Add(skillName);
 
-				string skill_str = "";
-				foreach (string skill_name in bst.SortedList)
-				{
-					if (skill_str != "")
-						skill_str += ", ";
+                var skillStr = "";
+                foreach (var skillName in bst.SortedList)
+                {
+                    if (skillStr != "")
+                        skillStr += ", ";
 
-					int mod = skill_list[skill_name];
+                    var mod = skillList[skillName];
 
-					// Apply level adjustment
-					int bonus = mod - (creature.Level / 2);
-					mod = bonus + ((creature.Level + delta) / 2);
+                    // Apply level adjustment
+                    var bonus = mod - creature.Level / 2;
+                    mod = bonus + (creature.Level + delta) / 2;
 
-					if (mod >= 0)
-						skill_str += skill_name + " +" + mod;
-					else
-						skill_str += skill_name + " " + mod;
-				}
+                    if (mod >= 0)
+                        skillStr += skillName + " +" + mod;
+                    else
+                        skillStr += skillName + " " + mod;
+                }
 
-				creature.Skills = skill_str;
-			}
+                creature.Skills = skillStr;
+            }
 
-			// Level
-			creature.Level += delta;
-		}
+            // Level
+            creature.Level += delta;
+        }
 
-		public static void AdjustPowerLevel(CreaturePower cp, int delta)
-		{
-			if (cp.Attack != null)
-				cp.Attack.Bonus += delta;
+        public static void AdjustPowerLevel(CreaturePower cp, int delta)
+        {
+            if (cp.Attack != null)
+                cp.Attack.Bonus += delta;
 
-			// Adjust power damage
-			string dmg_str = AI.ExtractDamage(cp.Details);
-			if (dmg_str != "")
-			{
-				DiceExpression exp = DiceExpression.Parse(dmg_str);
-				if (exp != null)
-				{
-					DiceExpression exp_adj = exp.Adjust(delta);
-					if ((exp_adj != null) && (exp.ToString() != exp_adj.ToString()))
-					{
-						cp.Details = cp.Details.Replace(dmg_str, exp_adj + " damage");
-					}
-				}
-			}
-		}
+            // Adjust power damage
+            var dmgStr = Ai.ExtractDamage(cp.Details);
+            if (dmgStr != "")
+            {
+                var exp = DiceExpression.Parse(dmgStr);
+                var expAdj = exp?.Adjust(delta);
+                if (expAdj != null && exp.ToString() != expAdj.ToString())
+                    cp.Details = cp.Details.Replace(dmgStr, expAdj + " damage");
+            }
+        }
 
-		public static Dictionary<string, int> ParseSkills(string source)
-		{
-			Dictionary<string, int> skill_list = new Dictionary<string, int>();
+        public static Dictionary<string, int> ParseSkills(string source)
+        {
+            var skillList = new Dictionary<string, int>();
 
-			if ((source != null) && (source != ""))
-			{
-				string[] skills = source.Split(new string[] { ",", ";" }, StringSplitOptions.RemoveEmptyEntries);
-				foreach (string skill in skills)
-				{
-					string str = skill.Trim();
+            if (source != null && source != "")
+            {
+                var skills = source.Split(new[] { ",", ";" }, StringSplitOptions.RemoveEmptyEntries);
+                foreach (var skill in skills)
+                {
+                    var str = skill.Trim();
 
-					int index = str.IndexOf(" ");
-					if (index != -1)
-					{
-						string skill_name = str.Substring(0, index);
-						string skill_bonus = str.Substring(index + 1);
+                    var index = str.IndexOf(" ");
+                    if (index != -1)
+                    {
+                        var skillName = str.Substring(0, index);
+                        var skillBonus = str.Substring(index + 1);
 
-						int bonus = 0;
-						try
-						{
-							bonus = int.Parse(skill_bonus);
-						}
-						catch
-						{
-							bonus = 0;
-						}
+                        var bonus = 0;
+                        try
+                        {
+                            bonus = int.Parse(skillBonus);
+                        }
+                        catch
+                        {
+                            bonus = 0;
+                        }
 
-						skill_list[skill_name] = bonus;
-					}
-				}
-			}
+                        skillList[skillName] = bonus;
+                    }
+                }
+            }
 
-			return skill_list;
-		}
-	}
+            return skillList;
+        }
+    }
 }

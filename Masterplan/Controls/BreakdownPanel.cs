@@ -1,226 +1,187 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
-
 using Masterplan.Data;
 
 namespace Masterplan.Controls
 {
-	partial class BreakdownPanel : UserControl
-	{
-		public BreakdownPanel()
-		{
-			InitializeComponent();
+    internal partial class BreakdownPanel : UserControl
+    {
+        private readonly StringFormat _centered = new StringFormat();
+        private Dictionary<Point, int> _cells;
+        private List<string> _columns;
+        private Dictionary<int, int> _columnTotals;
 
-			SetStyle(ControlStyles.AllPaintingInWmPaint
-				| ControlStyles.OptimizedDoubleBuffer
-				| ControlStyles.ResizeRedraw
-				| ControlStyles.UserPaint, true);
+        private List<HeroRoleType> _rows;
+        private Dictionary<int, int> _rowTotals;
 
-			fCentred.Alignment = StringAlignment.Center;
-			fCentred.LineAlignment = StringAlignment.Center;
-			fCentred.Trimming = StringTrimming.EllipsisWord;
-		}
+        public List<Hero> Heroes { get; set; }
 
-		#region Properties
+        public BreakdownPanel()
+        {
+            InitializeComponent();
 
-		public List<Hero> Heroes
-		{
-			get { return fHeroes; }
-			set { fHeroes = value; }
-		}
-		List<Hero> fHeroes = null;
+            SetStyle(ControlStyles.AllPaintingInWmPaint
+                     | ControlStyles.OptimizedDoubleBuffer
+                     | ControlStyles.ResizeRedraw
+                     | ControlStyles.UserPaint, true);
 
-		List<HeroRoleType> fRows = null;
-		List<string> fColumns = null;
-		Dictionary<Point, int> fCells = null;
-		Dictionary<int, int> fRowTotals = null;
-		Dictionary<int, int> fColumnTotals = null;
+            _centered.Alignment = StringAlignment.Center;
+            _centered.LineAlignment = StringAlignment.Center;
+            _centered.Trimming = StringTrimming.EllipsisWord;
+        }
 
-		StringFormat fCentred = new StringFormat();
+        protected override void OnPaint(PaintEventArgs e)
+        {
+            base.OnPaint(e);
 
-		#endregion
+            if (Heroes == null)
+            {
+                e.Graphics.DrawString("(no heroes)", Font, SystemBrushes.WindowText, ClientRectangle, _centered);
+                return;
+            }
 
-		#region Painting
+            analyse_party();
 
-		protected override void OnPaint(PaintEventArgs e)
-		{
-			base.OnPaint(e);
+            var header = new Font(Font, FontStyle.Bold);
 
-			if (fHeroes == null)
-			{
-				e.Graphics.DrawString("(no heroes)", Font, SystemBrushes.WindowText, ClientRectangle, fCentred);
-				return;
-			}
+            for (var row = 0; row != _rows.Count + 1; ++row)
+            {
+                var str = "Total";
+                if (row != _rows.Count)
+                {
+                    var role = _rows[row];
+                    str = role.ToString();
+                }
 
-			analyse_party();
+                // Draw row header cell
+                var rowHeaderCell = get_rect(0, row + 1);
+                e.Graphics.DrawString(str, header, SystemBrushes.WindowText, rowHeaderCell, _centered);
+            }
 
-			#region Row / column headers
+            for (var col = 0; col != _columns.Count + 1; ++col)
+            {
+                var str = "Total";
+                if (col != _columns.Count) str = _columns[col];
 
-			Font header = new Font(Font, FontStyle.Bold);
+                // Draw col header cell
+                var columnHeaderCell = get_rect(col + 1, 0);
+                e.Graphics.DrawString(str, header, SystemBrushes.WindowText, columnHeaderCell, _centered);
+            }
 
-			for (int row = 0; row != fRows.Count + 1; ++row)
-			{
-				string str = "Total";
-				if (row != fRows.Count)
-				{
-					HeroRoleType role = fRows[row];
-					str = role.ToString();
-				}
+            for (var row = 0; row != _rows.Count; ++row)
+            for (var col = 0; col != _columns.Count; ++col)
+            {
+                var heroes = _cells[new Point(row, col)];
 
-				// Draw row header cell
-				RectangleF rowhdr = get_rect(0, row + 1);
-				e.Graphics.DrawString(str, header, SystemBrushes.WindowText, rowhdr, fCentred);
-			}
+                var rect = get_rect(col + 1, row + 1);
+                e.Graphics.DrawString(heroes.ToString(), Font, SystemBrushes.WindowText, rect, _centered);
+            }
 
-			for (int col = 0; col != fColumns.Count + 1; ++col)
-			{
-				string str = "Total";
-				if (col != fColumns.Count)
-				{
-					str = fColumns[col];
-				}
+            // Row totals
+            for (var row = 0; row != _rows.Count; ++row)
+            {
+                var count = _rowTotals[row];
 
-				// Draw col header cell
-				RectangleF colhdr = get_rect(col + 1, 0);
-				e.Graphics.DrawString(str, header, SystemBrushes.WindowText, colhdr, fCentred);
-			}
+                // Draw row header cell
+                var rowHeaderCell = get_rect(_columns.Count + 1, row + 1);
+                e.Graphics.DrawString(count.ToString(), header, SystemBrushes.WindowText, rowHeaderCell, _centered);
+            }
 
-			#endregion
+            // Column totals
+            for (var col = 0; col != _columns.Count; ++col)
+            {
+                var count = _columnTotals[col];
 
-			#region Matrix cells
+                // Draw col header cell
+                var columnHeaderCell = get_rect(col + 1, _rows.Count + 1);
+                e.Graphics.DrawString(count.ToString(), header, SystemBrushes.WindowText, columnHeaderCell, _centered);
+            }
 
-			for (int row = 0; row != fRows.Count; ++row)
-			{
-				for (int col = 0; col != fColumns.Count; ++col)
-				{
-					int heroes = fCells[new Point(row, col)];
+            // Total
+            var totalRect = get_rect(_columns.Count + 1, _rows.Count + 1);
+            e.Graphics.DrawString(Heroes.Count.ToString(), header, SystemBrushes.WindowText, totalRect, _centered);
 
-					RectangleF rect = get_rect(col + 1, row + 1);
-					e.Graphics.DrawString(heroes.ToString(), Font, SystemBrushes.WindowText, rect, fCentred);
-				}
-			}
+            var cellWidth = (float)ClientRectangle.Width / (_columns.Count + 2);
+            var cellHeight = (float)ClientRectangle.Height / (_rows.Count + 2);
 
-			#endregion
+            var p = new Pen(SystemColors.ControlDark);
 
-			#region Totals
+            // Draw horizontal lines
+            for (var row = 0; row != _rows.Count + 1; ++row)
+            {
+                var y = (row + 1) * cellHeight;
+                e.Graphics.DrawLine(p, new PointF(ClientRectangle.Left, y), new PointF(ClientRectangle.Right, y));
+            }
 
-			// Row totals
-			for (int row = 0; row != fRows.Count; ++row)
-			{
-				HeroRoleType role = fRows[row];
-				int count = fRowTotals[row];
+            // Draw vertical lines
+            for (var col = 0; col != _columns.Count + 1; ++col)
+            {
+                var x = (col + 1) * cellWidth;
+                e.Graphics.DrawLine(p, new PointF(x, ClientRectangle.Top), new PointF(x, ClientRectangle.Bottom));
+            }
+        }
 
-				// Draw row header cell
-				RectangleF rowhdr = get_rect(fColumns.Count + 1, row + 1);
-				e.Graphics.DrawString(count.ToString(), header, SystemBrushes.WindowText, rowhdr, fCentred);
-			}
+        private void analyse_party()
+        {
+            if (Heroes == null)
+                return;
 
-			// Column totals
-			for (int col = 0; col != fColumns.Count; ++col)
-			{
-				string source = fColumns[col];
-				int count = fColumnTotals[col];
+            // Rows
+            _rows = new List<HeroRoleType>();
+            foreach (HeroRoleType role in Enum.GetValues(typeof(HeroRoleType)))
+                _rows.Add(role);
 
-				// Draw col header cell
-				RectangleF colhdr = get_rect(col + 1, fRows.Count + 1);
-				e.Graphics.DrawString(count.ToString(), header, SystemBrushes.WindowText, colhdr, fCentred);
-			}
+            // Columns
+            _columns = new List<string>();
 
-			// Total
-			RectangleF total_rect = get_rect(fColumns.Count + 1, fRows.Count + 1);
-			e.Graphics.DrawString(fHeroes.Count.ToString(), header, SystemBrushes.WindowText, total_rect, fCentred);
+            Heroes.ForEach(h =>
+            {
+                if (!_columns.Contains(h.PowerSource))
+                    _columns.Add(h.PowerSource);
+            });
 
-			#endregion
+            _columns.Sort();
 
-			#region Grid
+            _cells = new Dictionary<Point, int>();
+            _rowTotals = new Dictionary<int, int>();
+            _columnTotals = new Dictionary<int, int>();
 
-			float cellwidth = (float)ClientRectangle.Width / (fColumns.Count + 2);
-			float cellheight = (float)ClientRectangle.Height / (fRows.Count + 2);
+            for (var row = 0; row != _rows.Count; ++row)
+            {
+                var role = _rows[row];
 
-			Pen p = new Pen(SystemColors.ControlDark);
+                if (!_rowTotals.ContainsKey(row))
+                    _rowTotals[row] = 0;
 
-			// Draw horizontal lines
-			for (int row = 0; row != fRows.Count + 1; ++row)
-			{
-				float y = (row + 1) * cellheight;
-				e.Graphics.DrawLine(p, new PointF(ClientRectangle.Left, y), new PointF(ClientRectangle.Right, y));
-			}
+                for (var col = 0; col != _columns.Count; ++col)
+                {
+                    var source = _columns[col];
 
-			// Draw vertical lines
-			for (int col = 0; col != fColumns.Count + 1; ++col)
-			{
-				float x = (col + 1) * cellwidth;
-				e.Graphics.DrawLine(p, new PointF(x, ClientRectangle.Top), new PointF(x, ClientRectangle.Bottom));
-			}
+                    // Get list of heroes for this cell
+                    var heroes = Heroes.Count(card => card.Role == role && card.PowerSource == source);
 
-			#endregion
-		}
+                    _cells[new Point(row, col)] = heroes;
 
-		#endregion
+                    // Add to row total
+                    _rowTotals[row] += heroes;
 
-		void analyse_party()
-		{
-			if (fHeroes == null)
-				return;
+                    // Add to column total
+                    if (!_columnTotals.ContainsKey(col))
+                        _columnTotals[col] = 0;
+                    _columnTotals[col] += heroes;
+                }
+            }
+        }
 
-			// Rows
-			fRows = new List<HeroRoleType>();
-			foreach (HeroRoleType role in Enum.GetValues(typeof(HeroRoleType)))
-				fRows.Add(role);
+        private RectangleF get_rect(int x, int y)
+        {
+            var width = (float)ClientRectangle.Width / (_columns.Count + 2);
+            var height = (float)ClientRectangle.Height / (_rows.Count + 2);
 
-			// Columns
-			fColumns = new List<string>();
-			foreach (Hero h in fHeroes)
-			{
-				if (!fColumns.Contains(h.PowerSource))
-					fColumns.Add(h.PowerSource);
-			}
-			fColumns.Sort();
-
-			fCells = new Dictionary<Point, int>();
-			fRowTotals = new Dictionary<int, int>();
-			fColumnTotals = new Dictionary<int, int>();
-
-			for (int row = 0; row != fRows.Count; ++row)
-			{
-				HeroRoleType role = fRows[row];
-
-				if (!fRowTotals.ContainsKey(row))
-					fRowTotals[row] = 0;
-
-				for (int col = 0; col != fColumns.Count; ++col)
-				{
-					string source = fColumns[col];
-
-					// Get list of heroes for this cell
-					int heroes = 0;
-					foreach (Hero card in fHeroes)
-					{
-						if ((card.Role == role) && (card.PowerSource == source))
-							heroes += 1;
-					}
-
-					fCells[new Point(row, col)] = heroes;
-
-					// Add to row total
-					fRowTotals[row] += heroes;
-
-					// Add to column total
-					if (!fColumnTotals.ContainsKey(col))
-						fColumnTotals[col] = 0;
-					fColumnTotals[col] += heroes;
-				}
-			}
-		}
-
-		RectangleF get_rect(int x, int y)
-		{
-			float width = (float)ClientRectangle.Width / (fColumns.Count + 2);
-			float height = (float)ClientRectangle.Height / (fRows.Count + 2);
-
-			return new RectangleF(x * width, y * height, width, height);
-		}
-	}
+            return new RectangleF(x * width, y * height, width, height);
+        }
+    }
 }

@@ -2,238 +2,231 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
-
 using Masterplan.Data;
 
 namespace Masterplan.UI
 {
-	partial class SavingThrowForm : Form
-	{
-		public SavingThrowForm(CombatData data, EncounterCard card, Encounter enc)
-		{
-			InitializeComponent();
+    internal partial class SavingThrowForm : Form
+    {
+        private readonly EncounterCard _fCard;
 
-			Application.Idle += new EventHandler(Application_Idle);
+        private readonly CombatData _fData;
+        private readonly Encounter _fEncounter;
 
-			fData = data;
-			fCard = card;
-			fEncounter = enc;
+        private readonly Dictionary<OngoingCondition, int> _fRolls = new Dictionary<OngoingCondition, int>();
 
-			Text = "Saving Throws: " + fData.DisplayName;
+        public OngoingCondition SelectedEffect
+        {
+            get
+            {
+                if (EffectList.SelectedItems.Count != 0)
+                    return EffectList.SelectedItems[0].Tag as OngoingCondition;
 
-			foreach (OngoingCondition oc in fData.Conditions)
-			{
-				if (oc.Duration != DurationType.SaveEnds)
-					continue;
+                return null;
+            }
+        }
 
-				int roll = (fCard != null) ? Session.Dice(1, 20) : 0;
-				fRolls[oc] = roll;
-			}
+        public SavingThrowForm(CombatData data, EncounterCard card, Encounter enc)
+        {
+            InitializeComponent();
 
-			int save_modifier = 0;
-			if (fCard != null)
-			{
-				switch (fCard.Flag)
-				{
-					case RoleFlag.Elite:
-						save_modifier = 2;
-						break;
-					case RoleFlag.Solo:
-						save_modifier = 5;
-						break;
-				}
-			}
-			ModBox.Value = save_modifier;
+            Application.Idle += Application_Idle;
 
-			update_list();
-		}
+            _fData = data;
+            _fCard = card;
+            _fEncounter = enc;
 
-		~SavingThrowForm()
-		{
-			Application.Idle -= Application_Idle;
-		}
+            Text = "Saving Throws: " + _fData.DisplayName;
 
-		void Application_Idle(object sender, EventArgs e)
-		{
-			AddBtn.Enabled = (SelectedEffect != null);
-			SubtractBtn.Enabled = (SelectedEffect != null);
-			RollBtn.Enabled = (SelectedEffect != null);
+            foreach (var oc in _fData.Conditions)
+            {
+                if (oc.Duration != DurationType.SaveEnds)
+                    continue;
 
-			if (SelectedEffect == null)
-			{
-				SavedBtn.Enabled = false;
-				NotSavedBtn.Enabled = false;
-			}
-			else
-			{
-				int roll = fRolls[SelectedEffect];
+                var roll = _fCard != null ? Session.Dice(1, 20) : 0;
+                _fRolls[oc] = roll;
+            }
 
-				SavedBtn.Enabled = (roll != int.MaxValue);
-				NotSavedBtn.Enabled = (roll != int.MinValue);
-			}
-		}
+            var saveModifier = 0;
+            if (_fCard != null)
+                switch (_fCard.Flag)
+                {
+                    case RoleFlag.Elite:
+                        saveModifier = 2;
+                        break;
+                    case RoleFlag.Solo:
+                        saveModifier = 5;
+                        break;
+                }
 
-		CombatData fData = null;
-		EncounterCard fCard = null;
-		Encounter fEncounter = null;
+            ModBox.Value = saveModifier;
 
-		Dictionary<OngoingCondition, int> fRolls = new Dictionary<OngoingCondition, int>();
+            update_list();
+        }
 
-		public OngoingCondition SelectedEffect
-		{
-			get
-			{
-				if (EffectList.SelectedItems.Count != 0)
-					return EffectList.SelectedItems[0].Tag as OngoingCondition;
+        ~SavingThrowForm()
+        {
+            Application.Idle -= Application_Idle;
+        }
 
-				return null;
-			}
-		}
+        private void Application_Idle(object sender, EventArgs e)
+        {
+            AddBtn.Enabled = SelectedEffect != null;
+            SubtractBtn.Enabled = SelectedEffect != null;
+            RollBtn.Enabled = SelectedEffect != null;
 
-		private void ModBox_ValueChanged(object sender, EventArgs e)
-		{
-			update_list();
-		}
+            if (SelectedEffect == null)
+            {
+                SavedBtn.Enabled = false;
+                NotSavedBtn.Enabled = false;
+            }
+            else
+            {
+                var roll = _fRolls[SelectedEffect];
 
-		private void OKBtn_Click(object sender, EventArgs e)
-		{
-			int mod = (int)ModBox.Value;
+                SavedBtn.Enabled = roll != int.MaxValue;
+                NotSavedBtn.Enabled = roll != int.MinValue;
+            }
+        }
 
-			List<OngoingCondition> obsolete = new List<OngoingCondition>();
-			foreach (OngoingCondition oc in fData.Conditions)
-			{
-				if (oc.Duration != DurationType.SaveEnds)
-					continue;
+        private void ModBox_ValueChanged(object sender, EventArgs e)
+        {
+            update_list();
+        }
 
-				int save = fRolls[oc];
-				if (save == 0)
-					continue;
+        private void OKBtn_Click(object sender, EventArgs e)
+        {
+            var mod = (int)ModBox.Value;
 
-				int result = save + mod;
-				if (result >= 10)
-					obsolete.Add(oc);
-			}
-			foreach (OngoingCondition oc in obsolete)
-			{
-				fData.Conditions.Remove(oc);
-			}
-		}
+            var obsolete = new List<OngoingCondition>();
+            foreach (var oc in _fData.Conditions)
+            {
+                if (oc.Duration != DurationType.SaveEnds)
+                    continue;
 
-		private void update_list()
-		{
-			OngoingCondition selection = SelectedEffect;
+                var save = _fRolls[oc];
+                if (save == 0)
+                    continue;
 
-			EffectList.BeginUpdate();
-			EffectList.Items.Clear();
-			foreach (OngoingCondition oc in fData.Conditions)
-			{
-				if (oc.Duration != DurationType.SaveEnds)
-					continue;
+                var result = save + mod;
+                if (result >= 10)
+                    obsolete.Add(oc);
+            }
 
-				int mod = (int)ModBox.Value;
-				int roll = fRolls[oc];
+            foreach (var oc in obsolete) _fData.Conditions.Remove(oc);
+        }
 
-				ListViewItem lvi = EffectList.Items.Add(oc.ToString(fEncounter, false));
-				lvi.Tag = oc;
-				if (oc == selection)
-					lvi.Selected = true;
+        private void update_list()
+        {
+            var selection = SelectedEffect;
 
-				if (roll == 0)
-				{
-					lvi.SubItems.Add("(not rolled)");
-					lvi.SubItems.Add("(not rolled)");
+            EffectList.BeginUpdate();
+            EffectList.Items.Clear();
+            foreach (var oc in _fData.Conditions)
+            {
+                if (oc.Duration != DurationType.SaveEnds)
+                    continue;
 
-					lvi.ForeColor = SystemColors.GrayText;
-				}
-				else if (roll == int.MinValue)
-				{
-					lvi.SubItems.Add("-");
-					lvi.SubItems.Add("Not saved");
-				}
-				else if (roll == int.MaxValue)
-				{
-					lvi.SubItems.Add("-");
-					lvi.SubItems.Add("Saved");
-					lvi.ForeColor = SystemColors.GrayText;
-				}
-				else
-				{
-					int result = roll + oc.SavingThrowModifier + mod;
+                var mod = (int)ModBox.Value;
+                var roll = _fRolls[oc];
 
-					if (result == roll)
-					{
-						lvi.SubItems.Add(roll.ToString());
-					}
-					else
-					{
-						lvi.SubItems.Add(roll + " => " + result);
-					}
+                var lvi = EffectList.Items.Add(oc.ToString(_fEncounter, false));
+                lvi.Tag = oc;
+                if (oc == selection)
+                    lvi.Selected = true;
 
-					if (result >= 10)
-					{
-						lvi.SubItems.Add("Saved");
-						lvi.ForeColor = SystemColors.GrayText;
-					}
-					else
-					{
-						lvi.SubItems.Add("Not saved");
-					}
-				}
-			}
+                if (roll == 0)
+                {
+                    lvi.SubItems.Add("(not rolled)");
+                    lvi.SubItems.Add("(not rolled)");
 
-			if (EffectList.Items.Count == 0)
-			{
-				ListViewItem lvi = EffectList.Items.Add("(no conditions)");
-				lvi.ForeColor = SystemColors.GrayText;
-			}
+                    lvi.ForeColor = SystemColors.GrayText;
+                }
+                else if (roll == int.MinValue)
+                {
+                    lvi.SubItems.Add("-");
+                    lvi.SubItems.Add("Not saved");
+                }
+                else if (roll == int.MaxValue)
+                {
+                    lvi.SubItems.Add("-");
+                    lvi.SubItems.Add("Saved");
+                    lvi.ForeColor = SystemColors.GrayText;
+                }
+                else
+                {
+                    var result = roll + oc.SavingThrowModifier + mod;
 
-			EffectList.EndUpdate();
-		}
+                    if (result == roll)
+                        lvi.SubItems.Add(roll.ToString());
+                    else
+                        lvi.SubItems.Add(roll + " => " + result);
 
-		private void AddBtn_Click(object sender, EventArgs e)
-		{
-			if (SelectedEffect != null)
-			{
-				fRolls[SelectedEffect] += 1;
-				update_list();
-			}
-		}
+                    if (result >= 10)
+                    {
+                        lvi.SubItems.Add("Saved");
+                        lvi.ForeColor = SystemColors.GrayText;
+                    }
+                    else
+                    {
+                        lvi.SubItems.Add("Not saved");
+                    }
+                }
+            }
 
-		private void SubtractBtn_Click(object sender, EventArgs e)
-		{
-			if (SelectedEffect != null)
-			{
-				fRolls[SelectedEffect] -= 1;
-				fRolls[SelectedEffect] = Math.Max(fRolls[SelectedEffect], 0);
-				update_list();
-			}
-		}
+            if (EffectList.Items.Count == 0)
+            {
+                var lvi = EffectList.Items.Add("(no conditions)");
+                lvi.ForeColor = SystemColors.GrayText;
+            }
 
-		private void RollBtn_Click(object sender, EventArgs e)
-		{
-			if (SelectedEffect != null)
-			{
-				fRolls[SelectedEffect] = Session.Dice(1, 20);
-				update_list();
-			}
-		}
+            EffectList.EndUpdate();
+        }
 
-		private void SavedBtn_Click(object sender, EventArgs e)
-		{
-			if (SelectedEffect != null)
-			{
-				fRolls[SelectedEffect] = int.MaxValue;
-				update_list();
-			}
-		}
+        private void AddBtn_Click(object sender, EventArgs e)
+        {
+            if (SelectedEffect != null)
+            {
+                _fRolls[SelectedEffect] += 1;
+                update_list();
+            }
+        }
 
-		private void NotSavedBtn_Click(object sender, EventArgs e)
-		{
-			if (SelectedEffect != null)
-			{
-				fRolls[SelectedEffect] = int.MinValue;
-				update_list();
-			}
-		}
-	}
+        private void SubtractBtn_Click(object sender, EventArgs e)
+        {
+            if (SelectedEffect != null)
+            {
+                _fRolls[SelectedEffect] -= 1;
+                _fRolls[SelectedEffect] = Math.Max(_fRolls[SelectedEffect], 0);
+                update_list();
+            }
+        }
+
+        private void RollBtn_Click(object sender, EventArgs e)
+        {
+            if (SelectedEffect != null)
+            {
+                _fRolls[SelectedEffect] = Session.Dice(1, 20);
+                update_list();
+            }
+        }
+
+        private void SavedBtn_Click(object sender, EventArgs e)
+        {
+            if (SelectedEffect != null)
+            {
+                _fRolls[SelectedEffect] = int.MaxValue;
+                update_list();
+            }
+        }
+
+        private void NotSavedBtn_Click(object sender, EventArgs e)
+        {
+            if (SelectedEffect != null)
+            {
+                _fRolls[SelectedEffect] = int.MinValue;
+                update_list();
+            }
+        }
+    }
 }

@@ -1,273 +1,287 @@
 ﻿using System;
 using System.Collections.Generic;
-
 using Masterplan.Tools;
 
 namespace Masterplan.Data
 {
-	/// <summary>
-	/// Class representing a magical artifact.
-	/// </summary>
-	[Serializable]
-	public class Artifact
-	{
-		/// <summary>
-		/// Default constructor.
-		/// </summary>
-		public Artifact()
-		{
-			AddStandardConcordanceLevels();
-		}
+    /// <summary>
+    ///     Class representing a magical artifact.
+    /// </summary>
+    [Serializable]
+    public class Artifact
+    {
+        private List<ArtifactConcordance> _fConcordanceLevels = new List<ArtifactConcordance>();
 
-		/// <summary>
-		/// Gets or sets the unique ID of the artifact.
-		/// </summary>
-		public Guid ID
-		{
-			get { return fID; }
-			set { fID = value; }
-		}
-		Guid fID = Guid.NewGuid();
+        private List<Pair<string, string>> _fConcordanceRules = new List<Pair<string, string>>();
 
-		/// <summary>
-		/// Gets or sets the name of the artifact.
-		/// </summary>
-		public string Name
-		{
-			get { return fName; }
-			set { fName = value; }
-		}
-		string fName = "";
+        private string _fDescription = "";
 
-		/// <summary>
-		/// The tier for which the artifact is suitable.
-		/// </summary>
-		public Tier Tier
-		{
-			get { return fTier; }
-			set {fTier = value;}
-		}
-		Tier fTier = Tier.Heroic;
+        private string _fDetails = "";
 
-		/// <summary>
-		/// The artifact's description.
-		/// </summary>
-		public string Description
-		{
-			get { return fDescription; }
-			set { fDescription = value; }
-		}
-		string fDescription = "";
+        private string _fGoals = "";
 
-		/// <summary>
-		/// The artifact's details.
-		/// </summary>
-		public string Details
-		{
-			get { return fDetails; }
-			set { fDetails = value; }
-		}
-		string fDetails = "";
+        private Guid _fId = Guid.NewGuid();
 
-		/// <summary>
-		/// The artifact's goals.
-		/// </summary>
-		public string Goals
-		{
-			get { return fGoals; }
-			set { fGoals = value; }
-		}
-		string fGoals = "";
+        private string _fName = "";
 
-		/// <summary>
-		/// Roleplaying tips for the artifact.
-		/// </summary>
-		public string RoleplayingTips
-		{
-			get { return fRoleplayingTips; }
-			set { fRoleplayingTips = value; }
-		}
-		string fRoleplayingTips = "";
+        private string _fRoleplayingTips = "";
 
-		/// <summary>
-		/// The artifact's enhancement / properties
-		/// </summary>
-		public List<MagicItemSection> Sections
-		{
-			get { return fSections; }
-			set { fSections = value; }
-		}
-		List<MagicItemSection> fSections = new List<MagicItemSection>();
+        private List<MagicItemSection> _fSections = new List<MagicItemSection>();
 
-		/// <summary>
-		/// The artifact's concordance rules.
-		/// </summary>
-		public List<Pair<string, string>> ConcordanceRules
-		{
-			get { return fConcordanceRules; }
-			set { fConcordanceRules = value; }
-		}
-		List<Pair<string, string>> fConcordanceRules = new List<Pair<string, string>>();
+        private Tier _fTier = Tier.Heroic;
 
-		/// <summary>
-		/// The artifact's concordance levels.
-		/// </summary>
-		public List<ArtifactConcordance> ConcordanceLevels
-		{
-			get { return fConcordanceLevels; }
-			set { fConcordanceLevels = value; }
-		}
-		List<ArtifactConcordance> fConcordanceLevels = new List<ArtifactConcordance>();
+        /// <summary>
+        ///     Gets or sets the unique ID of the artifact.
+        /// </summary>
+        public Guid Id
+        {
+            get => _fId;
+            set => _fId = value;
+        }
 
-		/// <summary>
-		/// Adds the standard concordance levels to the artifact.
-		/// </summary>
-		public void AddStandardConcordanceLevels()
-		{
-			fConcordanceLevels.Add(new ArtifactConcordance("Pleased", "16-20"));
-			fConcordanceLevels.Add(new ArtifactConcordance("Satisfied", "12-15"));
-			fConcordanceLevels.Add(new ArtifactConcordance("Normal", "5-11"));
-			fConcordanceLevels.Add(new ArtifactConcordance("Unsatisfied", "1-4"));
-			fConcordanceLevels.Add(new ArtifactConcordance("Angered", "0 or lower"));
-			fConcordanceLevels.Add(new ArtifactConcordance("Moving On", ""));
-		}
+        /// <summary>
+        ///     Gets or sets the name of the artifact.
+        /// </summary>
+        public string Name
+        {
+            get => _fName;
+            set => _fName = value;
+        }
 
-		/// <summary>
-		/// Creates a copy of the artifact.
-		/// </summary>
-		/// <returns>Returns the copy.</returns>
-		public Artifact Copy()
-		{
-			Artifact a = new Artifact();
+        /// <summary>
+        ///     The tier for which the artifact is suitable.
+        /// </summary>
+        public Tier Tier
+        {
+            get => _fTier;
+            set => _fTier = value;
+        }
 
-			a.ID = fID;
-			a.Name = fName;
-			a.Tier = fTier;
-			a.Description = fDescription;
-			a.Details = fDetails;
-			a.Goals = fGoals;
-			a.RoleplayingTips = fRoleplayingTips;
+        /// <summary>
+        ///     The artifact's description.
+        /// </summary>
+        public string Description
+        {
+            get => _fDescription;
+            set => _fDescription = value;
+        }
 
-			a.Sections.Clear();
-			foreach (MagicItemSection mis in fSections)
-				a.Sections.Add(mis.Copy());
+        /// <summary>
+        ///     The artifact's details.
+        /// </summary>
+        public string Details
+        {
+            get => _fDetails;
+            set => _fDetails = value;
+        }
 
-			a.ConcordanceRules.Clear();
-			foreach (Pair<string, string> pair in fConcordanceRules)
-			{
-				Pair<string, string> rule = new Pair<string, string>(pair.First, pair.Second);
-				a.ConcordanceRules.Add(rule);
-			}
+        /// <summary>
+        ///     The artifact's goals.
+        /// </summary>
+        public string Goals
+        {
+            get => _fGoals;
+            set => _fGoals = value;
+        }
 
-			a.ConcordanceLevels.Clear();
-			foreach (ArtifactConcordance ac in fConcordanceLevels)
-				a.ConcordanceLevels.Add(ac.Copy());
+        /// <summary>
+        ///     Roleplaying tips for the artifact.
+        /// </summary>
+        public string RoleplayingTips
+        {
+            get => _fRoleplayingTips;
+            set => _fRoleplayingTips = value;
+        }
 
-			return a;
-		}
+        /// <summary>
+        ///     The artifact's enhancement / properties
+        /// </summary>
+        public List<MagicItemSection> Sections
+        {
+            get => _fSections;
+            set => _fSections = value;
+        }
 
-		/// <summary>
-		/// Returns the name of the artifact.
-		/// </summary>
-		/// <returns>Returns the name of the artifact.</returns>
-		public override string ToString()
-		{
-			return fName;
-		}
-	}
+        /// <summary>
+        ///     The artifact's concordance rules.
+        /// </summary>
+        public List<Pair<string, string>> ConcordanceRules
+        {
+            get => _fConcordanceRules;
+            set => _fConcordanceRules = value;
+        }
 
-	/// <summary>
-	/// Class representing a concordance level for an artifact.
-	/// </summary>
-	[Serializable]
-	public class ArtifactConcordance
-	{
-		/// <summary>
-		/// Default constructor.
-		/// </summary>
-		public ArtifactConcordance()
-		{
-		}
+        /// <summary>
+        ///     The artifact's concordance levels.
+        /// </summary>
+        public List<ArtifactConcordance> ConcordanceLevels
+        {
+            get => _fConcordanceLevels;
+            set => _fConcordanceLevels = value;
+        }
 
-		/// <summary>
-		/// Constructor taking a name and a value range.
-		/// </summary>
-		/// <param name="name">The name.</param>
-		/// <param name="value_range">The value range.</param>
-		public ArtifactConcordance(string name, string value_range)
-		{
-			fName = name;
-			fValueRange = value_range;
-		}
+        /// <summary>
+        ///     Default constructor.
+        /// </summary>
+        public Artifact()
+        {
+            AddStandardConcordanceLevels();
+        }
 
-		/// <summary>
-		/// The concordance level's name.
-		/// </summary>
-		public string Name
-		{
-			get { return fName; }
-			set { fName = value; }
-		}
-		string fName = "";
+        /// <summary>
+        ///     Adds the standard concordance levels to the artifact.
+        /// </summary>
+        public void AddStandardConcordanceLevels()
+        {
+            _fConcordanceLevels.Add(new ArtifactConcordance("Pleased", "16-20"));
+            _fConcordanceLevels.Add(new ArtifactConcordance("Satisfied", "12-15"));
+            _fConcordanceLevels.Add(new ArtifactConcordance("Normal", "5-11"));
+            _fConcordanceLevels.Add(new ArtifactConcordance("Unsatisfied", "1-4"));
+            _fConcordanceLevels.Add(new ArtifactConcordance("Angered", "0 or lower"));
+            _fConcordanceLevels.Add(new ArtifactConcordance("Moving On", ""));
+        }
 
-		/// <summary>
-		/// The concordance level's value range.
-		/// </summary>
-		public string ValueRange
-		{
-			get { return fValueRange; }
-			set { fValueRange = value; }
-		}
-		string fValueRange = "";
+        /// <summary>
+        ///     Creates a copy of the artifact.
+        /// </summary>
+        /// <returns>Returns the copy.</returns>
+        public Artifact Copy()
+        {
+            var a = new Artifact();
 
-		/// <summary>
-		/// The concordance level's quote.
-		/// </summary>
-		public string Quote
-		{
-			get { return fQuote; }
-			set { fQuote = value; }
-		}
-		string fQuote = "";
+            a.Id = _fId;
+            a.Name = _fName;
+            a.Tier = _fTier;
+            a.Description = _fDescription;
+            a.Details = _fDetails;
+            a.Goals = _fGoals;
+            a.RoleplayingTips = _fRoleplayingTips;
 
-		/// <summary>
-		/// The concordance level's description.
-		/// </summary>
-		public string Description
-		{
-			get { return fDescription; }
-			set { fDescription = value; }
-		}
-		string fDescription = "";
+            a.Sections.Clear();
+            foreach (var mis in _fSections)
+                a.Sections.Add(mis.Copy());
 
-		/// <summary>
-		/// The concordance level's enhancements and properties.
-		/// </summary>
-		public List<MagicItemSection> Sections
-		{
-			get { return fSections; }
-			set { fSections = value; }
-		}
-		List<MagicItemSection> fSections = new List<MagicItemSection>();
+            a.ConcordanceRules.Clear();
+            foreach (var pair in _fConcordanceRules)
+            {
+                var rule = new Pair<string, string>(pair.First, pair.Second);
+                a.ConcordanceRules.Add(rule);
+            }
 
-		/// <summary>
-		/// Creates a copy of the artifact concordance.
-		/// </summary>
-		/// <returns>Returns the copy.</returns>
-		public ArtifactConcordance Copy()
-		{
-			ArtifactConcordance ac = new ArtifactConcordance();
+            a.ConcordanceLevels.Clear();
+            foreach (var ac in _fConcordanceLevels)
+                a.ConcordanceLevels.Add(ac.Copy());
 
-			ac.Name = fName;
-			ac.ValueRange = fValueRange;
-			ac.Quote = fQuote;
-			ac.Description = fDescription;
+            return a;
+        }
 
-			ac.Sections.Clear();
-			foreach (MagicItemSection mis in fSections)
-				ac.Sections.Add(mis.Copy());
+        /// <summary>
+        ///     Returns the name of the artifact.
+        /// </summary>
+        /// <returns>Returns the name of the artifact.</returns>
+        public override string ToString()
+        {
+            return _fName;
+        }
+    }
 
-			return ac;
-		}
-	}
+    /// <summary>
+    ///     Class representing a concordance level for an artifact.
+    /// </summary>
+    [Serializable]
+    public class ArtifactConcordance
+    {
+        private string _fDescription = "";
+
+        private string _fName = "";
+
+        private string _fQuote = "";
+
+        private List<MagicItemSection> _fSections = new List<MagicItemSection>();
+
+        private string _fValueRange = "";
+
+        /// <summary>
+        ///     The concordance level's name.
+        /// </summary>
+        public string Name
+        {
+            get => _fName;
+            set => _fName = value;
+        }
+
+        /// <summary>
+        ///     The concordance level's value range.
+        /// </summary>
+        public string ValueRange
+        {
+            get => _fValueRange;
+            set => _fValueRange = value;
+        }
+
+        /// <summary>
+        ///     The concordance level's quote.
+        /// </summary>
+        public string Quote
+        {
+            get => _fQuote;
+            set => _fQuote = value;
+        }
+
+        /// <summary>
+        ///     The concordance level's description.
+        /// </summary>
+        public string Description
+        {
+            get => _fDescription;
+            set => _fDescription = value;
+        }
+
+        /// <summary>
+        ///     The concordance level's enhancements and properties.
+        /// </summary>
+        public List<MagicItemSection> Sections
+        {
+            get => _fSections;
+            set => _fSections = value;
+        }
+
+        /// <summary>
+        ///     Default constructor.
+        /// </summary>
+        public ArtifactConcordance()
+        {
+        }
+
+        /// <summary>
+        ///     Constructor taking a name and a value range.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <param name="valueRange">The value range.</param>
+        public ArtifactConcordance(string name, string valueRange)
+        {
+            _fName = name;
+            _fValueRange = valueRange;
+        }
+
+        /// <summary>
+        ///     Creates a copy of the artifact concordance.
+        /// </summary>
+        /// <returns>Returns the copy.</returns>
+        public ArtifactConcordance Copy()
+        {
+            var ac = new ArtifactConcordance();
+
+            ac.Name = _fName;
+            ac.ValueRange = _fValueRange;
+            ac.Quote = _fQuote;
+            ac.Description = _fDescription;
+
+            ac.Sections.Clear();
+            foreach (var mis in _fSections)
+                ac.Sections.Add(mis.Copy());
+
+            return ac;
+        }
+    }
 }

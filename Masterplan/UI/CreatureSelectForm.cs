@@ -1,154 +1,152 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-
 using Masterplan.Data;
 using Masterplan.Tools;
 using Masterplan.Tools.Generators;
 
 namespace Masterplan.UI
 {
-	partial class CreatureSelectForm : Form
-	{
-		public CreatureSelectForm(EncounterTemplateSlot slot, int level)
-		{
-			InitializeComponent();
+    internal partial class CreatureSelectForm : Form
+    {
+        private readonly List<Creature> _fCreatures;
+        private readonly int _fLevel = 1;
+        private readonly EncounterTemplateSlot _fTemplateSlot;
 
-			Application.Idle += new EventHandler(Application_Idle);
+        public EncounterCard Creature
+        {
+            get
+            {
+                if (CreatureList.SelectedItems.Count != 0)
+                    return CreatureList.SelectedItems[0].Tag as EncounterCard;
 
-			fTemplateSlot = slot;
-			fLevel = level;
+                return null;
+            }
+        }
 
-			update_list();
+        public CreatureSelectForm(EncounterTemplateSlot slot, int level)
+        {
+            InitializeComponent();
 
-			Browser.DocumentText = "";
-			CreatureList_SelectedIndexChanged(null, null);
-		}
+            Application.Idle += Application_Idle;
 
-		~CreatureSelectForm()
-		{
-			Application.Idle -= Application_Idle;
-		}
+            _fTemplateSlot = slot;
+            _fLevel = level;
 
-		public CreatureSelectForm(List<Creature> creatures)
-		{
-			InitializeComponent();
+            update_list();
 
-			Application.Idle += new EventHandler(Application_Idle);
+            Browser.DocumentText = "";
+            CreatureList_SelectedIndexChanged(null, null);
+        }
 
-			fCreatures = creatures;
+        public CreatureSelectForm(List<Creature> creatures)
+        {
+            InitializeComponent();
 
-			update_list();
+            Application.Idle += Application_Idle;
 
-			Browser.DocumentText = "";
-			CreatureList_SelectedIndexChanged(null, null);
-		}
+            _fCreatures = creatures;
 
-		void Application_Idle(object sender, EventArgs e)
-		{
-			OKBtn.Enabled = (Creature != null);
-		}
+            update_list();
 
-		public EncounterCard Creature
-		{
-			get
-			{
-				if (CreatureList.SelectedItems.Count != 0)
-					return CreatureList.SelectedItems[0].Tag as EncounterCard;
+            Browser.DocumentText = "";
+            CreatureList_SelectedIndexChanged(null, null);
+        }
 
-				return null;
-			}
-		}
+        ~CreatureSelectForm()
+        {
+            Application.Idle -= Application_Idle;
+        }
 
-		List<Creature> fCreatures = null;
-		EncounterTemplateSlot fTemplateSlot = null;
-		int fLevel = 1;
+        private void Application_Idle(object sender, EventArgs e)
+        {
+            OKBtn.Enabled = Creature != null;
+        }
 
-		private void TileList_DoubleClick(object sender, EventArgs e)
-		{
-			if (Creature != null)
-			{
-				DialogResult = DialogResult.OK;
-				Close();
-			}
-		}
+        private void TileList_DoubleClick(object sender, EventArgs e)
+        {
+            if (Creature != null)
+            {
+                DialogResult = DialogResult.OK;
+                Close();
+            }
+        }
 
-		private void CreatureList_SelectedIndexChanged(object sender, EventArgs e)
-		{
-			string html = HTML.StatBlock(Creature, null, null, true, false, true, CardMode.View, Session.Preferences.TextSize);
+        private void CreatureList_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            var html = Html.StatBlock(Creature, null, null, true, false, true, CardMode.View,
+                Session.Preferences.TextSize);
 
-			Browser.Document.OpenNew(true);
-			Browser.Document.Write(html);
-		}
+            Browser.Document.OpenNew(true);
+            Browser.Document.Write(html);
+        }
 
-		void update_list()
-		{
-			CreatureList.Groups.Clear();
-			CreatureList.Items.Clear();
+        private void update_list()
+        {
+            CreatureList.Groups.Clear();
+            CreatureList.Items.Clear();
 
-			List<EncounterCard> cards = null;
-			if (fCreatures != null)
-			{
-				cards = new List<EncounterCard>();
-				foreach (Creature creature in fCreatures)
-					cards.Add(new EncounterCard(creature.ID));
-			}
-			else
-			{
-				cards = EncounterBuilder.FindCreatures(fTemplateSlot, fLevel, NameBox.Text);
-			}
+            List<EncounterCard> cards = null;
+            if (_fCreatures != null)
+            {
+                cards = new List<EncounterCard>();
+                foreach (var creature in _fCreatures)
+                    cards.Add(new EncounterCard(creature.Id));
+            }
+            else
+            {
+                cards = EncounterBuilder.FindCreatures(_fTemplateSlot, _fLevel, NameBox.Text);
+            }
 
-			BinarySearchTree<string> bst = new BinarySearchTree<string>();
-			foreach (EncounterCard card in cards)
-			{
-				ICreature c = Session.FindCreature(card.CreatureID, SearchType.Global);
-				bst.Add(c.Category);
-			}
+            var bst = new BinarySearchTree<string>();
+            foreach (var card in cards)
+            {
+                var c = Session.FindCreature(card.CreatureId, SearchType.Global);
+                bst.Add(c.Category);
+            }
 
-			List<string> cats = bst.SortedList;
-			cats.Add("Miscellaneous Creatures");
-			foreach (string cat in cats)
-				CreatureList.Groups.Add(cat, cat);
+            var cats = bst.SortedList;
+            cats.Add("Miscellaneous Creatures");
+            foreach (var cat in cats)
+                CreatureList.Groups.Add(cat, cat);
 
-			foreach (EncounterCard card in cards)
-			{
-				ICreature c = Session.FindCreature(card.CreatureID, SearchType.Global);
+            foreach (var card in cards)
+            {
+                var c = Session.FindCreature(card.CreatureId, SearchType.Global);
 
-				ListViewItem lvi = CreatureList.Items.Add(card.Title);
-				lvi.SubItems.Add(card.Info);
-				lvi.Tag = card;
+                var lvi = CreatureList.Items.Add(card.Title);
+                lvi.SubItems.Add(card.Info);
+                lvi.Tag = card;
 
-				if ((c.Category != null) && (c.Category != ""))
-					lvi.Group = CreatureList.Groups[c.Category];
-				else
-					lvi.Group = CreatureList.Groups["Miscellaneous Creatures"];
-			}
-		}
+                if (c.Category != null && c.Category != "")
+                    lvi.Group = CreatureList.Groups[c.Category];
+                else
+                    lvi.Group = CreatureList.Groups["Miscellaneous Creatures"];
+            }
+        }
 
-		private void NameBox_TextChanged(object sender, EventArgs e)
-		{
-			update_list();
-		}
+        private void NameBox_TextChanged(object sender, EventArgs e)
+        {
+            update_list();
+        }
 
-		bool match(Trap trap, string query)
-		{
-			string[] tokens = query.ToLower().Split();
+        private bool Match(Trap trap, string query)
+        {
+            var tokens = query.ToLower().Split();
 
-			foreach (string token in tokens)
-			{
-				if (!match_token(trap, token))
-					return false;
-			}
+            foreach (var token in tokens)
+                if (!match_token(trap, token))
+                    return false;
 
-			return true;
-		}
+            return true;
+        }
 
-		bool match_token(Trap trap, string token)
-		{
-			if (trap.Name.ToLower().Contains(token))
-				return true;
+        private bool match_token(Trap trap, string token)
+        {
+            if (trap.Name.ToLower().Contains(token))
+                return true;
 
-			return false;
-		}
-	}
+            return false;
+        }
+    }
 }

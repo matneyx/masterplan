@@ -1,189 +1,198 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
-
 using Masterplan.Data;
 using Masterplan.Tools;
 using Masterplan.UI;
 
-namespace Masterplan.Controls
+namespace Masterplan.Controls.Elements
 {
-	partial class EncounterPanel : UserControl
-	{
-		public EncounterPanel()
-		{
-			InitializeComponent();
+    internal partial class EncounterPanel : UserControl
+    {
+        private Encounter _encounter;
 
-			Application.Idle += new EventHandler(Application_Idle);
-		}
+        private int _partyLevel = Session.Project.Party.Level;
 
-		~EncounterPanel()
-		{
-			Application.Idle -= Application_Idle;
-		}
+        public Encounter Encounter
+        {
+            get => _encounter;
+            set
+            {
+                _encounter = value;
+                UpdateView();
+            }
+        }
 
-		void Application_Idle(object sender, EventArgs e)
-		{
-			RunBtn.Enabled = ((fEncounter.Count != 0) || (fEncounter.Traps.Count != 0) || (fEncounter.SkillChallenges.Count != 0));
-		}
+        public int PartyLevel
+        {
+            get => _partyLevel;
+            set
+            {
+                _partyLevel = value;
+                UpdateView();
+            }
+        }
 
-		public void Edit()
-		{
-			EditBtn_Click(null, null);
-		}
+        private EncounterSlot SelectedSlot
+        {
+            get
+            {
+                if (ItemList.SelectedItems.Count != 0)
+                    return ItemList.SelectedItems[0].Tag as EncounterSlot;
 
-		public Encounter Encounter
-		{
-			get { return fEncounter; }
-			set
-			{
-				fEncounter = value;
-				update_view();
-			}
-		}
-		Encounter fEncounter = null;
+                return null;
+            }
+        }
 
-		public int PartyLevel
-		{
-			get { return fPartyLevel; }
-			set
-			{
-				fPartyLevel = value;
-				update_view();
-			}
-		}
-		int fPartyLevel = Session.Project.Party.Level;
+        private Trap SelectedTrap
+        {
+            get
+            {
+                if (ItemList.SelectedItems.Count != 0)
+                    return ItemList.SelectedItems[0].Tag as Trap;
 
-		public EncounterSlot SelectedSlot
-		{
-			get
-			{
-				if (ItemList.SelectedItems.Count != 0)
-					return ItemList.SelectedItems[0].Tag as EncounterSlot;
+                return null;
+            }
+        }
 
-				return null;
-			}
-		}
+        private SkillChallenge SelectedChallenge
+        {
+            get
+            {
+                if (ItemList.SelectedItems.Count != 0)
+                    return ItemList.SelectedItems[0].Tag as SkillChallenge;
 
-		public Trap SelectedTrap
-		{
-			get
-			{
-				if (ItemList.SelectedItems.Count != 0)
-					return ItemList.SelectedItems[0].Tag as Trap;
+                return null;
+            }
+        }
 
-				return null;
-			}
-		}
+        public EncounterPanel()
+        {
+            InitializeComponent();
 
-		public SkillChallenge SelectedChallenge
-		{
-			get
-			{
-				if (ItemList.SelectedItems.Count != 0)
-					return ItemList.SelectedItems[0].Tag as SkillChallenge;
+            Application.Idle += Application_Idle;
+        }
 
-				return null;
-			}
-		}
+        ~EncounterPanel()
+        {
+            Application.Idle -= Application_Idle;
+        }
 
-		private void EditBtn_Click(object sender, EventArgs e)
-		{
-			EncounterBuilderForm dlg = new EncounterBuilderForm(fEncounter, fPartyLevel, false);
-			if (dlg.ShowDialog() == DialogResult.OK)
-			{
-				fEncounter.Slots = dlg.Encounter.Slots;
-				fEncounter.Traps = dlg.Encounter.Traps;
-				fEncounter.SkillChallenges = dlg.Encounter.SkillChallenges;
-                fEncounter.CustomTokens = dlg.Encounter.CustomTokens;
-				fEncounter.MapID = dlg.Encounter.MapID;
-				fEncounter.MapAreaID = dlg.Encounter.MapAreaID;
-                fEncounter.Notes = dlg.Encounter.Notes;
-				fEncounter.Waves = dlg.Encounter.Waves;
+        private void Application_Idle(object sender, EventArgs e)
+        {
+            RunBtn.Enabled = _encounter.Count != 0 || _encounter.Traps.Count != 0 ||
+                             _encounter.SkillChallenges.Count != 0;
+        }
 
-				update_view();
-			}
-		}
+        public void Edit()
+        {
+            EditBtn_Click(null, null);
+        }
 
-		private void RunBtn_Click(object sender, EventArgs e)
-		{
-			CombatState cs = new CombatState();
-			cs.Encounter = fEncounter;
-			cs.PartyLevel = fPartyLevel;
+        private void EditBtn_Click(object sender, EventArgs e)
+        {
+            var encounterBuilderForm = new EncounterBuilderForm(_encounter, _partyLevel, false);
 
-			CombatForm dlg = new CombatForm(cs);
-			dlg.Show();
-		}
+            if (encounterBuilderForm.ShowDialog() != DialogResult.OK) return;
 
-		void update_view()
-		{
-			ItemList.Items.Clear();
+            _encounter.Slots = encounterBuilderForm.Encounter.Slots;
+            _encounter.Traps = encounterBuilderForm.Encounter.Traps;
+            _encounter.SkillChallenges = encounterBuilderForm.Encounter.SkillChallenges;
+            _encounter.CustomTokens = encounterBuilderForm.Encounter.CustomTokens;
+            _encounter.MapId = encounterBuilderForm.Encounter.MapId;
+            _encounter.MapAreaId = encounterBuilderForm.Encounter.MapAreaId;
+            _encounter.Notes = encounterBuilderForm.Encounter.Notes;
+            _encounter.Waves = encounterBuilderForm.Encounter.Waves;
 
-			foreach (EncounterSlot slot in fEncounter.Slots)
-			{
-				ListViewItem lvi = ItemList.Items.Add(slot.Card.Title);
-				lvi.SubItems.Add(slot.Card.Info);
-				lvi.SubItems.Add(slot.CombatData.Count.ToString());
-				lvi.SubItems.Add(slot.XP.ToString());
-				lvi.Tag = slot;
+            UpdateView();
+        }
 
-				ICreature creature = Session.FindCreature(slot.Card.CreatureID, SearchType.Global);
-				Difficulty diff = AI.GetThreatDifficulty(creature.Level + slot.Card.LevelAdjustment, fPartyLevel);
-				if (diff == Difficulty.Trivial)
-					lvi.ForeColor = Color.Green;
-				if (diff == Difficulty.Extreme)
-					lvi.ForeColor = Color.Red;
-			}
+        private void RunBtn_Click(object sender, EventArgs e)
+        {
+            var combatState = new CombatState
+            {
+                Encounter = _encounter,
+                PartyLevel = _partyLevel
+            };
 
-			foreach (Trap trap in fEncounter.Traps)
-			{
-				ListViewItem lvi = ItemList.Items.Add(trap.Name);
-				lvi.SubItems.Add(trap.Info);
-				lvi.SubItems.Add("1");
-				lvi.SubItems.Add(Experience.GetCreatureXP(trap.Level).ToString());
-				lvi.Tag = trap;
-			}
+            var combatForm = new CombatForm(combatState);
+            combatForm.Show();
+        }
 
-			foreach (SkillChallenge sc in fEncounter.SkillChallenges)
-			{
-				ListViewItem lvi = ItemList.Items.Add(sc.Name);
-				lvi.SubItems.Add(sc.Info);
-				lvi.SubItems.Add("1");
-				lvi.SubItems.Add(sc.GetXP().ToString());
-				lvi.Tag = sc;
-			}
+        private void UpdateView()
+        {
+            ItemList.Items.Clear();
 
-			if (ItemList.Items.Count == 0)
-			{
-				ListViewItem lvi = ItemList.Items.Add("(none)");
-				lvi.ForeColor = SystemColors.GrayText;
-			}
+            _encounter.Slots.ForEach(slot =>
+            {
+                var listViewItem = ItemList.Items.Add(slot.Card.Title);
+                listViewItem.SubItems.Add(slot.Card.Info);
+                listViewItem.SubItems.Add(slot.CombatData.Count.ToString());
+                listViewItem.SubItems.Add(slot.Xp.ToString());
+                listViewItem.Tag = slot;
 
-			ItemList.Sort();
+                var creature = Session.FindCreature(slot.Card.CreatureId, SearchType.Global);
+                var difficulty = Ai.GetThreatDifficulty(creature.Level + slot.Card.LevelAdjustment, _partyLevel);
+                switch (difficulty)
+                {
+                    case Difficulty.Trivial:
+                        listViewItem.ForeColor = Color.Green;
+                        break;
+                    case Difficulty.Extreme:
+                        listViewItem.ForeColor = Color.Red;
+                        break;
+                }
+            });
 
-			XPLbl.Text = fEncounter.GetXP() + " XP";
-			DiffLbl.Text = "Difficulty: " + fEncounter.GetDifficulty(fPartyLevel, Session.Project.Party.Size);
-		}
+            _encounter.Traps.ForEach(trap =>
+            {
+                var listViewItem = ItemList.Items.Add(trap.Name);
+                listViewItem.SubItems.Add(trap.Info);
+                listViewItem.SubItems.Add("1");
+                listViewItem.SubItems.Add(Experience.GetCreatureXp(trap.Level).ToString());
+                listViewItem.Tag = trap;
+            });
 
-		private void CreatureList_DoubleClick(object sender, EventArgs e)
-		{
-			if (SelectedSlot != null)
-			{
-				CreatureDetailsForm dlg = new CreatureDetailsForm(SelectedSlot.Card);
-				dlg.ShowDialog();
-			}
+            _encounter.SkillChallenges.ForEach(sc =>
+            {
+                var listViewItem = ItemList.Items.Add(sc.Name);
+                listViewItem.SubItems.Add(sc.Info);
+                listViewItem.SubItems.Add("1");
+                listViewItem.SubItems.Add(sc.GetXp().ToString());
+                listViewItem.Tag = sc;
+            });
 
-			if (SelectedTrap != null)
-			{
-				TrapDetailsForm dlg = new TrapDetailsForm(SelectedTrap);
-				dlg.ShowDialog();
-			}
+            if (ItemList.Items.Count == 0)
+            {
+                var listViewItem = ItemList.Items.Add("(none)");
+                listViewItem.ForeColor = SystemColors.GrayText;
+            }
 
-			if (SelectedChallenge != null)
-			{
-				SkillChallengeDetailsForm dlg = new SkillChallengeDetailsForm(SelectedChallenge);
-				dlg.ShowDialog();
-			}
-		}
-	}
+            ItemList.Sort();
+
+            XPLbl.Text = _encounter.GetXp() + " XP";
+            DiffLbl.Text = "Difficulty: " + _encounter.GetDifficulty(_partyLevel, Session.Project.Party.Size);
+        }
+
+        private void CreatureList_DoubleClick(object sender, EventArgs e)
+        {
+            if (SelectedSlot != null)
+            {
+                var creatureDetailsForm = new CreatureDetailsForm(SelectedSlot.Card);
+                creatureDetailsForm.ShowDialog();
+            }
+
+            if (SelectedTrap != null)
+            {
+                var trapDetailsForm = new TrapDetailsForm(SelectedTrap);
+                trapDetailsForm.ShowDialog();
+            }
+
+            if (SelectedChallenge != null)
+            {
+                var skillChallengeDetailsForm = new SkillChallengeDetailsForm(SelectedChallenge);
+                skillChallengeDetailsForm.ShowDialog();
+            }
+        }
+    }
 }

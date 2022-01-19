@@ -4,25 +4,22 @@ using System.Windows.Forms;
 
 namespace Masterplan.UI
 {
-	partial class CategoryForm : Form
-	{
-		public CategoryForm(List<string> categories, string selected_category)
-		{
-			InitializeComponent();
+    internal partial class CategoryForm : Form
+    {
+        public string Category => CategoryBox.Text;
 
-			foreach (string cat in categories)
-				CategoryBox.Items.Add(cat);
+        public CategoryForm(List<string> categories, string selectedCategory)
+        {
+            InitializeComponent();
 
-			CategoryBox.Text = selected_category;
-		}
+            foreach (var cat in categories)
+                CategoryBox.Items.Add(cat);
 
-		public string Category
-		{
-			get { return CategoryBox.Text; }
-		}
+            CategoryBox.Text = selectedCategory;
+        }
 
-		private void OKBtn_Click(object sender, EventArgs e)
-		{
-		}
-	}
+        private void OKBtn_Click(object sender, EventArgs e)
+        {
+        }
+    }
 }

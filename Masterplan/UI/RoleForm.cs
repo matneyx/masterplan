@@ -1,125 +1,120 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-
 using Masterplan.Data;
 
 namespace Masterplan.UI
 {
-	partial class RoleForm : Form
-	{
-		public RoleForm(IRole r, ThreatType type)
-		{
-			InitializeComponent();
+    internal partial class RoleForm : Form
+    {
+        public IRole Role { get; private set; }
 
-			List<RoleType> roles = new List<RoleType>();
-			switch (type)
-			{
-				case ThreatType.Creature:
-					roles.Add(RoleType.Artillery);
-					roles.Add(RoleType.Brute);
-					roles.Add(RoleType.Controller);
-					roles.Add(RoleType.Lurker);
-					roles.Add(RoleType.Skirmisher);
-					roles.Add(RoleType.Soldier);
-					break;
-				case ThreatType.Trap:
-					roles.Add(RoleType.Blaster);
-					roles.Add(RoleType.Lurker);
-					roles.Add(RoleType.Obstacle);
-					roles.Add(RoleType.Warder);
-					LeaderBox.Text = "This trap is a leader";
-					break;
-			}
+        public RoleForm(IRole r, ThreatType type)
+        {
+            InitializeComponent();
 
-			foreach (RoleType role in roles)
-			{
-				RoleBox.Items.Add(role);
-				MinionRoleBox.Items.Add(role);
-			}
+            var roles = new List<RoleType>();
+            switch (type)
+            {
+                case ThreatType.Creature:
+                    roles.Add(RoleType.Artillery);
+                    roles.Add(RoleType.Brute);
+                    roles.Add(RoleType.Controller);
+                    roles.Add(RoleType.Lurker);
+                    roles.Add(RoleType.Skirmisher);
+                    roles.Add(RoleType.Soldier);
+                    break;
+                case ThreatType.Trap:
+                    roles.Add(RoleType.Blaster);
+                    roles.Add(RoleType.Lurker);
+                    roles.Add(RoleType.Obstacle);
+                    roles.Add(RoleType.Warder);
+                    LeaderBox.Text = "This trap is a leader";
+                    break;
+            }
 
-			foreach (RoleFlag flag in Enum.GetValues(typeof(RoleFlag)))
-				ModBox.Items.Add(flag);
+            foreach (var role in roles)
+            {
+                RoleBox.Items.Add(role);
+                MinionRoleBox.Items.Add(role);
+            }
 
-			Application.Idle += new EventHandler(Application_Idle);
+            foreach (RoleFlag flag in Enum.GetValues(typeof(RoleFlag)))
+                ModBox.Items.Add(flag);
 
-			fRole = r.Copy();
+            Application.Idle += Application_Idle;
 
-			if (fRole is ComplexRole)
-			{
-				StandardBtn.Checked = true;
+            Role = r.Copy();
 
-				ComplexRole cr = fRole as ComplexRole;
+            if (Role is ComplexRole)
+            {
+                StandardBtn.Checked = true;
 
-				RoleBox.SelectedItem = cr.Type;
-				MinionRoleBox.SelectedItem = cr.Type;
+                var cr = Role as ComplexRole;
 
-				ModBox.SelectedItem = cr.Flag;
-				LeaderBox.Checked = cr.Leader;
-				HasRoleBox.Checked = false;
-			}
+                RoleBox.SelectedItem = cr.Type;
+                MinionRoleBox.SelectedItem = cr.Type;
 
-			if (fRole is Minion)
-			{
-				MinionBtn.Checked = true;
+                ModBox.SelectedItem = cr.Flag;
+                LeaderBox.Checked = cr.Leader;
+                HasRoleBox.Checked = false;
+            }
 
-				Minion m = fRole as Minion;
+            if (Role is Minion)
+            {
+                MinionBtn.Checked = true;
 
-				RoleBox.SelectedItem = m.Type;
-				MinionRoleBox.SelectedItem = m.Type;
+                var m = Role as Minion;
 
-				ModBox.SelectedItem = RoleFlag.Standard;
-				LeaderBox.Checked = false;
-				HasRoleBox.Checked = m.HasRole;
-			}
-		}
+                RoleBox.SelectedItem = m.Type;
+                MinionRoleBox.SelectedItem = m.Type;
 
-		~RoleForm()
-		{
-			Application.Idle -= Application_Idle;
-		}
+                ModBox.SelectedItem = RoleFlag.Standard;
+                LeaderBox.Checked = false;
+                HasRoleBox.Checked = m.HasRole;
+            }
+        }
 
-		void Application_Idle(object sender, EventArgs e)
-		{
-			RoleLbl.Enabled = StandardBtn.Checked;
-			RoleBox.Enabled = StandardBtn.Checked;
-			ModLbl.Enabled = StandardBtn.Checked;
-			ModBox.Enabled = StandardBtn.Checked;
-			LeaderBox.Enabled = StandardBtn.Checked;
+        ~RoleForm()
+        {
+            Application.Idle -= Application_Idle;
+        }
 
-			HasRoleBox.Enabled = MinionBtn.Checked;
-			MinionRoleLbl.Enabled = MinionBtn.Checked && HasRoleBox.Checked;
-			MinionRoleBox.Enabled = MinionBtn.Checked && HasRoleBox.Checked;
-		}
+        private void Application_Idle(object sender, EventArgs e)
+        {
+            RoleLbl.Enabled = StandardBtn.Checked;
+            RoleBox.Enabled = StandardBtn.Checked;
+            ModLbl.Enabled = StandardBtn.Checked;
+            ModBox.Enabled = StandardBtn.Checked;
+            LeaderBox.Enabled = StandardBtn.Checked;
 
-		public IRole Role
-		{
-			get { return fRole; }
-		}
-		IRole fRole = null;
+            HasRoleBox.Enabled = MinionBtn.Checked;
+            MinionRoleLbl.Enabled = MinionBtn.Checked && HasRoleBox.Checked;
+            MinionRoleBox.Enabled = MinionBtn.Checked && HasRoleBox.Checked;
+        }
 
-		private void OKBtn_Click(object sender, EventArgs e)
-		{
-			if (StandardBtn.Checked)
-			{
-				ComplexRole cr = new ComplexRole();
+        private void OKBtn_Click(object sender, EventArgs e)
+        {
+            if (StandardBtn.Checked)
+            {
+                var cr = new ComplexRole();
 
-				cr.Type = (RoleType)RoleBox.SelectedItem;
-				cr.Flag = (RoleFlag)ModBox.SelectedItem;
-				cr.Leader = LeaderBox.Checked;
+                cr.Type = (RoleType)RoleBox.SelectedItem;
+                cr.Flag = (RoleFlag)ModBox.SelectedItem;
+                cr.Leader = LeaderBox.Checked;
 
-				fRole = cr;
-			}
+                Role = cr;
+            }
 
-			if (MinionBtn.Checked)
-			{
-				Minion m = new Minion();
+            if (MinionBtn.Checked)
+            {
+                var m = new Minion();
 
-				m.HasRole = HasRoleBox.Checked;
-				m.Type = (RoleType)MinionRoleBox.SelectedItem;
+                m.HasRole = HasRoleBox.Checked;
+                m.Type = (RoleType)MinionRoleBox.SelectedItem;
 
-				fRole = m;
-			}
-		}
-	}
+                Role = m;
+            }
+        }
+    }
 }

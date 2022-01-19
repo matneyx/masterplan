@@ -1,132 +1,121 @@
 ﻿using System;
 using System.Windows.Forms;
-
 using Masterplan.Data;
 
 namespace Masterplan.UI
 {
-	partial class PowerActionForm : Form
-	{
-		public PowerActionForm(PowerAction action)
-		{
-			InitializeComponent();
+    internal partial class PowerActionForm : Form
+    {
+        public PowerAction Action { get; private set; }
 
-			Application.Idle += new EventHandler(Application_Idle);
+        public PowerActionForm(PowerAction action)
+        {
+            InitializeComponent();
 
-			RechargeBox.Items.Add(PowerAction.RECHARGE_2);
-			RechargeBox.Items.Add(PowerAction.RECHARGE_3);
-			RechargeBox.Items.Add(PowerAction.RECHARGE_4);
-			RechargeBox.Items.Add(PowerAction.RECHARGE_5);
-			RechargeBox.Items.Add(PowerAction.RECHARGE_6);
+            Application.Idle += Application_Idle;
 
-			Array actions = Enum.GetValues(typeof(ActionType));
-			foreach (ActionType a in actions)
-			{
-				ActionBox.Items.Add(a);
-				SustainBox.Items.Add(a);
-			}
+            RechargeBox.Items.Add(PowerAction.Recharge2);
+            RechargeBox.Items.Add(PowerAction.Recharge3);
+            RechargeBox.Items.Add(PowerAction.Recharge4);
+            RechargeBox.Items.Add(PowerAction.Recharge5);
+            RechargeBox.Items.Add(PowerAction.Recharge6);
 
-			if (action != null)
-				fAction = action.Copy();
+            var actions = Enum.GetValues(typeof(ActionType));
+            foreach (ActionType a in actions)
+            {
+                ActionBox.Items.Add(a);
+                SustainBox.Items.Add(a);
+            }
 
-			if (fAction != null)
-			{
-				fAction = action.Copy();
+            if (action != null)
+                Action = action.Copy();
 
-				TraitBox.Checked = false;
+            if (Action != null)
+            {
+                Action = action.Copy();
 
-				switch (fAction.Use)
-				{
-					case PowerUseType.AtWill:
-						AtWillBtn.Checked = true;
-						BasicAttackBtn.Checked = false;
-						break;
-					case PowerUseType.Basic:
-						AtWillBtn.Checked = true;
-						BasicAttackBtn.Checked = true;
-						break;
-					case PowerUseType.Encounter:
-						EncounterBtn.Checked = true;
-						RechargeBox.Text = fAction.Recharge;
-						break;
-					case PowerUseType.Daily:
-						DailyBtn.Checked = true;
-						break;
-				}
+                TraitBox.Checked = false;
 
-				ActionBox.SelectedItem = fAction.Action;
-				TriggerBox.Text = fAction.Trigger;
-				SustainBox.SelectedItem = fAction.SustainAction;
-			}
-			else
-			{
-				TraitBox.Checked = true;
+                switch (Action.Use)
+                {
+                    case PowerUseType.AtWill:
+                        AtWillBtn.Checked = true;
+                        BasicAttackBtn.Checked = false;
+                        break;
+                    case PowerUseType.Basic:
+                        AtWillBtn.Checked = true;
+                        BasicAttackBtn.Checked = true;
+                        break;
+                    case PowerUseType.Encounter:
+                        EncounterBtn.Checked = true;
+                        RechargeBox.Text = Action.Recharge;
+                        break;
+                    case PowerUseType.Daily:
+                        DailyBtn.Checked = true;
+                        break;
+                }
 
-				AtWillBtn.Checked = true;
-				BasicAttackBtn.Checked = false;
-				ActionBox.SelectedItem = ActionType.Standard;
-				SustainBox.SelectedItem = ActionType.None;
-			}
-		}
+                ActionBox.SelectedItem = Action.Action;
+                TriggerBox.Text = Action.Trigger;
+                SustainBox.SelectedItem = Action.SustainAction;
+            }
+            else
+            {
+                TraitBox.Checked = true;
 
-		~PowerActionForm()
-		{
-			Application.Idle -= Application_Idle;
-		}
+                AtWillBtn.Checked = true;
+                BasicAttackBtn.Checked = false;
+                ActionBox.SelectedItem = ActionType.Standard;
+                SustainBox.SelectedItem = ActionType.None;
+            }
+        }
 
-		void Application_Idle(object sender, EventArgs e)
-		{
-			bool is_trait = TraitBox.Checked;
+        ~PowerActionForm()
+        {
+            Application.Idle -= Application_Idle;
+        }
 
-			UsageGroup.Enabled = !is_trait;
-			BasicAttackBtn.Enabled = UsageGroup.Enabled && AtWillBtn.Checked;
-			RechargeLbl.Enabled = UsageGroup.Enabled && EncounterBtn.Checked;
-			RechargeBox.Enabled = UsageGroup.Enabled && EncounterBtn.Checked;
-			ActionLbl.Enabled = !is_trait;
-			ActionBox.Enabled = !is_trait;
-			TriggerLbl.Enabled = !is_trait;
-			TriggerBox.Enabled = !is_trait;
-			SustainLbl.Enabled = !is_trait;
-			SustainBox.Enabled = !is_trait;
-		}
+        private void Application_Idle(object sender, EventArgs e)
+        {
+            var isTrait = TraitBox.Checked;
 
-		public PowerAction Action
-		{
-			get { return fAction; }
-		}
-		PowerAction fAction = null;
+            UsageGroup.Enabled = !isTrait;
+            BasicAttackBtn.Enabled = UsageGroup.Enabled && AtWillBtn.Checked;
+            RechargeLbl.Enabled = UsageGroup.Enabled && EncounterBtn.Checked;
+            RechargeBox.Enabled = UsageGroup.Enabled && EncounterBtn.Checked;
+            ActionLbl.Enabled = !isTrait;
+            ActionBox.Enabled = !isTrait;
+            TriggerLbl.Enabled = !isTrait;
+            TriggerBox.Enabled = !isTrait;
+            SustainLbl.Enabled = !isTrait;
+            SustainBox.Enabled = !isTrait;
+        }
 
-		private void OKBtn_Click(object sender, EventArgs e)
-		{
-			if (TraitBox.Checked)
-			{
-				fAction = null;
-			}
-			else
-			{
-				if (fAction == null)
-					fAction = new PowerAction();
+        private void OKBtn_Click(object sender, EventArgs e)
+        {
+            if (TraitBox.Checked)
+            {
+                Action = null;
+            }
+            else
+            {
+                if (Action == null)
+                    Action = new PowerAction();
 
-				if (AtWillBtn.Checked)
-				{
-					fAction.Use = BasicAttackBtn.Checked ? PowerUseType.Basic : PowerUseType.AtWill;
-				}
+                if (AtWillBtn.Checked) Action.Use = BasicAttackBtn.Checked ? PowerUseType.Basic : PowerUseType.AtWill;
 
-				if (EncounterBtn.Checked)
-				{
-					fAction.Use = PowerUseType.Encounter;
-					fAction.Recharge = RechargeBox.Text;
-				}
+                if (EncounterBtn.Checked)
+                {
+                    Action.Use = PowerUseType.Encounter;
+                    Action.Recharge = RechargeBox.Text;
+                }
 
-				if (DailyBtn.Checked)
-				{
-					fAction.Use = PowerUseType.Daily;
-				}
+                if (DailyBtn.Checked) Action.Use = PowerUseType.Daily;
 
-				fAction.Action = (ActionType)ActionBox.SelectedItem;
-				fAction.Trigger = TriggerBox.Text;
-				fAction.SustainAction = (ActionType)SustainBox.SelectedItem;
-			}
-		}
-	}
+                Action.Action = (ActionType)ActionBox.SelectedItem;
+                Action.Trigger = TriggerBox.Text;
+                Action.SustainAction = (ActionType)SustainBox.SelectedItem;
+            }
+        }
+    }
 }

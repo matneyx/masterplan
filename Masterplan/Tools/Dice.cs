@@ -3,39 +3,39 @@ using System.Collections.Generic;
 
 namespace Masterplan.Tools
 {
-    class DiceStatistics
+    internal class DiceStatistics
     {
         public static Dictionary<int, int> Odds(List<int> dice, int constant)
         {
-            Dictionary<int, int> odds = new Dictionary<int, int>();
+            var odds = new Dictionary<int, int>();
 
             if (dice.Count > 0)
             {
-                int combinations = 1;
-                foreach (int die in dice)
+                var combinations = 1;
+                foreach (var die in dice)
                     combinations *= die;
 
                 // Work out how quickly each die rolls over
-                int[] frequencies = new int[dice.Count];
+                var frequencies = new int[dice.Count];
                 frequencies[dice.Count - 1] = 1;
-                for (int n = dice.Count - 2; n >= 0; --n)
+                for (var n = dice.Count - 2; n >= 0; --n)
                     frequencies[n] = frequencies[n + 1] * dice[n + 1];
 
-                for (int n = 0; n != combinations; ++n)
+                for (var n = 0; n != combinations; ++n)
                 {
                     // Work out the number for each die
-                    List<int> rolls = new List<int>();
-                    for (int index = 0; index != dice.Count; ++index)
+                    var rolls = new List<int>();
+                    for (var index = 0; index != dice.Count; ++index)
                     {
-                        int die = dice[index];
-                        int roll = ((n / frequencies[index]) % die) + 1;
+                        var die = dice[index];
+                        var roll = n / frequencies[index] % die + 1;
 
                         rolls.Add(roll);
                     }
 
                     // Work out the sum
-                    int sum = constant;
-                    foreach (int roll in rolls)
+                    var sum = constant;
+                    foreach (var roll in rolls)
                         sum += roll;
 
                     if (!odds.ContainsKey(sum))
@@ -50,15 +50,14 @@ namespace Masterplan.Tools
 
         public static string Expression(List<int> dice, int constant)
         {
-            int d4 = 0;
-            int d6 = 0;
-            int d8 = 0;
-            int d10 = 0;
-            int d12 = 0;
-            int d20 = 0;
+            var d4 = 0;
+            var d6 = 0;
+            var d8 = 0;
+            var d10 = 0;
+            var d12 = 0;
+            var d20 = 0;
 
-            foreach (int die in dice)
-            {
+            foreach (var die in dice)
                 switch (die)
                 {
                     case 4:
@@ -80,9 +79,8 @@ namespace Masterplan.Tools
                         d20 += 1;
                         break;
                 }
-            }
 
-            string exp = "";
+            var exp = "";
             if (d4 != 0)
             {
                 if (exp != "")
@@ -90,6 +88,7 @@ namespace Masterplan.Tools
 
                 exp += d4 + "d4";
             }
+
             if (d6 != 0)
             {
                 if (exp != "")
@@ -97,6 +96,7 @@ namespace Masterplan.Tools
 
                 exp += d6 + "d6";
             }
+
             if (d8 != 0)
             {
                 if (exp != "")
@@ -104,6 +104,7 @@ namespace Masterplan.Tools
 
                 exp += d8 + "d8";
             }
+
             if (d10 != 0)
             {
                 if (exp != "")
@@ -111,6 +112,7 @@ namespace Masterplan.Tools
 
                 exp += d10 + "d10";
             }
+
             if (d12 != 0)
             {
                 if (exp != "")
@@ -118,6 +120,7 @@ namespace Masterplan.Tools
 
                 exp += d12 + "d12";
             }
+
             if (d20 != 0)
             {
                 if (exp != "")
@@ -126,264 +129,241 @@ namespace Masterplan.Tools
                 exp += d20 + "d20";
             }
 
-			if (constant != 0)
-			{
-				exp += " ";
+            if (constant != 0)
+            {
+                exp += " ";
 
-				if (constant > 0)
-					exp += "+";
+                if (constant > 0)
+                    exp += "+";
 
-				exp += constant.ToString();
-			}
+                exp += constant.ToString();
+            }
 
             return exp;
         }
     }
 
-	class DiceExpression
-	{
-		public DiceExpression()
-		{
-			fThrows = 0;
-			fSides = 0;
-			fConstant = 0;
-		}
+    internal class DiceExpression
+    {
+        public int Throws { get; set; }
 
-		public DiceExpression(int throws, int sides)
-		{
-			fThrows = throws;
-			fSides = sides;
-			fConstant = 0;
-		}
+        public int Sides { get; set; }
 
-		public DiceExpression(int throws, int sides, int constant)
-		{
-			fThrows = throws;
-			fSides = sides;
-			fConstant = constant;
-		}
+        public int Constant { get; set; }
 
-		public int Throws
-		{
-			get { return fThrows; }
-			set { fThrows = value; }
-		}
-		int fThrows = 0;
+        public int Maximum => Throws * Sides + Constant;
 
-		public int Sides
-		{
-			get { return fSides; }
-			set { fSides = value; }
-		}
-		int fSides = 0;
+        public double Average
+        {
+            get
+            {
+                var mean = (double)(Sides + 1) / 2;
+                return Throws * mean + Constant;
+            }
+        }
 
-		public int Constant
-		{
-			get { return fConstant; }
-			set { fConstant = value; }
-		}
-		int fConstant = 0;
+        public DiceExpression()
+        {
+            Throws = 0;
+            Sides = 0;
+            Constant = 0;
+        }
 
-		public static DiceExpression Parse(string str)
-		{
-			DiceExpression exp = new DiceExpression();
+        public DiceExpression(int throws, int sides)
+        {
+            Throws = throws;
+            Sides = sides;
+            Constant = 0;
+        }
 
-			try
-			{
-				bool started = false;
-				bool minus = false;
-				char[] digits = { '1', '2', '3', '4', '5', '6', '7', '8', '9', '0' };
+        public DiceExpression(int throws, int sides, int constant)
+        {
+            Throws = throws;
+            Sides = sides;
+            Constant = constant;
+        }
 
-				str = str.ToLower();
-				str = str.Replace("+", " + ");
-				str = str.Replace("-", " - ");
+        public static DiceExpression Parse(string str)
+        {
+            var exp = new DiceExpression();
 
-				string[] tokens = str.Split(null);
-				foreach (string token in tokens)
-				{
-					if ((token == "damage") || (token == "dmg"))
-						break;
+            try
+            {
+                var started = false;
+                var minus = false;
+                char[] digits = { '1', '2', '3', '4', '5', '6', '7', '8', '9', '0' };
 
-					if ((token == "-") && (started))
-					{
-						minus = true;
-						continue;
-					}
+                str = str.ToLower();
+                str = str.Replace("+", " + ");
+                str = str.Replace("-", " - ");
 
-					if (token.IndexOfAny(digits) == -1)
-						continue;
+                var tokens = str.Split(null);
+                foreach (var token in tokens)
+                {
+                    if (token == "damage" || token == "dmg")
+                        break;
 
-					// Has a 'd'
-					int d_index = token.IndexOf("d");
-					if (d_index != -1)
-					{
-						string throws = token.Substring(0, d_index);
-						string sides = token.Substring(d_index + 1);
+                    if (token == "-" && started)
+                    {
+                        minus = true;
+                        continue;
+                    }
 
-						if (throws != "")
-							exp.Throws = int.Parse(throws);
+                    if (token.IndexOfAny(digits) == -1)
+                        continue;
 
-						exp.Sides = int.Parse(sides);
-					}
-					else
-					{
-						if (exp.Constant == 0)
-						{
-							exp.Constant = int.Parse(token);
+                    // Has a 'd'
+                    var dIndex = token.IndexOf("d");
+                    if (dIndex != -1)
+                    {
+                        var throws = token.Substring(0, dIndex);
+                        var sides = token.Substring(dIndex + 1);
 
-							if (minus)
-								exp.Constant = -exp.Constant;
-						}
-					}
+                        if (throws != "")
+                            exp.Throws = int.Parse(throws);
 
-					started = true;
-				}
-			}
-			catch
-			{
-				// Parse error?
-				exp = null;
-			}
+                        exp.Sides = int.Parse(sides);
+                    }
+                    else
+                    {
+                        if (exp.Constant == 0)
+                        {
+                            exp.Constant = int.Parse(token);
 
-			if ((exp != null) && (exp.Throws == 0) && (exp.Constant == 0))
-				exp = null;
+                            if (minus)
+                                exp.Constant = -exp.Constant;
+                        }
+                    }
 
-			return exp;
-		}
+                    started = true;
+                }
+            }
+            catch
+            {
+                // Parse error?
+                exp = null;
+            }
 
-		public int Evaluate()
-		{
-			return Session.Dice(fThrows, fSides) + fConstant;
-		}
+            if (exp != null && exp.Throws == 0 && exp.Constant == 0)
+                exp = null;
 
-		public int Maximum
-		{
-			get
-			{
-				return (fThrows * fSides) + fConstant;
-			}
-		}
+            return exp;
+        }
 
-		public double Average
-		{
-			get
-			{
-				double mean = (double)(fSides + 1) / 2;
-				return (fThrows * mean) + fConstant;
-			}
-		}
+        public int Evaluate()
+        {
+            return Session.Dice(Throws, Sides) + Constant;
+        }
 
-		public override string ToString()
-		{
-			string str = "";
+        public override string ToString()
+        {
+            var str = "";
 
-			if (fThrows != 0)
-				str = fThrows + "d" + fSides;
+            if (Throws != 0)
+                str = Throws + "d" + Sides;
 
-			if (fConstant != 0)
-			{
-				if (str != "")
-				{
-					str += " ";
+            if (Constant != 0)
+            {
+                if (str != "")
+                {
+                    str += " ";
 
-					if (fConstant > 0)
-						str += "+";
-				}
+                    if (Constant > 0)
+                        str += "+";
+                }
 
-				str += fConstant.ToString();
-			}
+                str += Constant.ToString();
+            }
 
-			if (str == "")
-				str = "0";
+            if (str == "")
+                str = "0";
 
-			return str;
-		}
+            return str;
+        }
 
-		public DiceExpression Adjust(int level_adjustment)
-		{
-			Array dmgs = Enum.GetValues(typeof(DamageExpressionType));
+        public DiceExpression Adjust(int levelAdjustment)
+        {
+            var dmgs = Enum.GetValues(typeof(DamageExpressionType));
 
-			// Choose the closest level and work out the differences (in throws / sides / constant)
-			int min_difference = int.MaxValue;
-			int best_level = 0;
-			DamageExpressionType best_det = DamageExpressionType.Normal;
-			DiceExpression best_exp = null;
-			for (int level = 1; level <= 30; ++level)
-			{
-				foreach (DamageExpressionType det in dmgs)
-				{
-					DiceExpression exp = DiceExpression.Parse(Statistics.Damage(level, det));
+            // Choose the closest level and work out the differences (in throws / sides / constant)
+            var minDifference = int.MaxValue;
+            var bestLevel = 0;
+            var bestDet = DamageExpressionType.Normal;
+            DiceExpression bestExp = null;
+            for (var level = 1; level <= 30; ++level)
+                foreach (DamageExpressionType det in dmgs)
+                {
+                    var exp = Parse(Statistics.Damage(level, det));
 
-					int diff_throws = Math.Abs(fThrows - exp.Throws);
-					int diff_sides = Math.Abs(fSides - exp.Sides) / 2;
-					int diff_const = Math.Abs(fConstant - exp.Constant);
+                    var diffThrows = Math.Abs(Throws - exp.Throws);
+                    var diffSides = Math.Abs(Sides - exp.Sides) / 2;
+                    var diffConst = Math.Abs(Constant - exp.Constant);
 
-					int difference = (diff_throws * 10) + (diff_sides * 100) + diff_const;
-					if (difference < min_difference)
-					{
-						min_difference = difference;
-						best_level = level;
-						best_det = det;
-						best_exp = exp;
-					}
-				}
-			}
+                    var difference = diffThrows * 10 + diffSides * 100 + diffConst;
+                    if (difference < minDifference)
+                    {
+                        minDifference = difference;
+                        bestLevel = level;
+                        bestDet = det;
+                        bestExp = exp;
+                    }
+                }
 
-			if (best_exp == null)
-				return this;
+            if (bestExp == null)
+                return this;
 
-			int throw_diff = fThrows - best_exp.Throws;
-			int sides_diff = fSides - best_exp.Sides;
-			int const_diff = fConstant - best_exp.Constant;
+            var throwDiff = Throws - bestExp.Throws;
+            var sidesDiff = Sides - bestExp.Sides;
+            var constDiff = Constant - bestExp.Constant;
 
-			// Adjust the new expression
-			int adj_level = Math.Max(best_level + level_adjustment, 1);
-			DiceExpression adjusted = DiceExpression.Parse(Statistics.Damage(adj_level, best_det));
-			adjusted.Throws += throw_diff;
-			adjusted.Sides += sides_diff;
-			adjusted.Constant += const_diff;
+            // Adjust the new expression
+            var adjLevel = Math.Max(bestLevel + levelAdjustment, 1);
+            var adjusted = Parse(Statistics.Damage(adjLevel, bestDet));
+            adjusted.Throws += throwDiff;
+            adjusted.Sides += sidesDiff;
+            adjusted.Constant += constDiff;
 
-			if (fThrows == 0)
-				adjusted.Throws = 0;
-			else
-				adjusted.Throws = Math.Max(adjusted.Throws, 1);
+            if (Throws == 0)
+                adjusted.Throws = 0;
+            else
+                adjusted.Throws = Math.Max(adjusted.Throws, 1);
 
-			// Make sure we have a valid dice type
-			switch (adjusted.Sides)
-			{
-				case 0:
-				case 1:
-				case 2:
-				case 3:
-				case 4:
-					adjusted.Sides = 4;
-					break;
-				case 5:
-				case 6:
-					adjusted.Sides = 6;
-					break;
-				case 7:
-				case 8:
-					adjusted.Sides = 8;
-					break;
-				case 9:
-				case 10:
-					adjusted.Sides = 10;
-					break;
-				case 11:
-				case 12:
-				case 13:
-				case 14:
-				case 15:
-				case 16:
-					adjusted.Sides = 12;
-					break;
-				default:
-					adjusted.Sides = 20;
-					break;
-			}
+            // Make sure we have a valid dice type
+            switch (adjusted.Sides)
+            {
+                case 0:
+                case 1:
+                case 2:
+                case 3:
+                case 4:
+                    adjusted.Sides = 4;
+                    break;
+                case 5:
+                case 6:
+                    adjusted.Sides = 6;
+                    break;
+                case 7:
+                case 8:
+                    adjusted.Sides = 8;
+                    break;
+                case 9:
+                case 10:
+                    adjusted.Sides = 10;
+                    break;
+                case 11:
+                case 12:
+                case 13:
+                case 14:
+                case 15:
+                case 16:
+                    adjusted.Sides = 12;
+                    break;
+                default:
+                    adjusted.Sides = 20;
+                    break;
+            }
 
-			return adjusted;
-		}
-	}
+            return adjusted;
+        }
+    }
 }

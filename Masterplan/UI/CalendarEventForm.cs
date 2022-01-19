@@ -1,50 +1,45 @@
 ﻿using System;
 using System.Windows.Forms;
-
 using Masterplan.Data;
 
 namespace Masterplan.UI
 {
-	partial class CalendarEventForm : Form
-	{
-		public CalendarEventForm(CalendarEvent ce, Calendar calendar)
-		{
-			InitializeComponent();
+    internal partial class CalendarEventForm : Form
+    {
+        private readonly Calendar _fCalendar;
 
-			fEvent = ce.Copy();
-			fCalendar = calendar;
+        public CalendarEvent Event { get; }
 
-			foreach (MonthInfo mi in fCalendar.Months)
-				MonthBox.Items.Add(mi);
+        public CalendarEventForm(CalendarEvent ce, Calendar calendar)
+        {
+            InitializeComponent();
 
-			NameBox.Text = fEvent.Name;
-			DayBox.Value = fEvent.DayIndex + 1;
+            Event = ce.Copy();
+            _fCalendar = calendar;
 
-			MonthInfo month = fCalendar.FindMonth(fEvent.MonthID);
-			MonthBox.SelectedItem = month;
-		}
+            foreach (var mi in _fCalendar.Months)
+                MonthBox.Items.Add(mi);
 
-		public CalendarEvent Event
-		{
-			get { return fEvent; }
-		}
-		CalendarEvent fEvent = null;
+            NameBox.Text = Event.Name;
+            DayBox.Value = Event.DayIndex + 1;
 
-		Calendar fCalendar = null;
+            var month = _fCalendar.FindMonth(Event.MonthId);
+            MonthBox.SelectedItem = month;
+        }
 
-		private void OKBtn_Click(object sender, EventArgs e)
-		{
-			fEvent.Name = NameBox.Text;
-			fEvent.DayIndex = (int)DayBox.Value - 1;
+        private void OKBtn_Click(object sender, EventArgs e)
+        {
+            Event.Name = NameBox.Text;
+            Event.DayIndex = (int)DayBox.Value - 1;
 
-			MonthInfo mi = MonthBox.SelectedItem as MonthInfo;
-			fEvent.MonthID = mi.ID;
-		}
+            var mi = MonthBox.SelectedItem as MonthInfo;
+            Event.MonthId = mi.Id;
+        }
 
-		private void MonthBox_SelectedIndexChanged(object sender, EventArgs e)
-		{
-			MonthInfo mi = MonthBox.SelectedItem as MonthInfo;
-			DayBox.Maximum = mi.DayCount;
-		}
-	}
+        private void MonthBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            var mi = MonthBox.SelectedItem as MonthInfo;
+            DayBox.Maximum = mi.DayCount;
+        }
+    }
 }

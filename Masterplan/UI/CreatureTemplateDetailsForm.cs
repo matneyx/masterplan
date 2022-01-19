@@ -1,41 +1,40 @@
 ﻿using System;
 using System.IO;
 using System.Windows.Forms;
-
 using Masterplan.Data;
 using Masterplan.Tools;
 
 namespace Masterplan.UI
 {
-	partial class CreatureTemplateDetailsForm : Form
-	{
-		public CreatureTemplateDetailsForm(CreatureTemplate ct)
-		{
-			InitializeComponent();
+    internal partial class CreatureTemplateDetailsForm : Form
+    {
+        private readonly CreatureTemplate _fTemplate;
 
-			fTemplate = ct.Copy();
+        public CreatureTemplateDetailsForm(CreatureTemplate ct)
+        {
+            InitializeComponent();
 
-			Browser.DocumentText = HTML.CreatureTemplate(fTemplate, Session.Preferences.TextSize, false);
-		}
+            _fTemplate = ct.Copy();
 
-		CreatureTemplate fTemplate = null;
+            Browser.DocumentText = Html.CreatureTemplate(_fTemplate, Session.Preferences.TextSize, false);
+        }
 
-		private void PlayerViewBtn_Click(object sender, EventArgs e)
-		{
-			if (Session.PlayerView == null)
-				Session.PlayerView = new PlayerViewForm(this);
+        private void PlayerViewBtn_Click(object sender, EventArgs e)
+        {
+            if (Session.PlayerView == null)
+                Session.PlayerView = new PlayerViewForm(this);
 
-			Session.PlayerView.ShowCreatureTemplate(fTemplate);
-		}
+            Session.PlayerView.ShowCreatureTemplate(_fTemplate);
+        }
 
-		private void ExportHTML_Click(object sender, EventArgs e)
-		{
-			SaveFileDialog dlg = new SaveFileDialog();
-			dlg.FileName = fTemplate.Name;
-			dlg.Filter = Program.HTMLFilter;
+        private void ExportHTML_Click(object sender, EventArgs e)
+        {
+            var dlg = new SaveFileDialog();
+            dlg.FileName = _fTemplate.Name;
+            dlg.Filter = Program.HtmlFilter;
 
-			if (dlg.ShowDialog() == DialogResult.OK)
-				File.WriteAllText(dlg.FileName, Browser.DocumentText);
-		}
-	}
+            if (dlg.ShowDialog() == DialogResult.OK)
+                File.WriteAllText(dlg.FileName, Browser.DocumentText);
+        }
+    }
 }

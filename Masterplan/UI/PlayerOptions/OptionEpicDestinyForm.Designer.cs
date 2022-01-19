@@ -1,4 +1,4 @@
-﻿namespace Masterplan.UI
+﻿namespace Masterplan.UI.PlayerOptions
 {
 	partial class OptionEpicDestinyForm
 	{

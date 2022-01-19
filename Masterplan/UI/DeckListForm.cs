@@ -1,178 +1,176 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
-
 using Masterplan.Data;
 
 namespace Masterplan.UI
 {
-	partial class DeckListForm : Form
-	{
-		public DeckListForm()
-		{
-			InitializeComponent();
+    internal partial class DeckListForm : Form
+    {
+        public EncounterDeck SelectedDeck
+        {
+            get
+            {
+                if (DeckList.SelectedItems.Count != 0)
+                    return DeckList.SelectedItems[0].Tag as EncounterDeck;
 
-			Application.Idle += new EventHandler(Application_Idle);
+                return null;
+            }
+        }
 
-			update_decks();
-		}
+        public DeckListForm()
+        {
+            InitializeComponent();
 
-		~DeckListForm()
-		{
-			Application.Idle -= Application_Idle;
-		}
+            Application.Idle += Application_Idle;
 
-		void Application_Idle(object sender, EventArgs e)
-		{
-			RemoveBtn.Enabled = (SelectedDeck != null);
-			EditBtn.Enabled = (SelectedDeck != null);
+            update_decks();
+        }
 
-			ViewBtn.Enabled = ((SelectedDeck != null) && (SelectedDeck.Cards.Count != 0));
-			RunBtn.Enabled = ((SelectedDeck != null) && (SelectedDeck.Cards.Count != 0));
-		}
+        ~DeckListForm()
+        {
+            Application.Idle -= Application_Idle;
+        }
 
-		public EncounterDeck SelectedDeck
-		{
-			get
-			{
-				if (DeckList.SelectedItems.Count != 0)
-					return DeckList.SelectedItems[0].Tag as EncounterDeck;
+        private void Application_Idle(object sender, EventArgs e)
+        {
+            RemoveBtn.Enabled = SelectedDeck != null;
+            EditBtn.Enabled = SelectedDeck != null;
 
-				return null;
-			}
-		}
+            ViewBtn.Enabled = SelectedDeck != null && SelectedDeck.Cards.Count != 0;
+            RunBtn.Enabled = SelectedDeck != null && SelectedDeck.Cards.Count != 0;
+        }
 
-		private void AddBtn_Click(object sender, EventArgs e)
-		{
-			EncounterDeck deck = new EncounterDeck();
-			deck.Name = "New Deck";
-			deck.Level = Session.Project.Party.Level;
+        private void AddBtn_Click(object sender, EventArgs e)
+        {
+            var deck = new EncounterDeck();
+            deck.Name = "New Deck";
+            deck.Level = Session.Project.Party.Level;
 
-			DeckBuilderForm dlg = new DeckBuilderForm(deck);
-			if (dlg.ShowDialog() == DialogResult.OK)
-			{
-				Session.Project.Decks.Add(dlg.Deck);
-				Session.Modified = true;
+            var dlg = new DeckBuilderForm(deck);
+            if (dlg.ShowDialog() == DialogResult.OK)
+            {
+                Session.Project.Decks.Add(dlg.Deck);
+                Session.Modified = true;
 
-				update_decks();
-			}
-		}
+                update_decks();
+            }
+        }
 
-		private void RemoveBtn_Click(object sender, EventArgs e)
-		{
-			if (SelectedDeck != null)
-			{
-				Session.Project.Decks.Remove(SelectedDeck);
-				Session.Modified = true;
+        private void RemoveBtn_Click(object sender, EventArgs e)
+        {
+            if (SelectedDeck != null)
+            {
+                Session.Project.Decks.Remove(SelectedDeck);
+                Session.Modified = true;
 
-				update_decks();
-			}
-		}
+                update_decks();
+            }
+        }
 
-		private void EditBtn_Click(object sender, EventArgs e)
-		{
-			if (SelectedDeck != null)
-			{
-				int index = Session.Project.Decks.IndexOf(SelectedDeck);
+        private void EditBtn_Click(object sender, EventArgs e)
+        {
+            if (SelectedDeck != null)
+            {
+                var index = Session.Project.Decks.IndexOf(SelectedDeck);
 
-				DeckBuilderForm dlg = new DeckBuilderForm(SelectedDeck);
-				if (dlg.ShowDialog() == DialogResult.OK)
-				{
-					Session.Project.Decks[index] = dlg.Deck;
-					Session.Modified = true;
+                var dlg = new DeckBuilderForm(SelectedDeck);
+                if (dlg.ShowDialog() == DialogResult.OK)
+                {
+                    Session.Project.Decks[index] = dlg.Deck;
+                    Session.Modified = true;
 
-					update_decks();
-				}
-			}
-		}
+                    update_decks();
+                }
+            }
+        }
 
-		private void ViewBtn_Click(object sender, EventArgs e)
-		{
-			if (SelectedDeck != null)
-			{
-				DeckViewForm dlg = new DeckViewForm(SelectedDeck.Cards);
-				dlg.ShowDialog();
-			}
-		}
+        private void ViewBtn_Click(object sender, EventArgs e)
+        {
+            if (SelectedDeck != null)
+            {
+                var dlg = new DeckViewForm(SelectedDeck.Cards);
+                dlg.ShowDialog();
+            }
+        }
 
-		private void RunBtn_Click(object sender, EventArgs e)
-		{
-			if (SelectedDeck != null)
-				run_encounter(SelectedDeck, false);
-		}
+        private void RunBtn_Click(object sender, EventArgs e)
+        {
+            if (SelectedDeck != null)
+                run_encounter(SelectedDeck, false);
+        }
 
-		private void RunMap_Click(object sender, EventArgs e)
-		{
-			if (SelectedDeck != null)
-				run_encounter(SelectedDeck, true);
-		}
+        private void RunMap_Click(object sender, EventArgs e)
+        {
+            if (SelectedDeck != null)
+                run_encounter(SelectedDeck, true);
+        }
 
-		void run_encounter(EncounterDeck deck, bool choose_map)
-		{
-			MapAreaSelectForm map_dlg = null;
-			if (choose_map)
-			{
-				map_dlg = new MapAreaSelectForm(Guid.Empty, Guid.Empty);
-				if (map_dlg.ShowDialog() != DialogResult.OK)
-					return;
-			}
+        private void run_encounter(EncounterDeck deck, bool chooseMap)
+        {
+            MapAreaSelectForm mapDlg = null;
+            if (chooseMap)
+            {
+                mapDlg = new MapAreaSelectForm(Guid.Empty, Guid.Empty);
+                if (mapDlg.ShowDialog() != DialogResult.OK)
+                    return;
+            }
 
-			Encounter enc = new Encounter();
-			bool ok = deck.DrawEncounter(enc);
-			update_decks();
+            var enc = new Encounter();
+            var ok = deck.DrawEncounter(enc);
+            update_decks();
 
-			if (ok)
-			{
-				CombatState cs = new CombatState();
-				cs.Encounter = enc;
-				cs.PartyLevel = Session.Project.Party.Level;
+            if (ok)
+            {
+                var cs = new CombatState();
+                cs.Encounter = enc;
+                cs.PartyLevel = Session.Project.Party.Level;
 
-				if ((map_dlg != null) && (map_dlg.Map != null))
-				{
-					cs.Encounter.MapID = map_dlg.Map.ID;
+                if (mapDlg?.Map != null)
+                {
+                    cs.Encounter.MapId = mapDlg.Map.Id;
 
-					if (map_dlg.MapArea != null)
-						cs.Encounter.MapAreaID = map_dlg.MapArea.ID;
-				}
+                    if (mapDlg.MapArea != null)
+                        cs.Encounter.MapAreaId = mapDlg.MapArea.Id;
+                }
 
-				CombatForm dlg = new CombatForm(cs);
-				dlg.Show();
-			}
-			else
-			{
-				string str = "An encounter could not be built from this deck; check that there are enough cards remaining.";
-				MessageBox.Show(str, "Masterplan", MessageBoxButtons.OK, MessageBoxIcon.Information);
-			}
-		}
+                var dlg = new CombatForm(cs);
+                dlg.Show();
+            }
+            else
+            {
+                var str =
+                    "An encounter could not be built from this deck; check that there are enough cards remaining.";
+                MessageBox.Show(str, "Masterplan", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
 
-		void update_decks()
-		{
-			DeckList.Items.Clear();
+        private void update_decks()
+        {
+            DeckList.Items.Clear();
 
-			foreach (EncounterDeck deck in Session.Project.Decks)
-			{
-				int available = 0;
-				foreach (EncounterCard card in deck.Cards)
-				{
-					if (!card.Drawn)
-						available += 1;
-				}
+            foreach (var deck in Session.Project.Decks)
+            {
+                var available = 0;
+                foreach (var card in deck.Cards)
+                    if (!card.Drawn)
+                        available += 1;
 
-				string count = deck.Cards.Count.ToString();
-				if (available != deck.Cards.Count)
-					count = available + " / " + deck.Cards.Count;
+                var count = deck.Cards.Count.ToString();
+                if (available != deck.Cards.Count)
+                    count = available + " / " + deck.Cards.Count;
 
-				ListViewItem lvi = DeckList.Items.Add(deck.Name);
-				lvi.SubItems.Add(deck.Level.ToString());
-				lvi.SubItems.Add(count);
-				lvi.Tag = deck;
-			}
+                var lvi = DeckList.Items.Add(deck.Name);
+                lvi.SubItems.Add(deck.Level.ToString());
+                lvi.SubItems.Add(count);
+                lvi.Tag = deck;
+            }
 
-			if (DeckList.Items.Count == 0)
-			{
-				ListViewItem lvi = DeckList.Items.Add("(no decks)");
-				lvi.ForeColor = SystemColors.GrayText;
-			}
-		}
-	}
+            if (DeckList.Items.Count == 0)
+            {
+                var lvi = DeckList.Items.Add("(no decks)");
+                lvi.ForeColor = SystemColors.GrayText;
+            }
+        }
+    }
 }

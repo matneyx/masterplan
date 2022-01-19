@@ -1,86 +1,87 @@
 ﻿using System;
 using System.Windows.Forms;
-
 using Masterplan.Data;
 using Masterplan.Tools;
 
 namespace Masterplan.Controls
 {
-	partial class QuestPanel : UserControl
-	{
-		public QuestPanel()
-		{
-			InitializeComponent();
+    internal partial class QuestPanel : UserControl
+    {
+        private Quest _fQuest;
 
-			Array types = Enum.GetValues(typeof(QuestType));
-			foreach (QuestType type in types)
-				TypeBox.Items.Add(type);
-		}
+        private bool _fUpdating;
 
-		public Quest Quest
-		{
-			get { return fQuest; }
-			set
-			{
-				fQuest = value;
-				update_view();
-			}
-		}
-		Quest fQuest = null;
+        public Quest Quest
+        {
+            get => _fQuest;
+            set
+            {
+                _fQuest = value;
+                update_view();
+            }
+        }
 
-		bool fUpdating = false;
+        public QuestPanel()
+        {
+            InitializeComponent();
 
-		private void TypeBox_SelectedIndexChanged(object sender, EventArgs e)
-		{
-			if (fUpdating)
-				return;
+            var types = Enum.GetValues(typeof(QuestType));
+            foreach (QuestType type in types)
+                TypeBox.Items.Add(type);
+        }
 
-			fQuest.Type = (QuestType)TypeBox.SelectedItem;
-			update_view();
-		}
+        private void TypeBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (_fUpdating)
+                return;
 
-		private void LevelBox_ValueChanged(object sender, EventArgs e)
-		{
-			if (fUpdating)
-				return;
+            _fQuest.Type = (QuestType)TypeBox.SelectedItem;
+            update_view();
+        }
 
-			fQuest.Level = (int)LevelBox.Value;
-			update_view();
-		}
+        private void LevelBox_ValueChanged(object sender, EventArgs e)
+        {
+            if (_fUpdating)
+                return;
 
-		private void XPSlider_Scroll(object sender, EventArgs e)
-		{
-			if (fUpdating)
-				return;
+            _fQuest.Level = (int)LevelBox.Value;
+            update_view();
+        }
 
-			fQuest.XP = XPSlider.Value;
-			update_view();
-		}
+        private void XPSlider_Scroll(object sender, EventArgs e)
+        {
+            if (_fUpdating)
+                return;
 
-		void update_view()
-		{
-			fUpdating = true;
+            _fQuest.Xp = XPSlider.Value;
+            update_view();
+        }
 
-			TypeBox.SelectedItem = fQuest.Type;
-			LevelBox.Value = fQuest.Level;
+        private void update_view()
+        {
+            _fUpdating = true;
 
-			XPSlider.Visible = (fQuest.Type == QuestType.Minor);
-			if (XPSlider.Visible)
-			{
-				Pair<int, int> range = Experience.GetMinorQuestXP(fQuest.Level);
-				XPSlider.SetRange(range.First, range.Second);
-				MinMaxLbl.Text = range.First + " - " + range.Second;
+            TypeBox.SelectedItem = _fQuest.Type;
+            LevelBox.Value = _fQuest.Level;
 
-				if (fQuest.XP < range.First)
-					fQuest.XP = range.First;
-				if (fQuest.XP > range.Second)
-					fQuest.XP = range.Second;
+            XPSlider.Visible = _fQuest.Type == QuestType.Minor;
+            if (XPSlider.Visible)
+            {
+                var range = Experience.GetMinorQuestXp(_fQuest.Level);
+                XPSlider.SetRange(range.First, range.Second);
+                MinMaxLbl.Text = range.First + " - " + range.Second;
 
-				XPSlider.Value = fQuest.XP;
-			}
-			XPBox.Text = fQuest.GetXP() + " XP";
+                if (_fQuest.Xp < range.First)
+                    _fQuest.Xp = range.First;
+                if (_fQuest.Xp > range.Second)
+                    _fQuest.Xp = range.Second;
 
-			fUpdating = false;
-		}
-	}
+                XPSlider.Value = _fQuest.Xp;
+            }
+
+            XPBox.Text = _fQuest.GetXp() + " XP";
+
+            _fUpdating = false;
+        }
+    }
 }

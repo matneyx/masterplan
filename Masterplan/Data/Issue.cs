@@ -1,387 +1,360 @@
 ﻿using System;
-using System.Collections.Generic;
-
 using Masterplan.Tools;
 
 namespace Masterplan.Data
 {
-	/// <summary>
-	/// Interface for project issues.
-	/// </summary>
-	public interface IIssue
-	{
-		/// <summary>
-		/// Gets the reason for the issue.
-		/// </summary>
-		string Reason { get; }
-	}
+    /// <summary>
+    ///     Interface for project issues.
+    /// </summary>
+    public interface IIssue
+    {
+        /// <summary>
+        ///     Gets the reason for the issue.
+        /// </summary>
+        string Reason { get; }
+    }
 
-	/// <summary>
-	/// Class representing an issue with a plot point's difficulty level.
-	/// </summary>
-	[Serializable]
-	public class DifficultyIssue : IIssue
-	{
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		/// <param name="point">The point.</param>
-		public DifficultyIssue(PlotPoint point)
-		{
-			fPoint = point;
-		}
+    /// <summary>
+    ///     Class representing an issue with a plot point's difficulty level.
+    /// </summary>
+    [Serializable]
+    public class DifficultyIssue : IIssue
+    {
+        /// <summary>
+        ///     Gets the plot point.
+        /// </summary>
+        public PlotPoint Point { get; }
 
-		/// <summary>
-		/// Gets the plot point.
-		/// </summary>
-		public PlotPoint Point
-		{
-			get { return fPoint; }
-		}
-		PlotPoint fPoint = null;
+        /// <summary>
+        ///     Constructor.
+        /// </summary>
+        /// <param name="point">The point.</param>
+        public DifficultyIssue(PlotPoint point)
+        {
+            Point = point;
+        }
 
-		/// <summary>
-		/// Gets the reason for the issue.
-		/// </summary>
-		public string Reason
-		{
-			get
-			{
-				if (fPoint.State != PlotPointState.Normal)
-					return "";
+        /// <summary>
+        ///     [point name]: [reason]
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            return Point.Name + ": " + Reason;
+        }
 
-				if (fPoint.Element == null)
-					return "";
+        /// <summary>
+        ///     Gets the reason for the issue.
+        /// </summary>
+        public string Reason
+        {
+            get
+            {
+                if (Point.State != PlotPointState.Normal)
+                    return "";
 
-				string name = "game element";
-				if (fPoint.Element is Encounter)
-					name = "encounter";
-				if (fPoint.Element is TrapElement)
-				{
-					TrapElement te = fPoint.Element as TrapElement;
-					name = (te.Trap.Type == TrapType.Trap) ? "trap" : "hazard";
-				}
-				if (fPoint.Element is SkillChallenge)
-					name = "skill challenge";
-				if (fPoint.Element is Quest)
-					name = "quest";
+                if (Point.Element == null)
+                    return "";
 
-				int level = Workspace.GetPartyLevel(fPoint);
+                var name = "game element";
+                if (Point.Element is Encounter)
+                    name = "encounter";
+                if (Point.Element is TrapElement)
+                {
+                    var te = Point.Element as TrapElement;
+                    name = te.Trap.Type == TrapType.Trap ? "trap" : "hazard";
+                }
 
-				Difficulty diff = fPoint.Element.GetDifficulty(level, Session.Project.Party.Size);
-				switch (diff)
-				{
-					case Difficulty.Trivial:
-						return "This " + name + " is too easy for a party of level " + level + ".";
-					case Difficulty.Extreme:
-						return "This " + name + " is too difficult for a party of level " + level + ".";
-				}
+                if (Point.Element is SkillChallenge)
+                    name = "skill challenge";
+                if (Point.Element is Quest)
+                    name = "quest";
 
-				return "";
-			}
-		}
+                var level = Workspace.GetPartyLevel(Point);
 
-		/// <summary>
-		/// [point name]: [reason]
-		/// </summary>
-		/// <returns></returns>
-		public override string ToString()
-		{
-			return fPoint.Name + ": " + Reason;
-		}
-	}
+                var diff = Point.Element.GetDifficulty(level, Session.Project.Party.Size);
+                switch (diff)
+                {
+                    case Difficulty.Trivial:
+                        return "This " + name + " is too easy for a party of level " + level + ".";
+                    case Difficulty.Extreme:
+                        return "This " + name + " is too difficult for a party of level " + level + ".";
+                }
 
-	/// <summary>
-	/// Class representing an issue with a creature's difficulty level.
-	/// </summary>
-	[Serializable]
-	public class CreatureIssue : IIssue
-	{
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		/// <param name="point">The plot point.</param>
-		public CreatureIssue(PlotPoint point)
-		{
-			fPoint = point;
-		}
+                return "";
+            }
+        }
+    }
 
-		/// <summary>
-		/// Gets the plot point.
-		/// </summary>
-		public PlotPoint Point
-		{
-			get { return fPoint; }
-		}
-		PlotPoint fPoint = null;
+    /// <summary>
+    ///     Class representing an issue with a creature's difficulty level.
+    /// </summary>
+    [Serializable]
+    public class CreatureIssue : IIssue
+    {
+        /// <summary>
+        ///     Gets the plot point.
+        /// </summary>
+        public PlotPoint Point { get; }
 
-		/// <summary>
-		/// Gets the reason for the issue.
-		/// </summary>
-		public string Reason
-		{
-			get
-			{
-				if (fPoint.State != PlotPointState.Normal)
-					return "";
+        /// <summary>
+        ///     Constructor.
+        /// </summary>
+        /// <param name="point">The plot point.</param>
+        public CreatureIssue(PlotPoint point)
+        {
+            Point = point;
+        }
 
-				Encounter enc = fPoint.Element as Encounter;
-				if (enc == null)
-					return "";
+        /// <summary>
+        ///     [point name]: [reason]
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            return Point.Name + ": " + Reason;
+        }
 
-				int level = Workspace.GetPartyLevel(fPoint);
+        /// <summary>
+        ///     Gets the reason for the issue.
+        /// </summary>
+        public string Reason
+        {
+            get
+            {
+                if (Point.State != PlotPointState.Normal)
+                    return "";
 
-				foreach (EncounterSlot slot in enc.Slots)
-				{
-					int diff = slot.Card.Level - level;
+                var enc = Point.Element as Encounter;
+                if (enc == null)
+                    return "";
 
-					if (diff < -4)
-						return slot.Card.Title + " is more than four levels lower than the party level.";
+                var level = Workspace.GetPartyLevel(Point);
 
-					if (diff > 5)
-						return slot.Card.Title + " is more than five levels higher than the party level.";
-				}
+                foreach (var slot in enc.Slots)
+                {
+                    var diff = slot.Card.Level - level;
 
-				return "";
-			}
-		}
+                    if (diff < -4)
+                        return slot.Card.Title + " is more than four levels lower than the party level.";
 
-		/// <summary>
-		/// [point name]: [reason]
-		/// </summary>
-		/// <returns></returns>
-		public override string ToString()
-		{
-			return fPoint.Name + ": " + Reason;
-		}
-	}
+                    if (diff > 5)
+                        return slot.Card.Title + " is more than five levels higher than the party level.";
+                }
 
-	/// <summary>
-	/// Class representing an issue with the number of skills defined for a skill challenge.
-	/// </summary>
-	[Serializable]
-	public class SkillIssue : IIssue
-	{
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		/// <param name="point">The plot point.</param>
-		public SkillIssue(PlotPoint point)
-		{
-			fPoint = point;
-		}
+                return "";
+            }
+        }
+    }
 
-		/// <summary>
-		/// Gets the plot point.
-		/// </summary>
-		public PlotPoint Point
-		{
-			get { return fPoint; }
-		}
-		PlotPoint fPoint = null;
+    /// <summary>
+    ///     Class representing an issue with the number of skills defined for a skill challenge.
+    /// </summary>
+    [Serializable]
+    public class SkillIssue : IIssue
+    {
+        /// <summary>
+        ///     Gets the plot point.
+        /// </summary>
+        public PlotPoint Point { get; }
 
-		/// <summary>
-		/// Gets the reason for the issue.
-		/// </summary>
-		public string Reason
-		{
-			get
-			{
-				if (fPoint.State != PlotPointState.Normal)
-					return "";
+        /// <summary>
+        ///     Constructor.
+        /// </summary>
+        /// <param name="point">The plot point.</param>
+        public SkillIssue(PlotPoint point)
+        {
+            Point = point;
+        }
 
-				SkillChallenge sc = fPoint.Element as SkillChallenge;
-				if (sc == null)
-					return "";
+        /// <summary>
+        ///     [point name]: [reason]
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            return Point.Name + ": " + Reason;
+        }
 
-				if (sc.Skills.Count == 0)
-					return "No skills are defined for this skill challenge.";
+        /// <summary>
+        ///     Gets the reason for the issue.
+        /// </summary>
+        public string Reason
+        {
+            get
+            {
+                if (Point.State != PlotPointState.Normal)
+                    return "";
 
-				return "";
-			}
-		}
+                var sc = Point.Element as SkillChallenge;
+                if (sc == null)
+                    return "";
 
-		/// <summary>
-		/// [point name]: [reason]
-		/// </summary>
-		/// <returns></returns>
-		public override string ToString()
-		{
-			return fPoint.Name + ": " + Reason;
-		}
-	}
+                if (sc.Skills.Count == 0)
+                    return "No skills are defined for this skill challenge.";
 
-	/// <summary>
-	/// Class representing an issue with a treasure parcel being undefined.
-	/// </summary>
-	[Serializable]
-	public class ParcelIssue : IIssue
-	{
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		/// <param name="parcel">The treasure parcel.</param>
-		/// <param name="pp">The plot point.</param>
-		public ParcelIssue(Parcel parcel, PlotPoint pp)
-		{
-			fParcel = parcel;
-			fPoint = pp;
-		}
+                return "";
+            }
+        }
+    }
 
-		Parcel fParcel = null;
+    /// <summary>
+    ///     Class representing an issue with a treasure parcel being undefined.
+    /// </summary>
+    [Serializable]
+    public class ParcelIssue : IIssue
+    {
+        private Parcel _fParcel;
 
-		/// <summary>
-		/// Gets the plot point.
-		/// </summary>
-		public PlotPoint Point
-		{
-			get { return fPoint; }
-		}
-		PlotPoint fPoint = null;
+        /// <summary>
+        ///     Gets the plot point.
+        /// </summary>
+        public PlotPoint Point { get; }
 
-		/// <summary>
-		/// Gets the reason for the issue.
-		/// </summary>
-		public string Reason
-		{
-			get
-			{
-				if (fPoint.State != PlotPointState.Normal)
-					return "";
+        /// <summary>
+        ///     Constructor.
+        /// </summary>
+        /// <param name="parcel">The treasure parcel.</param>
+        /// <param name="pp">The plot point.</param>
+        public ParcelIssue(Parcel parcel, PlotPoint pp)
+        {
+            _fParcel = parcel;
+            Point = pp;
+        }
 
-				if (fParcel.Name == "")
-					return "A treasure parcel in " + fPoint.Name + " is undefined.";
+        /// <summary>
+        ///     [point name]: [reason]
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            return Point.Name + ": " + Reason;
+        }
 
-				return "";
-			}
-		}
+        /// <summary>
+        ///     Gets the reason for the issue.
+        /// </summary>
+        public string Reason
+        {
+            get
+            {
+                if (Point.State != PlotPointState.Normal)
+                    return "";
 
-		/// <summary>
-		/// [point name]: [reason]
-		/// </summary>
-		/// <returns></returns>
-		public override string ToString()
-		{
-			return fPoint.Name + ": " + Reason;
-		}
-	}
+                if (_fParcel.Name == "")
+                    return "A treasure parcel in " + Point.Name + " is undefined.";
 
-	/// <summary>
-	/// Class representing an issue with the number of treasure parcels in a plot.
-	/// </summary>
-	[Serializable]
-	public class TreasureIssue : IIssue
-	{
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		/// <param name="name">The plot name.</param>
-		/// <param name="plot">The plot.</param>
-		public TreasureIssue(string name, Plot plot)
-		{
-			fName = name;
-			fPlot = plot;
-		}
+                return "";
+            }
+        }
+    }
 
-		/// <summary>
-		/// Gets the plot name.
-		/// </summary>
-		public string PlotName
-		{
-			get { return fName; }
-		}
-		string fName = "";
+    /// <summary>
+    ///     Class representing an issue with the number of treasure parcels in a plot.
+    /// </summary>
+    [Serializable]
+    public class TreasureIssue : IIssue
+    {
+        /// <summary>
+        ///     Gets the plot name.
+        /// </summary>
+        public string PlotName { get; } = "";
 
-		/// <summary>
-		/// Gets the plot.
-		/// </summary>
-		public Plot Plot
-		{
-			get { return fPlot; }
-		}
-		Plot fPlot = null;
+        /// <summary>
+        ///     Gets the plot.
+        /// </summary>
+        public Plot Plot { get; }
 
-		/// <summary>
-		/// Gets the reason for the issue.
-		/// </summary>
-		public string Reason
-		{
-			get
-			{
-				int xp_gained = 0;
-				int parcels_gained = 0;
+        /// <summary>
+        ///     Constructor.
+        /// </summary>
+        /// <param name="name">The plot name.</param>
+        /// <param name="plot">The plot.</param>
+        public TreasureIssue(string name, Plot plot)
+        {
+            PlotName = name;
+            Plot = plot;
+        }
 
-				foreach (PlotPoint pp in fPlot.Points)
-				{
-					xp_gained += pp.GetXP();
+        /// <summary>
+        ///     [plot name]: [reason]
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            return PlotName + ": " + Reason;
+        }
 
-					List<PlotPoint> points = pp.Subtree;
-					foreach (PlotPoint point in points)
-						parcels_gained += point.Parcels.Count;
-				}
+        /// <summary>
+        ///     Gets the reason for the issue.
+        /// </summary>
+        public string Reason
+        {
+            get
+            {
+                var xpGained = 0;
+                var parcelsGained = 0;
 
-				int total_xp = Experience.GetHeroXP(Session.Project.Party.Level);
-				total_xp += xp_gained / Session.Project.Party.Size;
+                foreach (var pp in Plot.Points)
+                {
+                    xpGained += pp.GetXp();
 
-				int final_level = Experience.GetHeroLevel(total_xp);
-				int levels_gained = final_level - Session.Project.Party.Level;
+                    var points = pp.Subtree;
+                    foreach (var point in points)
+                        parcelsGained += point.Parcels.Count;
+                }
 
-				int remainder = total_xp - Experience.GetHeroXP(final_level);
-				int required_xp = Experience.GetHeroXP(final_level + 1) - Experience.GetHeroXP(final_level);
-				if (required_xp == 0)
-					return "";
+                var totalXp = Experience.GetHeroXp(Session.Project.Party.Level);
+                totalXp += xpGained / Session.Project.Party.Size;
 
-				int parcels_per_level = 10 + (Session.Project.Party.Size - 5);
-				int parcels_required = parcels_per_level * levels_gained;
-				parcels_required += (remainder * parcels_per_level) / required_xp;
+                var finalLevel = Experience.GetHeroLevel(totalXp);
+                var levelsGained = finalLevel - Session.Project.Party.Level;
 
-				int delta = (int)(parcels_required * 0.3);
-				int upper = parcels_required + delta;
-				int lower = parcels_required - delta;
+                var remainder = totalXp - Experience.GetHeroXp(finalLevel);
+                var requiredXp = Experience.GetHeroXp(finalLevel + 1) - Experience.GetHeroXp(finalLevel);
+                if (requiredXp == 0)
+                    return "";
 
-				string str = "";
+                var parcelsPerLevel = 10 + (Session.Project.Party.Size - 5);
+                var parcelsRequired = parcelsPerLevel * levelsGained;
+                parcelsRequired += remainder * parcelsPerLevel / requiredXp;
 
-				if (parcels_gained < lower)
-					str = "Too few treasure parcels are available, compared to the amount of XP given.";
+                var delta = (int)(parcelsRequired * 0.3);
+                var upper = parcelsRequired + delta;
+                var lower = parcelsRequired - delta;
 
-				if (parcels_gained > upper)
-					str = "Too many treasure parcels are available, compared to the amount of XP given.";
+                var str = "";
 
-				if (str != "")
-				{
-					bool has_subplots = false;
-					foreach (PlotPoint pp in fPlot.Points)
-					{
-						if (pp.Subplot.Points.Count != 0)
-						{
-							has_subplots = true;
-							break;
-						}
-					}
+                if (parcelsGained < lower)
+                    str = "Too few treasure parcels are available, compared to the amount of XP given.";
 
-					str += Environment.NewLine;
-					str += "This plot";
-					if (has_subplots)
-						str += " (and its subplots)";
-					str += " should contain ";
-					if (lower == upper)
-						str += upper.ToString();
-					else
-						str += lower + " - " + upper;
-					str += " parcels; currently " + parcels_gained + " are available.";
-				}
+                if (parcelsGained > upper)
+                    str = "Too many treasure parcels are available, compared to the amount of XP given.";
 
-				return str;
-			}
-		}
+                if (str != "")
+                {
+                    var hasSubplots = false;
+                    foreach (var pp in Plot.Points)
+                        if (pp.Subplot.Points.Count != 0)
+                        {
+                            hasSubplots = true;
+                            break;
+                        }
 
-		/// <summary>
-		/// [plot name]: [reason]
-		/// </summary>
-		/// <returns></returns>
-		public override string ToString()
-		{
-			return fName + ": " + Reason;
-		}
-	}
+                    str += Environment.NewLine;
+                    str += "This plot";
+                    if (hasSubplots)
+                        str += " (and its subplots)";
+                    str += " should contain ";
+                    if (lower == upper)
+                        str += upper.ToString();
+                    else
+                        str += lower + " - " + upper;
+                    str += " parcels; currently " + parcelsGained + " are available.";
+                }
+
+                return str;
+            }
+        }
+    }
 }

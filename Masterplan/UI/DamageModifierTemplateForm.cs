@@ -1,98 +1,80 @@
 ﻿using System;
 using System.Windows.Forms;
-
 using Masterplan.Data;
 
 namespace Masterplan.UI
 {
-	partial class DamageModifierTemplateForm : Form
-	{
-		public DamageModifierTemplateForm(DamageModifierTemplate dmt)
-		{
-			InitializeComponent();
+    internal partial class DamageModifierTemplateForm : Form
+    {
+        public DamageModifierTemplate Modifier { get; }
 
-			foreach (DamageType type in Enum.GetValues(typeof(DamageType)))
-			{
-				if (type == DamageType.Untyped)
-					continue;
+        public DamageModifierTemplateForm(DamageModifierTemplate dmt)
+        {
+            InitializeComponent();
 
-				DamageTypeBox.Items.Add(type);
-			}
+            foreach (DamageType type in Enum.GetValues(typeof(DamageType)))
+            {
+                if (type == DamageType.Untyped)
+                    continue;
 
-			TypeBox.Items.Add("Immunity to this damage type");
-			TypeBox.Items.Add("Resistance to this damage type");
-			TypeBox.Items.Add("Vulnerability to this damage type");
+                DamageTypeBox.Items.Add(type);
+            }
 
-			fMod = dmt.Copy();
+            TypeBox.Items.Add("Immunity to this damage type");
+            TypeBox.Items.Add("Resistance to this damage type");
+            TypeBox.Items.Add("Vulnerability to this damage type");
 
-			if (fMod.Type == DamageType.Untyped)
-			{
-				DamageTypeBox.SelectedIndex = 0;
-			}
-			else
-			{
-				DamageTypeBox.SelectedItem = fMod.Type;
-			}
+            Modifier = dmt.Copy();
 
-			int total_mod = fMod.HeroicValue + fMod.ParagonValue + fMod.EpicValue;
-			if (total_mod == 0)
-			{
-				TypeBox.SelectedIndex = 0;
-			}
-			if (total_mod < 0)
-			{
-				TypeBox.SelectedIndex = 1;
-			}
-			if (total_mod > 0)
-			{
-				TypeBox.SelectedIndex = 2;
-			}
+            if (Modifier.Type == DamageType.Untyped)
+                DamageTypeBox.SelectedIndex = 0;
+            else
+                DamageTypeBox.SelectedItem = Modifier.Type;
 
-			HeroicBox.Value = Math.Abs(fMod.HeroicValue);
-			ParagonBox.Value = Math.Abs(fMod.ParagonValue);
-			EpicBox.Value = Math.Abs(fMod.EpicValue);
-		}
+            var totalMod = Modifier.HeroicValue + Modifier.ParagonValue + Modifier.EpicValue;
+            if (totalMod == 0) TypeBox.SelectedIndex = 0;
+            if (totalMod < 0) TypeBox.SelectedIndex = 1;
+            if (totalMod > 0) TypeBox.SelectedIndex = 2;
 
-		public DamageModifierTemplate Modifier
-		{
-			get { return fMod; }
-		}
-		DamageModifierTemplate fMod = null;
+            HeroicBox.Value = Math.Abs(Modifier.HeroicValue);
+            ParagonBox.Value = Math.Abs(Modifier.ParagonValue);
+            EpicBox.Value = Math.Abs(Modifier.EpicValue);
+        }
 
-		private void OKBtn_Click(object sender, EventArgs e)
-		{
-			fMod.Type = (DamageType)DamageTypeBox.SelectedItem;
+        private void OKBtn_Click(object sender, EventArgs e)
+        {
+            Modifier.Type = (DamageType)DamageTypeBox.SelectedItem;
 
-			switch (TypeBox.SelectedIndex)
-			{
-				case 0:
-					fMod.HeroicValue = 0;
-					fMod.ParagonValue = 0;
-					fMod.EpicValue = 0;
-					break;
-				case 1:
-					fMod.HeroicValue = -(int)HeroicBox.Value;
-					fMod.ParagonValue = -(int)ParagonBox.Value;
-					fMod.EpicValue = -(int)EpicBox.Value;
-					break;
-				case 2:
-					fMod.HeroicValue = (int)HeroicBox.Value;
-					fMod.ParagonValue = (int)ParagonBox.Value;
-					fMod.EpicValue = (int)EpicBox.Value;
-					break;
-			}
-		}
+            switch (TypeBox.SelectedIndex)
+            {
+                case 0:
+                    Modifier.HeroicValue = 0;
+                    Modifier.ParagonValue = 0;
+                    Modifier.EpicValue = 0;
+                    break;
+                case 1:
+                    Modifier.HeroicValue = -(int)HeroicBox.Value;
+                    Modifier.ParagonValue = -(int)ParagonBox.Value;
+                    Modifier.EpicValue = -(int)EpicBox.Value;
+                    break;
+                case 2:
+                    Modifier.HeroicValue = (int)HeroicBox.Value;
+                    Modifier.ParagonValue = (int)ParagonBox.Value;
+                    Modifier.EpicValue = (int)EpicBox.Value;
+                    break;
+            }
+        }
 
-		private void TypeBox_SelectedIndexChanged(object sender, EventArgs e)
-		{
-			HeroicLbl.Enabled = (TypeBox.SelectedIndex != 0);
-			HeroicBox.Enabled = (TypeBox.SelectedIndex != 0);
+        private void TypeBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            HeroicLbl.Enabled = TypeBox.SelectedIndex != 0;
+            HeroicBox.Enabled = TypeBox.SelectedIndex != 0;
 
-			ParagonLbl.Enabled = (TypeBox.SelectedIndex != 0);
-			ParagonBox.Enabled = (TypeBox.SelectedIndex != 0);
-			
-			EpicLbl.Enabled = (TypeBox.SelectedIndex != 0);
-			EpicBox.Enabled = (TypeBox.SelectedIndex != 0);
-		}
-	}
+            ParagonLbl.Enabled = TypeBox.SelectedIndex != 0;
+            ParagonBox.Enabled = TypeBox.SelectedIndex != 0;
+
+            EpicLbl.Enabled = TypeBox.SelectedIndex != 0;
+            EpicBox.Enabled = TypeBox.SelectedIndex != 0;
+        }
+    }
 }

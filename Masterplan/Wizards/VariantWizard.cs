@@ -1,93 +1,91 @@
 ﻿using System.Collections.Generic;
-
 using Masterplan.Data;
 
 namespace Masterplan.Wizards
 {
-	class VariantWizard : Wizard
-	{
-		public VariantWizard()
-			: base("Select Creature")
-		{
-		}
+    internal class VariantWizard : Wizard
+    {
+        private VariantData _fData = new VariantData();
 
-		public override object Data
-		{
-			get { return fData; }
-			set { fData = value as VariantData; }
-		}
-		VariantData fData = new VariantData();
+        public override object Data
+        {
+            get => _fData;
+            set => _fData = value as VariantData;
+        }
 
-		public override void AddPages()
-		{
-			Pages.Add(new VariantBasePage());
-			Pages.Add(new VariantTemplatesPage());
-			Pages.Add(new VariantRolePage());
-			Pages.Add(new VariantFinishPage());
-		}
+        public VariantWizard()
+            : base("Select Creature")
+        {
+        }
 
-		public override int NextPageIndex(int current_page)
-		{
-			if (current_page == 0)
-				return (fData.BaseCreature.Role is Minion) ? 3 : 1;
+        public override void AddPages()
+        {
+            Pages.Add(new VariantBasePage());
+            Pages.Add(new VariantTemplatesPage());
+            Pages.Add(new VariantRolePage());
+            Pages.Add(new VariantFinishPage());
+        }
 
-			if (current_page == 1)
-				return (fData.Roles.Count == 1) ? 3 : 2;
+        public override int NextPageIndex(int currentPage)
+        {
+            if (currentPage == 0)
+                return _fData.BaseCreature.Role is Minion ? 3 : 1;
 
-			return base.NextPageIndex(current_page);
-		}
+            if (currentPage == 1)
+                return _fData.Roles.Count == 1 ? 3 : 2;
 
-		public override int BackPageIndex(int current_page)
-		{
-			if (current_page == 3)
-			{
-				if (fData.BaseCreature.Role is Minion)
-					return 0;
+            return base.NextPageIndex(currentPage);
+        }
 
-				return (fData.Roles.Count == 1) ? 1 : 2;
-			}
+        public override int BackPageIndex(int currentPage)
+        {
+            if (currentPage == 3)
+            {
+                if (_fData.BaseCreature.Role is Minion)
+                    return 0;
 
-			return base.BackPageIndex(current_page);
-		}
+                return _fData.Roles.Count == 1 ? 1 : 2;
+            }
 
-		public override void OnFinish()
-		{
-		}
+            return base.BackPageIndex(currentPage);
+        }
 
-		public override void OnCancel()
-		{
-		}
-	}
+        public override void OnFinish()
+        {
+        }
 
-	class VariantData
-	{
-		public ICreature BaseCreature = null;
-		public List<CreatureTemplate> Templates = new List<CreatureTemplate>();
+        public override void OnCancel()
+        {
+        }
+    }
 
-		public List<RoleType> Roles
-		{
-			get
-			{
-				List<RoleType> roles = new List<RoleType>();
+    internal class VariantData
+    {
+        public ICreature BaseCreature = null;
 
-				if ((BaseCreature != null) && (BaseCreature.Role is ComplexRole))
-				{
-					ComplexRole cr = BaseCreature.Role as ComplexRole;
-					roles.Add(cr.Type);
-				}
+        public int SelectedRoleIndex = 0;
+        public List<CreatureTemplate> Templates = new List<CreatureTemplate>();
 
-				foreach (CreatureTemplate ct in Templates)
-				{
-					if (!roles.Contains(ct.Role))
-						roles.Add(ct.Role);
-				}
+        public List<RoleType> Roles
+        {
+            get
+            {
+                var roles = new List<RoleType>();
 
-				roles.Sort();
+                if (BaseCreature?.Role is ComplexRole)
+                {
+                    var cr = BaseCreature.Role as ComplexRole;
+                    roles.Add(cr.Type);
+                }
 
-				return roles;
-			}
-		}
+                foreach (var ct in Templates)
+                    if (!roles.Contains(ct.Role))
+                        roles.Add(ct.Role);
 
-		public int SelectedRoleIndex = 0;
-	}
+                roles.Sort();
+
+                return roles;
+            }
+        }
+    }
 }

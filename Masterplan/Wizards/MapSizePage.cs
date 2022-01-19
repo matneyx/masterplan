@@ -1,64 +1,50 @@
 ﻿using System.Windows.Forms;
-
 using Masterplan.Tools.Generators;
 
 namespace Masterplan.Wizards
 {
-	partial class MapSizePage : UserControl, IWizardPage
-	{
-		public MapSizePage()
-		{
-			InitializeComponent();
-		}
+    internal partial class MapSizePage : UserControl, IWizardPage
+    {
+        private MapBuilderData _fData;
 
-		MapBuilderData fData = null;
+        public MapSizePage()
+        {
+            InitializeComponent();
+        }
 
-		#region IWizardPage Members
+        public bool AllowNext => false;
 
-		public bool AllowNext
-		{
-			get { return false; }
-		}
+        public bool AllowBack => true;
 
-		public bool AllowBack
-		{
-			get { return true; }
-		}
+        public bool AllowFinish => true;
 
-		public bool AllowFinish
-		{
-			get { return true; }
-		}
+        public void OnShown(object data)
+        {
+            if (_fData == null)
+            {
+                _fData = data as MapBuilderData;
 
-		public void OnShown(object data)
-		{
-			if (fData == null)
-			{
-				fData = data as MapBuilderData;
+                WidthBox.Value = _fData.Width;
+                HeightBox.Value = _fData.Height;
+            }
+        }
 
-				WidthBox.Value = fData.Width;
-				HeightBox.Value = fData.Height;
-			}
-		}
+        public bool OnBack()
+        {
+            return true;
+        }
 
-		public bool OnBack()
-		{
-			return true;
-		}
+        public bool OnNext()
+        {
+            return true;
+        }
 
-		public bool OnNext()
-		{
-			return true;
-		}
+        public bool OnFinish()
+        {
+            _fData.Width = (int)WidthBox.Value;
+            _fData.Height = (int)HeightBox.Value;
 
-		public bool OnFinish()
-		{
-			fData.Width = (int)WidthBox.Value;
-			fData.Height = (int)HeightBox.Value;
-
-			return true;
-		}
-
-		#endregion
-	}
+            return true;
+        }
+    }
 }

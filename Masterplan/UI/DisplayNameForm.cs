@@ -2,141 +2,140 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
-
 using Masterplan.Data;
 using Masterplan.Tools;
 
 namespace Masterplan.UI
 {
-	partial class DisplayNameForm : Form
-	{
-		public DisplayNameForm(List<CombatData> combatants, Encounter enc)
-		{
-			InitializeComponent();
+    internal partial class DisplayNameForm : Form
+    {
+        private readonly Encounter _fEncounter;
 
-			Application.Idle += new EventHandler(Application_Idle);
+        public List<CombatData> Combatants { get; }
 
-			fCombatants = combatants;
-			fEncounter = enc;
+        public CombatData SelectedCombatant
+        {
+            get
+            {
+                if (CombatantList.SelectedItems.Count != 0)
+                    return CombatantList.SelectedItems[0].Tag as CombatData;
 
-			Map map = null;
-			if (fEncounter.MapID != Guid.Empty)
-				map = Session.Project.FindTacticalMap(fEncounter.MapID);
+                return null;
+            }
+        }
 
-			if (map == null)
-				Pages.TabPages.Remove(MapPage);
-			else
-			{
-				Map.Map = map;
-				Map.Encounter = fEncounter;
-			}
+        public DisplayNameForm(List<CombatData> combatants, Encounter enc)
+        {
+            InitializeComponent();
 
-			update_list();
-			update_stat_block();
-			update_map_area();
-		}
+            Application.Idle += Application_Idle;
 
-		~DisplayNameForm()
-		{
-			Application.Idle -= Application_Idle;
-		}
+            Combatants = combatants;
+            _fEncounter = enc;
 
-		void Application_Idle(object sender, EventArgs e)
-		{
-			NameBox.Enabled = (SelectedCombatant != null);
-			SetNameBtn.Enabled = ((NameBox.Text != "") && (SelectedCombatant != null) && (NameBox.Text != SelectedCombatant.DisplayName));
-		}
+            Map map = null;
+            if (_fEncounter.MapId != Guid.Empty)
+                map = Session.Project.FindTacticalMap(_fEncounter.MapId);
 
-		public List<CombatData> Combatants
-		{
-			get { return fCombatants; }
-		}
-		List<CombatData> fCombatants = null;
+            if (map == null)
+            {
+                Pages.TabPages.Remove(MapPage);
+            }
+            else
+            {
+                Map.Map = map;
+                Map.Encounter = _fEncounter;
+            }
 
-		Encounter fEncounter = null;
+            update_list();
+            update_stat_block();
+            update_map_area();
+        }
 
-		public CombatData SelectedCombatant
-		{
-			get
-			{
-				if (CombatantList.SelectedItems.Count != 0)
-					return CombatantList.SelectedItems[0].Tag as CombatData;
+        ~DisplayNameForm()
+        {
+            Application.Idle -= Application_Idle;
+        }
 
-				return null;
-			}
-		}
+        private void Application_Idle(object sender, EventArgs e)
+        {
+            NameBox.Enabled = SelectedCombatant != null;
+            SetNameBtn.Enabled = NameBox.Text != "" && SelectedCombatant != null &&
+                                 NameBox.Text != SelectedCombatant.DisplayName;
+        }
 
-		private void CombatantList_SelectedIndexChanged(object sender, EventArgs e)
-		{
-			NameBox.Text = (SelectedCombatant != null) ? SelectedCombatant.DisplayName : "";
+        private void CombatantList_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            NameBox.Text = SelectedCombatant != null ? SelectedCombatant.DisplayName : "";
 
-			update_stat_block();
-			update_map_area();
-		}
+            update_stat_block();
+            update_map_area();
+        }
 
-		void update_list()
-		{
-			CombatantList.Items.Clear();
+        private void update_list()
+        {
+            CombatantList.Items.Clear();
 
-			foreach (CombatData cd in fCombatants)
-			{
-				ListViewItem lvi = CombatantList.Items.Add(cd.DisplayName);
-				lvi.Tag = cd;
-			}
-		}
+            foreach (var cd in Combatants)
+            {
+                var lvi = CombatantList.Items.Add(cd.DisplayName);
+                lvi.Tag = cd;
+            }
+        }
 
-		void update_stat_block()
-		{
-			EncounterSlot slot = fEncounter.FindSlot(SelectedCombatant);
-			EncounterCard card = slot != null ? slot.Card : null;
-			Browser.DocumentText = HTML.StatBlock(card, SelectedCombatant, fEncounter, true, false, true, CardMode.View, Session.Preferences.TextSize);
-		}
+        private void update_stat_block()
+        {
+            var slot = _fEncounter.FindSlot(SelectedCombatant);
+            var card = slot?.Card;
+            Browser.DocumentText = Html.StatBlock(card, SelectedCombatant, _fEncounter, true, false, true,
+                CardMode.View, Session.Preferences.TextSize);
+        }
 
-		void update_map_area()
-		{
-			Rectangle view = Rectangle.Empty;
+        private void update_map_area()
+        {
+            var view = Rectangle.Empty;
 
-			Map.BoxedTokens.Clear();
+            Map.BoxedTokens.Clear();
 
-			if ((SelectedCombatant != null) && (SelectedCombatant.Location != CombatData.NoPoint))
-			{
-				EncounterSlot slot = fEncounter.FindSlot(SelectedCombatant);
-				Map.BoxedTokens.Add(new CreatureToken(slot.ID, SelectedCombatant));
-				Map.MapChanged();
+            if (SelectedCombatant != null && SelectedCombatant.Location != CombatData.NoPoint)
+            {
+                var slot = _fEncounter.FindSlot(SelectedCombatant);
+                Map.BoxedTokens.Add(new CreatureToken(slot.Id, SelectedCombatant));
+                Map.MapChanged();
 
-				ICreature creature = Session.FindCreature(slot.Card.CreatureID, SearchType.Global);
-				int size = Creature.GetSize(creature.Size);
+                var creature = Session.FindCreature(slot.Card.CreatureId, SearchType.Global);
+                var size = Creature.GetSize(creature.Size);
 
-				int dx = 7;
-				int dy = 4;
+                var dx = 7;
+                var dy = 4;
 
-				int left = SelectedCombatant.Location.X - dx;
-				int top = SelectedCombatant.Location.Y - dy;
-				int width = dx + size + dx;
-				int height = dy + size + dy;
+                var left = SelectedCombatant.Location.X - dx;
+                var top = SelectedCombatant.Location.Y - dy;
+                var width = dx + size + dx;
+                var height = dy + size + dy;
 
-				view = new Rectangle(left, top, width, height);
-			}
-			else if (fEncounter.MapAreaID != Guid.Empty)
-			{
-				MapArea ma = Map.Map.FindArea(fEncounter.MapAreaID);
-				if (ma != null)
-					view = ma.Region;
-			}
+                view = new Rectangle(left, top, width, height);
+            }
+            else if (_fEncounter.MapAreaId != Guid.Empty)
+            {
+                var ma = Map.Map.FindArea(_fEncounter.MapAreaId);
+                if (ma != null)
+                    view = ma.Region;
+            }
 
-			Map.Viewpoint = view;
-		}
+            Map.Viewpoint = view;
+        }
 
-		private void SetNameBtn_Click(object sender, EventArgs e)
-		{
-			if (SelectedCombatant != null)
-			{
-				SelectedCombatant.DisplayName = NameBox.Text;
+        private void SetNameBtn_Click(object sender, EventArgs e)
+        {
+            if (SelectedCombatant != null)
+            {
+                SelectedCombatant.DisplayName = NameBox.Text;
 
-				update_list();
-				update_stat_block();
-				update_map_area();
-			}
-		}
-	}
+                update_list();
+                update_stat_block();
+                update_map_area();
+            }
+        }
+    }
 }

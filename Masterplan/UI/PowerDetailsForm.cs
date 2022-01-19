@@ -1,78 +1,70 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-
 using Masterplan.Data;
 using Masterplan.Tools;
 
 namespace Masterplan.UI
 {
-	partial class PowerDetailsForm : Form
-	{
-		public PowerDetailsForm(string str, ICreature creature)
-		{
-			InitializeComponent();
+    internal partial class PowerDetailsForm : Form
+    {
+        private readonly ICreature _fCreature;
 
-			DetailsBox.Text = str;
-			fCreature = creature;
+        public string Details => DetailsBox.Text;
 
-			int level = (fCreature != null) ? fCreature.Level : 0;
-			IRole role = (fCreature != null) ? fCreature.Role : null;
+        public PowerDetailsForm(string str, ICreature creature)
+        {
+            InitializeComponent();
 
-			string damage = "1d8 + 2";
-			if (role != null)
-			{
-				if (role is Minion)
-				{
-					damage = Statistics.Damage(level, DamageExpressionType.Minion);
-				}
-				else
-				{
-					damage = Statistics.Damage(level, DamageExpressionType.Normal);
-				}
-			}
+            DetailsBox.Text = str;
+            _fCreature = creature;
 
-			List<string> examples = new List<string>();
-			examples.Add(damage + " damage");
-			examples.Add(damage + " damage, and the target is knocked prone");
-			examples.Add("The target is slowed (save ends)");
-			examples.Add("The target is immobilised until the start of your next turn");
+            var level = _fCreature?.Level ?? 0;
+            var role = _fCreature?.Role;
 
-			List<string> lines = HTML.GetHead(null, null, Session.Preferences.TextSize);
-			lines.Add("<BODY>");
+            var damage = "1d8 + 2";
+            if (role != null)
+            {
+                if (role is Minion)
+                    damage = Statistics.Damage(level, DamageExpressionType.Minion);
+                else
+                    damage = Statistics.Damage(level, DamageExpressionType.Normal);
+            }
 
-			lines.Add("<P class=table>");
-			lines.Add("<TABLE>");
+            var examples = new List<string>();
+            examples.Add(damage + " damage");
+            examples.Add(damage + " damage, and the target is knocked prone");
+            examples.Add("The target is slowed (save ends)");
+            examples.Add("The target is immobilised until the start of your next turn");
 
-			lines.Add("<TR class=heading>");
-			lines.Add("<TD><B>Examples</B></TD>");
-			lines.Add("</TR>");
+            var lines = Html.GetHead(null, null, Session.Preferences.TextSize);
+            lines.Add("<BODY>");
 
-			foreach (string example in examples)
-			{
-				lines.Add("<TR>");
-				lines.Add("<TD>" + example + "</TD>");
-				lines.Add("</TR>");
-			}
+            lines.Add("<P class=table>");
+            lines.Add("<TABLE>");
 
-			lines.Add("</TABLE>");
-			lines.Add("</P>");
+            lines.Add("<TR class=heading>");
+            lines.Add("<TD><B>Examples</B></TD>");
+            lines.Add("</TR>");
 
-			lines.Add("</BODY>");
-			lines.Add("</HTML>");
+            foreach (var example in examples)
+            {
+                lines.Add("<TR>");
+                lines.Add("<TD>" + example + "</TD>");
+                lines.Add("</TR>");
+            }
 
-			Browser.DocumentText = HTML.Concatenate(lines);
-		}
+            lines.Add("</TABLE>");
+            lines.Add("</P>");
 
-		ICreature fCreature = null;
+            lines.Add("</BODY>");
+            lines.Add("</HTML>");
 
-		public string Details
-		{
-			get { return DetailsBox.Text; }
-		}
+            Browser.DocumentText = Html.Concatenate(lines);
+        }
 
-		private void OKBtn_Click(object sender, EventArgs e)
-		{
-		}
-	}
+        private void OKBtn_Click(object sender, EventArgs e)
+        {
+        }
+    }
 }

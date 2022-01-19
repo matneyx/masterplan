@@ -2,263 +2,255 @@
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Windows.Forms;
-
 using Masterplan.Data;
 using Masterplan.Tools;
 
 namespace Masterplan.UI
 {
-	partial class CalendarListForm : Form
-	{
-		public CalendarListForm()
-		{
-			InitializeComponent();
+    internal partial class CalendarListForm : Form
+    {
+        public Calendar SelectedCalendar
+        {
+            get
+            {
+                if (CalendarList.SelectedItems.Count != 0)
+                    return CalendarList.SelectedItems[0].Tag as Calendar;
 
-			Application.Idle += new EventHandler(Application_Idle);
+                return null;
+            }
+        }
 
-			update_calendars();
-			update_calendar_panel();
-		}
+        public CalendarListForm()
+        {
+            InitializeComponent();
 
-		~CalendarListForm()
-		{
-			Application.Idle -= Application_Idle;
-		}
+            Application.Idle += Application_Idle;
 
-		void Application_Idle(object sender, EventArgs e)
-		{
-			RemoveBtn.Enabled = (SelectedCalendar != null);
-			EditBtn.Enabled = (SelectedCalendar != null);
-			ExportBtn.Enabled = (SelectedCalendar != null);
-			PlayerViewBtn.Enabled = (SelectedCalendar != null);
-		}
+            update_calendars();
+            update_calendar_panel();
+        }
 
-		public Calendar SelectedCalendar
-		{
-			get
-			{
-				if (CalendarList.SelectedItems.Count != 0)
-					return CalendarList.SelectedItems[0].Tag as Calendar;
+        ~CalendarListForm()
+        {
+            Application.Idle -= Application_Idle;
+        }
 
-				return null;
-			}
-		}
+        private void Application_Idle(object sender, EventArgs e)
+        {
+            RemoveBtn.Enabled = SelectedCalendar != null;
+            EditBtn.Enabled = SelectedCalendar != null;
+            ExportBtn.Enabled = SelectedCalendar != null;
+            PlayerViewBtn.Enabled = SelectedCalendar != null;
+        }
 
-		#region Toolbar
+        private void AddBtn_Click(object sender, EventArgs e)
+        {
+            var c = new Calendar();
+            c.Name = "New Calendar";
 
-		private void AddBtn_Click(object sender, EventArgs e)
-		{
-			Calendar c = new Calendar();
-			c.Name = "New Calendar";
+            var dlg = new CalendarForm(c);
+            if (dlg.ShowDialog() == DialogResult.OK)
+            {
+                Session.Project.Calendars.Add(dlg.Calendar);
+                Session.Modified = true;
 
-			CalendarForm dlg = new CalendarForm(c);
-			if (dlg.ShowDialog() == DialogResult.OK)
-			{
-				Session.Project.Calendars.Add(dlg.Calendar);
-				Session.Modified = true;
+                update_calendars();
+                update_calendar_panel();
+            }
+        }
 
-				update_calendars();
-				update_calendar_panel();
-			}
-		}
+        private void RemoveBtn_Click(object sender, EventArgs e)
+        {
+            if (SelectedCalendar != null)
+            {
+                var msg = "Are you sure you want to delete this calendar?";
+                var dr = MessageBox.Show(msg, "Masterplan", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                if (dr == DialogResult.No)
+                    return;
 
-		private void RemoveBtn_Click(object sender, EventArgs e)
-		{
-			if (SelectedCalendar != null)
-			{
-				string msg = "Are you sure you want to delete this calendar?";
-				DialogResult dr = MessageBox.Show(msg, "Masterplan", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-				if (dr == DialogResult.No)
-					return;
+                Session.Project.Calendars.Remove(SelectedCalendar);
+                Session.Modified = true;
 
-				Session.Project.Calendars.Remove(SelectedCalendar);
-				Session.Modified = true;
+                update_calendars();
+                update_calendar_panel();
+            }
+        }
 
-				update_calendars();
-				update_calendar_panel();
-			}
-		}
+        private void EditBtn_Click(object sender, EventArgs e)
+        {
+            if (SelectedCalendar != null)
+            {
+                var index = Session.Project.Calendars.IndexOf(SelectedCalendar);
 
-		private void EditBtn_Click(object sender, EventArgs e)
-		{
-			if (SelectedCalendar != null)
-			{
-				int index = Session.Project.Calendars.IndexOf(SelectedCalendar);
+                var dlg = new CalendarForm(SelectedCalendar);
+                if (dlg.ShowDialog() == DialogResult.OK)
+                {
+                    Session.Project.Calendars[index] = dlg.Calendar;
+                    Session.Modified = true;
 
-				CalendarForm dlg = new CalendarForm(SelectedCalendar);
-				if (dlg.ShowDialog() == DialogResult.OK)
-				{
-					Session.Project.Calendars[index] = dlg.Calendar;
-					Session.Modified = true;
+                    update_calendars();
+                    update_calendar_panel();
+                }
+            }
+        }
 
-					update_calendars();
-					update_calendar_panel();
-				}
-			}
-		}
+        private void ExportBtn_Click(object sender, EventArgs e)
+        {
+            if (SelectedCalendar != null)
+            {
+                var dlg = new SaveFileDialog();
+                dlg.FileName = SelectedCalendar.Name;
+                dlg.Filter = "Bitmap Image |*.bmp|JPEG Image|*.jpg|GIF Image|*.gif|PNG Image|*.png";
+                if (dlg.ShowDialog() == DialogResult.OK)
+                {
+                    var format = ImageFormat.Bmp;
+                    switch (dlg.FilterIndex)
+                    {
+                        case 1:
+                            format = ImageFormat.Bmp;
+                            break;
+                        case 2:
+                            format = ImageFormat.Jpeg;
+                            break;
+                        case 3:
+                            format = ImageFormat.Gif;
+                            break;
+                        case 4:
+                            format = ImageFormat.Png;
+                            break;
+                    }
 
-		#endregion
+                    var bmp = Screenshot.Calendar(CalendarPnl.Calendar, CalendarPnl.MonthIndex, CalendarPnl.Year,
+                        new Size(800, 600));
+                    bmp.Save(dlg.FileName, format);
+                }
+            }
+        }
 
-		private void ExportBtn_Click(object sender, EventArgs e)
-		{
-			if (SelectedCalendar != null)
-			{
-				SaveFileDialog dlg = new SaveFileDialog();
-				dlg.FileName = SelectedCalendar.Name;
-				dlg.Filter = "Bitmap Image |*.bmp|JPEG Image|*.jpg|GIF Image|*.gif|PNG Image|*.png";
-				if (dlg.ShowDialog() == DialogResult.OK)
-				{
-					ImageFormat format = ImageFormat.Bmp;
-					switch (dlg.FilterIndex)
-					{
-						case 1:
-							format = ImageFormat.Bmp;
-							break;
-						case 2:
-							format = ImageFormat.Jpeg;
-							break;
-						case 3:
-							format = ImageFormat.Gif;
-							break;
-						case 4:
-							format = ImageFormat.Png;
-							break;
-					}
+        private void PlayerViewBtn_Click(object sender, EventArgs e)
+        {
+            if (SelectedCalendar != null)
+            {
+                if (Session.PlayerView == null)
+                    Session.PlayerView = new PlayerViewForm(this);
 
-					Bitmap bmp = Screenshot.Calendar(CalendarPnl.Calendar, CalendarPnl.MonthIndex, CalendarPnl.Year, new Size(800, 600));
-					bmp.Save(dlg.FileName, format);
-				}
-			}
-		}
+                Session.PlayerView.ShowCalendar(CalendarPnl.Calendar, CalendarPnl.MonthIndex, CalendarPnl.Year);
+            }
+        }
 
-		private void PlayerViewBtn_Click(object sender, EventArgs e)
-		{
-			if (SelectedCalendar != null)
-			{
-				if (Session.PlayerView == null)
-					Session.PlayerView = new PlayerViewForm(this);
+        private void CalendarList_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            update_calendar_panel();
+        }
 
-				Session.PlayerView.ShowCalendar(CalendarPnl.Calendar, CalendarPnl.MonthIndex, CalendarPnl.Year);
-			}
-		}
+        private void MonthBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            var mi = MonthBox.SelectedItem as MonthInfo;
+            var index = CalendarPnl.Calendar.Months.IndexOf(mi);
+            CalendarPnl.MonthIndex = index;
+        }
 
-		private void CalendarList_SelectedIndexChanged(object sender, EventArgs e)
-		{
-			update_calendar_panel();
-		}
+        private void YearBox_TextChanged(object sender, EventArgs e)
+        {
+            try
+            {
+                var year = int.Parse(YearBox.Text);
+                CalendarPnl.Year = year;
+            }
+            catch
+            {
+                YearBox.Text = CalendarPnl.Year.ToString();
+            }
+        }
 
-		private void MonthBox_SelectedIndexChanged(object sender, EventArgs e)
-		{
-			MonthInfo mi = MonthBox.SelectedItem as MonthInfo;
-			int index = CalendarPnl.Calendar.Months.IndexOf(mi);
-			CalendarPnl.MonthIndex = index;
-		}
+        private void MonthPrevBtn_Click(object sender, EventArgs e)
+        {
+            CalendarPnl.MonthIndex -= 1;
+            if (CalendarPnl.MonthIndex == -1)
+            {
+                CalendarPnl.MonthIndex = CalendarPnl.Calendar.Months.Count - 1;
+                CalendarPnl.Year -= 1;
+            }
 
-		private void YearBox_TextChanged(object sender, EventArgs e)
-		{
-			try
-			{
-				int year = int.Parse(YearBox.Text);
-				CalendarPnl.Year = year;
-			}
-			catch
-			{
-				YearBox.Text = CalendarPnl.Year.ToString();
-			}
-		}
+            update_calendar_panel();
+        }
 
-		#region Calendar toolbar
+        private void MonthNextBtn_Click(object sender, EventArgs e)
+        {
+            CalendarPnl.MonthIndex += 1;
+            if (CalendarPnl.MonthIndex == CalendarPnl.Calendar.Months.Count)
+            {
+                CalendarPnl.MonthIndex = 0;
+                CalendarPnl.Year += 1;
+            }
 
-		private void MonthPrevBtn_Click(object sender, EventArgs e)
-		{
-			CalendarPnl.MonthIndex -= 1;
-			if (CalendarPnl.MonthIndex == -1)
-			{
-				CalendarPnl.MonthIndex = CalendarPnl.Calendar.Months.Count - 1;
-				CalendarPnl.Year -= 1;
-			}
+            update_calendar_panel();
+        }
 
-			update_calendar_panel();
-		}
+        private void YearPrevBtn_Click(object sender, EventArgs e)
+        {
+            CalendarPnl.Year -= 1;
+            update_calendar_panel();
+        }
 
-		private void MonthNextBtn_Click(object sender, EventArgs e)
-		{
-			CalendarPnl.MonthIndex += 1;
-			if (CalendarPnl.MonthIndex == CalendarPnl.Calendar.Months.Count)
-			{
-				CalendarPnl.MonthIndex = 0;
-				CalendarPnl.Year += 1;
-			}
+        private void YearNextBtn_Click(object sender, EventArgs e)
+        {
+            CalendarPnl.Year += 1;
+            update_calendar_panel();
+        }
 
-			update_calendar_panel();
-		}
+        private void update_calendars()
+        {
+            CalendarList.Items.Clear();
 
-		private void YearPrevBtn_Click(object sender, EventArgs e)
-		{
-			CalendarPnl.Year -= 1;
-			update_calendar_panel();
-		}
+            foreach (var c in Session.Project.Calendars)
+            {
+                var lvi = CalendarList.Items.Add(c.Name);
+                lvi.SubItems.Add(c.Months.Count.ToString());
+                lvi.SubItems.Add(c.DayCount(c.CampaignYear).ToString());
+                lvi.Tag = c;
+            }
 
-		private void YearNextBtn_Click(object sender, EventArgs e)
-		{
-			CalendarPnl.Year += 1;
-			update_calendar_panel();
-		}
+            if (CalendarList.Items.Count == 0)
+            {
+                var lvi = CalendarList.Items.Add("(no calendars)");
+                lvi.ForeColor = SystemColors.GrayText;
+            }
+        }
 
-		#endregion
+        private void update_calendar_panel()
+        {
+            NavigationToolbar.Visible = SelectedCalendar != null;
 
-		void update_calendars()
-		{
-			CalendarList.Items.Clear();
+            if (CalendarPnl.Calendar != SelectedCalendar)
+            {
+                CalendarPnl.Calendar = SelectedCalendar;
+                if (CalendarPnl.Calendar != null)
+                {
+                    CalendarPnl.Year = SelectedCalendar.CampaignYear;
+                    CalendarPnl.MonthIndex = 0;
+                }
 
-			foreach (Calendar c in Session.Project.Calendars)
-			{
-				ListViewItem lvi = CalendarList.Items.Add(c.Name);
-				lvi.SubItems.Add(c.Months.Count.ToString());
-				lvi.SubItems.Add(c.DayCount(c.CampaignYear).ToString());
-				lvi.Tag = c;
-			}
+                CalendarPnl.Invalidate();
+            }
 
-			if (CalendarList.Items.Count == 0)
-			{
-				ListViewItem lvi = CalendarList.Items.Add("(no calendars)");
-				lvi.ForeColor = SystemColors.GrayText;
-			}
-		}
+            MonthBox.Items.Clear();
 
-		void update_calendar_panel()
-		{
-			NavigationToolbar.Visible = (SelectedCalendar != null);
+            if (CalendarPnl.Calendar != null)
+            {
+                foreach (var mi in CalendarPnl.Calendar.Months)
+                    MonthBox.Items.Add(mi);
 
-			if (CalendarPnl.Calendar != SelectedCalendar)
-			{
-				CalendarPnl.Calendar = SelectedCalendar;
-				if (CalendarPnl.Calendar != null)
-				{
-					CalendarPnl.Year = SelectedCalendar.CampaignYear;
-					CalendarPnl.MonthIndex = 0;
-				}
+                var currentMonth = CalendarPnl.Calendar.Months[CalendarPnl.MonthIndex];
 
-				CalendarPnl.Invalidate();
-			}
-
-			MonthBox.Items.Clear();
-
-			if (CalendarPnl.Calendar != null)
-			{
-				foreach (MonthInfo mi in CalendarPnl.Calendar.Months)
-					MonthBox.Items.Add(mi);
-
-				MonthInfo current_month = CalendarPnl.Calendar.Months[CalendarPnl.MonthIndex];
-
-				MonthBox.SelectedItem = current_month;
-				YearBox.Text = CalendarPnl.Year.ToString();
-			}
-			else
-			{
-				MonthBox.Text = "";
-				YearBox.Text = "";
-			}
-		}
-	}
+                MonthBox.SelectedItem = currentMonth;
+                YearBox.Text = CalendarPnl.Year.ToString();
+            }
+            else
+            {
+                MonthBox.Text = "";
+                YearBox.Text = "";
+            }
+        }
+    }
 }

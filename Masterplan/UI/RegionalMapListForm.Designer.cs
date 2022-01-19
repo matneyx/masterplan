@@ -1,4 +1,6 @@
-﻿namespace Masterplan.UI
+﻿using Masterplan.Controls.Elements;
+
+namespace Masterplan.UI
 {
 	partial class RegionalMapListForm
 	{
@@ -37,7 +39,7 @@
 			this.RemoveBtn = new System.Windows.Forms.ToolStripButton();
 			this.EditBtn = new System.Windows.Forms.ToolStripButton();
 			this.Splitter = new System.Windows.Forms.SplitContainer();
-			this.MapPanel = new Masterplan.Controls.RegionalMapPanel();
+			this.MapPanel = new RegionalMapPanel();
 			this.MapToolbar = new System.Windows.Forms.ToolStrip();
 			this.LocationMenu = new System.Windows.Forms.ToolStripDropDownButton();
 			this.LocationEntry = new System.Windows.Forms.ToolStripMenuItem();
@@ -272,7 +274,7 @@
 		private System.Windows.Forms.ToolStripMenuItem ToolsScreenshot;
 		private System.Windows.Forms.ToolStripMenuItem ToolsPlayerView;
 		private System.Windows.Forms.Button CloseBtn;
-		private Masterplan.Controls.RegionalMapPanel MapPanel;
+		private RegionalMapPanel MapPanel;
 		private System.Windows.Forms.ToolStripSplitButton AddBtn;
 		private System.Windows.Forms.ToolStripMenuItem AddImportProject;
 		private System.Windows.Forms.ToolStripDropDownButton LocationMenu;

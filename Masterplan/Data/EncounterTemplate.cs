@@ -3,366 +3,375 @@ using System.Collections.Generic;
 
 namespace Masterplan.Data
 {
-	/// <summary>
-	/// Class representing a group of EncounterTemplate items.
-	/// </summary>
-	[Serializable]
-	public class EncounterTemplateGroup
-	{
-		/// <summary>
-		/// Default constructor.
-		/// </summary>
-		public EncounterTemplateGroup()
-		{
-		}
+    /// <summary>
+    ///     Class representing a group of EncounterTemplate items.
+    /// </summary>
+    [Serializable]
+    public class EncounterTemplateGroup
+    {
+        private string _fCategory = "";
+
+        private string _fName = "";
+
+        private List<EncounterTemplate> _fTemplates = new List<EncounterTemplate>();
 
         /// <summary>
-        /// Constructor.
+        ///     Gets or sets the category of the group.
+        /// </summary>
+        public string Category
+        {
+            get => _fCategory;
+            set => _fCategory = value;
+        }
+
+        /// <summary>
+        ///     Gets or sets the name of the group.
+        /// </summary>
+        public string Name
+        {
+            get => _fName;
+            set => _fName = value;
+        }
+
+        /// <summary>
+        ///     Gets or sets the list of EncounterTemplate items.
+        /// </summary>
+        public List<EncounterTemplate> Templates
+        {
+            get => _fTemplates;
+            set => _fTemplates = value;
+        }
+
+        /// <summary>
+        ///     Default constructor.
+        /// </summary>
+        public EncounterTemplateGroup()
+        {
+        }
+
+        /// <summary>
+        ///     Constructor.
         /// </summary>
         /// <param name="name">The name of the group.</param>
         /// <param name="category">The category of the group.</param>
         public EncounterTemplateGroup(string name, string category)
         {
-            fName = name;
-            fCategory = category;
+            _fName = name;
+            _fCategory = category;
         }
+    }
+
+    /// <summary>
+    ///     Class representing a template for an encounter.
+    /// </summary>
+    [Serializable]
+    public class EncounterTemplate
+    {
+        private Difficulty _fDifficulty = Difficulty.Moderate;
+
+        private List<EncounterTemplateSlot> _fSlots = new List<EncounterTemplateSlot>();
 
         /// <summary>
-        /// Gets or sets the category of the group.
+        ///     Gets or sets the difficulty of the template.
         /// </summary>
-        public string Category
+        public Difficulty Difficulty
         {
-            get { return fCategory; }
-            set { fCategory = value; }
+            get => _fDifficulty;
+            set => _fDifficulty = value;
         }
-        string fCategory = "";
 
         /// <summary>
-        /// Gets or sets the name of the group.
+        ///     Gets or sets the list of slots in this template.
         /// </summary>
-        public string Name
+        public List<EncounterTemplateSlot> Slots
         {
-            get { return fName; }
-            set { fName = value; }
+            get => _fSlots;
+            set => _fSlots = value;
         }
-        string fName = "";
-
-		/// <summary>
-		/// Gets or sets the list of EncounterTemplate items.
-		/// </summary>
-		public List<EncounterTemplate> Templates
-		{
-			get { return fTemplates; }
-			set { fTemplates = value; }
-		}
-		List<EncounterTemplate> fTemplates = new List<EncounterTemplate>();
-	}
-
-	/// <summary>
-	/// Class representing a template for an encounter.
-	/// </summary>
-	[Serializable]
-	public class EncounterTemplate
-	{
-		/// <summary>
-		/// Default constructor.
-		/// </summary>
-		public EncounterTemplate()
-		{
-		}
-
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		/// <param name="diff">The difficulty of the template.</param>
-		public EncounterTemplate(Difficulty diff)
-		{
-			fDifficulty = diff;
-		}
-
-		/// <summary>
-		/// Gets or sets the difficulty of the template.
-		/// </summary>
-		public Difficulty Difficulty
-		{
-			get { return fDifficulty; }
-			set { fDifficulty = value; }
-		}
-		Difficulty fDifficulty = Difficulty.Moderate;
-
-		/// <summary>
-		/// Gets or sets the list of slots in this template.
-		/// </summary>
-		public List<EncounterTemplateSlot> Slots
-		{
-			get { return fSlots; }
-			set { fSlots = value; }
-		}
-		List<EncounterTemplateSlot> fSlots = new List<EncounterTemplateSlot>();
-
-		/// <summary>
-		/// Find a template slot matching the given encounter slot.
-		/// </summary>
-		/// <param name="enc_slot">The encounter slot.</param>
-		/// <param name="level">The encounter level.</param>
-		/// <returns>Returns the matching template slot, or null if no slot is found.</returns>
-		public EncounterTemplateSlot FindSlot(EncounterSlot enc_slot, int level)
-		{
-			foreach (EncounterTemplateSlot template_slot in fSlots)
-			{
-				if (template_slot.Count < enc_slot.CombatData.Count)
-					continue;
-
-				bool match = template_slot.Match(enc_slot.Card, level);
-				if (!match)
-					continue;
-
-				return template_slot;
-			}
-
-			return null;
-		}
-
-		/// <summary>
-		/// Creates a copy of the template.
-		/// </summary>
-		/// <returns>Returns the copy.</returns>
-		public EncounterTemplate Copy()
-		{
-			EncounterTemplate et = new EncounterTemplate();
-
-			et.Difficulty = fDifficulty;
-
-			foreach (EncounterTemplateSlot slot in fSlots)
-				et.Slots.Add(slot.Copy());
-
-			return et;
-		}
-	}
-
-	/// <summary>
-	/// Class representing a slot in an EncounterTemplate.
-	/// </summary>
-	[Serializable]
-	public class EncounterTemplateSlot
-	{
-		/// <summary>
-		/// Default constructor.
-		/// </summary>
-		public EncounterTemplateSlot()
-		{
-		}
-
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		/// <param name="count">The number of creatures.</param>
-		/// <param name="level_adj">The level adjustment.</param>
-		/// <param name="flag">The type of creature.</param>
-		/// <param name="role">The allowed role.</param>
-		public EncounterTemplateSlot(int count, int level_adj, RoleFlag flag, RoleType role)
-		{
-			fCount = count;
-			fLevelAdjustment = level_adj;
-			fFlag = flag;
-			fRoles.Add(role);
-		}
-
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		/// <param name="count">The number of creatures.</param>
-		/// <param name="level_adj">The level adjustment.</param>
-		/// <param name="flag">The type of creature.</param>
-		/// <param name="roles">The allowed roles.</param>
-		public EncounterTemplateSlot(int count, int level_adj, RoleFlag flag, RoleType[] roles)
-		{
-			fCount = count;
-			fLevelAdjustment = level_adj;
-			fFlag = flag;
-			fRoles.AddRange(roles);
-		}
-
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		/// <param name="count">The number of creatures.</param>
-		/// <param name="level_adj">The level adjustment.</param>
-		/// <param name="flag">The type of creature.</param>
-		public EncounterTemplateSlot(int count, int level_adj, RoleFlag flag)
-		{
-			fCount = count;
-			fLevelAdjustment = level_adj;
-			fFlag = flag;
-		}
-
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		/// <param name="count">The number of creatures.</param>
-		/// <param name="level_adj">The level adjustment.</param>
-		/// <param name="role">The allowed role.</param>
-		public EncounterTemplateSlot(int count, int level_adj, RoleType role)
-		{
-			fCount = count;
-			fLevelAdjustment = level_adj;
-			fRoles.Add(role);
-		}
-
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		/// <param name="count">The number of creatures.</param>
-		/// <param name="level_adj">The level adjustment.</param>
-		/// <param name="roles">The allowed roles.</param>
-		public EncounterTemplateSlot(int count, int level_adj, RoleType[] roles)
-		{
-			fCount = count;
-			fLevelAdjustment = level_adj;
-			fRoles.AddRange(roles);
-		}
 
         /// <summary>
-        /// Constructor.
+        ///     Default constructor.
+        /// </summary>
+        public EncounterTemplate()
+        {
+        }
+
+        /// <summary>
+        ///     Constructor.
+        /// </summary>
+        /// <param name="diff">The difficulty of the template.</param>
+        public EncounterTemplate(Difficulty diff)
+        {
+            _fDifficulty = diff;
+        }
+
+        /// <summary>
+        ///     Find a template slot matching the given encounter slot.
+        /// </summary>
+        /// <param name="enc_slot">The encounter slot.</param>
+        /// <param name="level">The encounter level.</param>
+        /// <returns>Returns the matching template slot, or null if no slot is found.</returns>
+        public EncounterTemplateSlot FindSlot(EncounterSlot encSlot, int level)
+        {
+            foreach (var templateSlot in _fSlots)
+            {
+                if (templateSlot.Count < encSlot.CombatData.Count)
+                    continue;
+
+                var match = templateSlot.Match(encSlot.Card, level);
+                if (!match)
+                    continue;
+
+                return templateSlot;
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        ///     Creates a copy of the template.
+        /// </summary>
+        /// <returns>Returns the copy.</returns>
+        public EncounterTemplate Copy()
+        {
+            var et = new EncounterTemplate();
+
+            et.Difficulty = _fDifficulty;
+
+            foreach (var slot in _fSlots)
+                et.Slots.Add(slot.Copy());
+
+            return et;
+        }
+    }
+
+    /// <summary>
+    ///     Class representing a slot in an EncounterTemplate.
+    /// </summary>
+    [Serializable]
+    public class EncounterTemplateSlot
+    {
+        private int _fCount = 1;
+
+        private RoleFlag _fFlag = RoleFlag.Standard;
+
+        private int _fLevelAdjustment;
+
+        private bool _fMinions;
+
+        private List<RoleType> _fRoles = new List<RoleType>();
+
+        /// <summary>
+        ///     Gets or sets the list of allowed roles.
+        ///     If empty, all roles are allowed.
+        /// </summary>
+        public List<RoleType> Roles
+        {
+            get => _fRoles;
+            set => _fRoles = value;
+        }
+
+        /// <summary>
+        ///     Gets or sets the type of creature (standard, elite, solo).
+        /// </summary>
+        public RoleFlag Flag
+        {
+            get => _fFlag;
+            set => _fFlag = value;
+        }
+
+        /// <summary>
+        ///     Gets or sets the level adjustment.
+        /// </summary>
+        public int LevelAdjustment
+        {
+            get => _fLevelAdjustment;
+            set => _fLevelAdjustment = value;
+        }
+
+        /// <summary>
+        ///     Gets or sets the number of creatures in the slot.
+        /// </summary>
+        public int Count
+        {
+            get => _fCount;
+            set => _fCount = value;
+        }
+
+        /// <summary>
+        ///     Gets or sets whether the slot should contain minions.
+        /// </summary>
+        public bool Minions
+        {
+            get => _fMinions;
+            set => _fMinions = value;
+        }
+
+        /// <summary>
+        ///     Default constructor.
+        /// </summary>
+        public EncounterTemplateSlot()
+        {
+        }
+
+        /// <summary>
+        ///     Constructor.
         /// </summary>
         /// <param name="count">The number of creatures.</param>
         /// <param name="level_adj">The level adjustment.</param>
-        public EncounterTemplateSlot(int count, int level_adj)
+        /// <param name="flag">The type of creature.</param>
+        /// <param name="role">The allowed role.</param>
+        public EncounterTemplateSlot(int count, int levelAdj, RoleFlag flag, RoleType role)
         {
-            fCount = count;
-            fLevelAdjustment = level_adj;
+            _fCount = count;
+            _fLevelAdjustment = levelAdj;
+            _fFlag = flag;
+            _fRoles.Add(role);
         }
 
         /// <summary>
-        /// Constructor.
+        ///     Constructor.
+        /// </summary>
+        /// <param name="count">The number of creatures.</param>
+        /// <param name="level_adj">The level adjustment.</param>
+        /// <param name="flag">The type of creature.</param>
+        /// <param name="roles">The allowed roles.</param>
+        public EncounterTemplateSlot(int count, int levelAdj, RoleFlag flag, RoleType[] roles)
+        {
+            _fCount = count;
+            _fLevelAdjustment = levelAdj;
+            _fFlag = flag;
+            _fRoles.AddRange(roles);
+        }
+
+        /// <summary>
+        ///     Constructor.
+        /// </summary>
+        /// <param name="count">The number of creatures.</param>
+        /// <param name="level_adj">The level adjustment.</param>
+        /// <param name="flag">The type of creature.</param>
+        public EncounterTemplateSlot(int count, int levelAdj, RoleFlag flag)
+        {
+            _fCount = count;
+            _fLevelAdjustment = levelAdj;
+            _fFlag = flag;
+        }
+
+        /// <summary>
+        ///     Constructor.
+        /// </summary>
+        /// <param name="count">The number of creatures.</param>
+        /// <param name="level_adj">The level adjustment.</param>
+        /// <param name="role">The allowed role.</param>
+        public EncounterTemplateSlot(int count, int levelAdj, RoleType role)
+        {
+            _fCount = count;
+            _fLevelAdjustment = levelAdj;
+            _fRoles.Add(role);
+        }
+
+        /// <summary>
+        ///     Constructor.
+        /// </summary>
+        /// <param name="count">The number of creatures.</param>
+        /// <param name="level_adj">The level adjustment.</param>
+        /// <param name="roles">The allowed roles.</param>
+        public EncounterTemplateSlot(int count, int levelAdj, RoleType[] roles)
+        {
+            _fCount = count;
+            _fLevelAdjustment = levelAdj;
+            _fRoles.AddRange(roles);
+        }
+
+        /// <summary>
+        ///     Constructor.
+        /// </summary>
+        /// <param name="count">The number of creatures.</param>
+        /// <param name="level_adj">The level adjustment.</param>
+        public EncounterTemplateSlot(int count, int levelAdj)
+        {
+            _fCount = count;
+            _fLevelAdjustment = levelAdj;
+        }
+
+        /// <summary>
+        ///     Constructor.
         /// </summary>
         /// <param name="count">The number of creatures.</param>
         /// <param name="level_adj">The level adjustment.</param>
         /// <param name="minions">Whether the slot should contain minions.</param>
-        public EncounterTemplateSlot(int count, int level_adj, bool minions)
+        public EncounterTemplateSlot(int count, int levelAdj, bool minions)
         {
-            fCount = count;
-            fLevelAdjustment = level_adj;
-            fMinions = minions;
+            _fCount = count;
+            _fLevelAdjustment = levelAdj;
+            _fMinions = minions;
         }
-
-		/// <summary>
-		/// Gets or sets the list of allowed roles.
-		/// If empty, all roles are allowed.
-		/// </summary>
-		public List<RoleType> Roles
-		{
-			get { return fRoles; }
-			set { fRoles = value; }
-		}
-		List<RoleType> fRoles = new List<RoleType>();
-
-		/// <summary>
-		/// Gets or sets the type of creature (standard, elite, solo).
-		/// </summary>
-		public RoleFlag Flag
-		{
-			get { return fFlag; }
-			set { fFlag = value; }
-		}
-		RoleFlag fFlag = RoleFlag.Standard;
-
-		/// <summary>
-		/// Gets or sets the level adjustment.
-		/// </summary>
-		public int LevelAdjustment
-		{
-			get { return fLevelAdjustment; }
-			set { fLevelAdjustment = value; }
-		}
-		int fLevelAdjustment = 0;
 
         /// <summary>
-        /// Gets or sets the number of creatures in the slot.
+        ///     Determine whether a given creature fits this slot.
         /// </summary>
-        public int Count
+        /// <param name="card">The creature.</param>
+        /// <param name="encounter_level">The level of the encounter.</param>
+        /// <returns>True if the creature matches; false otherwise.</returns>
+        public bool Match(EncounterCard card, int encounterLevel)
         {
-            get { return fCount; }
-            set { fCount = value; }
-        }
-        int fCount = 1;
+            var creature = Session.FindCreature(card.CreatureId, SearchType.Global);
 
-        /// <summary>
-        /// Gets or sets whether the slot should contain minions.
-        /// </summary>
-        public bool Minions
-        {
-            get { return fMinions; }
-            set { fMinions = value; }
-        }
-        bool fMinions = false;
-
-		/// <summary>
-		/// Determine whether a given creature fits this slot.
-		/// </summary>
-		/// <param name="card">The creature.</param>
-		/// <param name="encounter_level">The level of the encounter.</param>
-		/// <returns>True if the creature matches; false otherwise.</returns>
-		public bool Match(EncounterCard card, int encounter_level)
-		{
-			ICreature creature = Session.FindCreature(card.CreatureID, SearchType.Global);
-
-			// Check the level
-			int level = encounter_level + fLevelAdjustment;
-			if (level < 1)
-				level = 1;
-			if (creature.Level != level)
-				return false;
-
-            // Check minion status
-            bool is_minion = (creature.Role is Minion);
-            if (is_minion != fMinions)
+            // Check the level
+            var level = encounterLevel + _fLevelAdjustment;
+            if (level < 1)
+                level = 1;
+            if (creature.Level != level)
                 return false;
 
-			// Check the role matches
-			bool role_ok = false;
-			if (fRoles.Count == 0)
-			{
-				// We match any role
-				role_ok = true;
-			}
-			else
-			{
-                ComplexRole role = creature.Role as ComplexRole;
-				foreach (RoleType r in card.Roles)
-				{
-					if (fRoles.Contains(role.Type))
-					{
-						role_ok = true;
-						break;
-					}
-				}
-			}
-			if (!role_ok)
-				return false;
+            // Check minion status
+            var isMinion = creature.Role is Minion;
+            if (isMinion != _fMinions)
+                return false;
 
-			// Check the elite / solo flag matches
-			if (fFlag != card.Flag)
-				return false;
+            // Check the role matches
+            var roleOk = false;
+            if (_fRoles.Count == 0)
+            {
+                // We match any role
+                roleOk = true;
+            }
+            else
+            {
+                var role = creature.Role as ComplexRole;
+                foreach (var r in card.Roles)
+                    if (_fRoles.Contains(role.Type))
+                    {
+                        roleOk = true;
+                        break;
+                    }
+            }
 
-			return true;
-		}
+            if (!roleOk)
+                return false;
 
-		/// <summary>
-		/// Creates a copy of the slot.
-		/// </summary>
-		/// <returns>Returns the copy.</returns>
-		public EncounterTemplateSlot Copy()
-		{
-			EncounterTemplateSlot slot = new EncounterTemplateSlot();
+            // Check the elite / solo flag matches
+            if (_fFlag != card.Flag)
+                return false;
 
-			slot.Roles.AddRange(fRoles);
-			slot.Flag = fFlag;
-			slot.LevelAdjustment = fLevelAdjustment;
-			slot.Count = fCount;
-            slot.Minions = fMinions;
+            return true;
+        }
 
-			return slot;
-		}
-	}
+        /// <summary>
+        ///     Creates a copy of the slot.
+        /// </summary>
+        /// <returns>Returns the copy.</returns>
+        public EncounterTemplateSlot Copy()
+        {
+            var slot = new EncounterTemplateSlot();
+
+            slot.Roles.AddRange(_fRoles);
+            slot.Flag = _fFlag;
+            slot.LevelAdjustment = _fLevelAdjustment;
+            slot.Count = _fCount;
+            slot.Minions = _fMinions;
+
+            return slot;
+        }
+    }
 }

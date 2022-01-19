@@ -4,97 +4,97 @@ using System.Drawing;
 
 namespace Masterplan.Data
 {
-	/// <summary>
-	/// Class representing a hand-drawn annotation on a map.
-	/// </summary>
-	[Serializable]
-	public class MapSketch
-	{
-		/// <summary>
-		/// Gets or sets the colour of the sketch.
-		/// </summary>
-		public Color Colour
-		{
-			get { return fColour; }
-			set { fColour = value; }
-		}
-		Color fColour = Color.Black;
+    /// <summary>
+    ///     Class representing a hand-drawn annotation on a map.
+    /// </summary>
+    [Serializable]
+    public class MapSketch
+    {
+        private Color _fColour = Color.Black;
 
-		/// <summary>
-		/// Gets or sets the width of the sketch pen.
-		/// </summary>
-		public int Width
-		{
-			get { return fWidth; }
-			set { fWidth = value; }
-		}
-		int fWidth = 3;
+        private int _fWidth = 3;
 
-		/// <summary>
-		/// Gets the list of points in the sketch line.
-		/// </summary>
-		public List<MapSketchPoint> Points
-		{
-			get { return fPoints; }
-		}
-		List<MapSketchPoint> fPoints = new List<MapSketchPoint>();
+        /// <summary>
+        ///     Gets or sets the colour of the sketch.
+        /// </summary>
+        public Color Colour
+        {
+            get => _fColour;
+            set => _fColour = value;
+        }
 
-		/// <summary>
-		/// Creates a copy of the sketch.
-		/// </summary>
-		/// <returns>Returns the copy.</returns>
-		public MapSketch Copy()
-		{
-			MapSketch sketch = new MapSketch();
+        /// <summary>
+        ///     Gets or sets the width of the sketch pen.
+        /// </summary>
+        public int Width
+        {
+            get => _fWidth;
+            set => _fWidth = value;
+        }
 
-			sketch.Colour = fColour;
-			sketch.Width = fWidth;
+        /// <summary>
+        ///     Gets the list of points in the sketch line.
+        /// </summary>
+        public List<MapSketchPoint> Points { get; } = new List<MapSketchPoint>();
 
-			foreach (MapSketchPoint msp in fPoints)
-				sketch.Points.Add(msp.Copy());
+        /// <summary>
+        ///     Creates a copy of the sketch.
+        /// </summary>
+        /// <returns>Returns the copy.</returns>
+        public MapSketch Copy()
+        {
+            var sketch = new MapSketch();
 
-			return sketch;
-		}
-	}
+            sketch.Colour = _fColour;
+            sketch.Width = _fWidth;
 
-	/// <summary>
-	/// Class representing a point in a map sketch.
-	/// </summary>
-	[Serializable]
-	public class MapSketchPoint
-	{
-		/// <summary>
-		/// Gets or sets the map square containing the point.
-		/// </summary>
-		public Point Square
-		{
-			get { return fSquare; }
-			set { fSquare = value; }
-		}
-		Point fSquare = new Point(0, 0);
+            foreach (var msp in Points)
+                sketch.Points.Add(msp.Copy());
 
-		/// <summary>
-		/// Gets or sets the location of the point in the square.
-		/// </summary>
-		public PointF Location
-		{
-			get { return fLocation; }
-			set { fLocation = value; }
-		}
-		PointF fLocation = new PointF(0, 0);
+            return sketch;
+        }
+    }
 
-		/// <summary>
-		/// Creates a copy of the point.
-		/// </summary>
-		/// <returns>Returns the copy.</returns>
-		public MapSketchPoint Copy()
-		{
-			MapSketchPoint msp = new MapSketchPoint();
+    /// <summary>
+    ///     Class representing a point in a map sketch.
+    /// </summary>
+    [Serializable]
+    public class MapSketchPoint
+    {
+        private PointF _fLocation = new PointF(0, 0);
 
-			msp.Square = new Point(fSquare.X, fSquare.Y);
-			msp.Location = new PointF(fLocation.X, fLocation.Y);
+        private Point _fSquare = new Point(0, 0);
 
-			return msp;
-		}
-	}
+        /// <summary>
+        ///     Gets or sets the map square containing the point.
+        /// </summary>
+        public Point Square
+        {
+            get => _fSquare;
+            set => _fSquare = value;
+        }
+
+        /// <summary>
+        ///     Gets or sets the location of the point in the square.
+        /// </summary>
+        public PointF Location
+        {
+            get => _fLocation;
+            set => _fLocation = value;
+        }
+
+        /// <summary>
+        ///     Creates a copy of the point.
+        /// </summary>
+        /// <returns>Returns the copy.</returns>
+        public MapSketchPoint Copy()
+        {
+            var msp = new MapSketchPoint();
+
+            msp.Square = new Point(_fSquare.X, _fSquare.Y);
+            msp.Location = new PointF(_fLocation.X, _fLocation.Y);
+
+            return msp;
+        }
+    }
 }

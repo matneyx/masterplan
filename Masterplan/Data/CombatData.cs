@@ -4,212 +4,226 @@ using System.Drawing;
 
 namespace Masterplan.Data
 {
-	/// <summary>
-	/// Enumeration describing the combat state of a creature.
-	/// </summary>
-	public enum CreatureState
-	{
-		/// <summary>
-		/// The creature has over half its HP remaining.
-		/// </summary>
-		Active,
+    /// <summary>
+    ///     Enumeration describing the combat state of a creature.
+    /// </summary>
+    public enum CreatureState
+    {
+        /// <summary>
+        ///     The creature has over half its HP remaining.
+        /// </summary>
+        Active,
 
-		/// <summary>
-		/// The creature has no more than half its HP remaining.
-		/// </summary>
-		Bloodied,
+        /// <summary>
+        ///     The creature has no more than half its HP remaining.
+        /// </summary>
+        Bloodied,
 
-		/// <summary>
-		/// The creature is at or below 0 HP.
-		/// </summary>
-		Defeated
-	}
+        /// <summary>
+        ///     The creature is at or below 0 HP.
+        /// </summary>
+        Defeated
+    }
 
-	/// <summary>
-	/// Class containing data about a creature in combat.
-	/// </summary>
-	[Serializable]
-	public class CombatData : IComparable<CombatData>
-	{
-		/// <summary>
-		/// Used by the Location property to specify that the token is not on the map.
-		/// </summary>
-		public static Point NoPoint = new Point(int.MinValue, int.MinValue);
+    /// <summary>
+    ///     Class containing data about a creature in combat.
+    /// </summary>
+    [Serializable]
+    public class CombatData : IComparable<CombatData>
+    {
+        /// <summary>
+        ///     Used by the Location property to specify that the token is not on the map.
+        /// </summary>
+        public static Point NoPoint = new Point(int.MinValue, int.MinValue);
 
-		/// <summary>
-		/// Gets or sets the unique ID of this token.
-		/// </summary>
-		public Guid ID
-		{
-			get { return fID; }
-			set { fID = value; }
-		}
-		Guid fID = Guid.NewGuid();
+        private int _fAltitude;
 
-		/// <summary>
-		/// Gets or sets the name to be displayed for this token.
-		/// </summary>
-		public string DisplayName
-		{
-			get { return fDisplayName; }
-			set { fDisplayName = value; }
-		}
-		string fDisplayName = "";
+        private List<OngoingCondition> _fConditions = new List<OngoingCondition>();
 
-		/// <summary>
-		/// Gets or sets the token location.
-		/// </summary>
-		public Point Location
-		{
-			get { return fLocation; }
-			set { fLocation = value; }
-		}
-		Point fLocation = NoPoint;
+        private int _fDamage;
 
-		/// <summary>
-		/// Gets or sets a value indicating whether the token is visible to the PCs.
-		/// </summary>
-		public bool Visible
-		{
-			get { return fVisible; }
-			set { fVisible = value; }
-		}
-		bool fVisible = true;
+        private bool _fDelaying;
 
-		/// <summary>
-		/// Gets or sets the token's initiative score.
-		/// </summary>
-		public int Initiative
-		{
-			get { return fInitiative; }
-			set { fInitiative = value; }
-		}
-		int fInitiative = int.MinValue;
+        private string _fDisplayName = "";
 
-		/// <summary>
-		/// Gets or sets a value indicating whether the token is delaying / readying its action.
-		/// </summary>
-		public bool Delaying
-		{
-			get { return fDelaying; }
-			set { fDelaying = value; }
-		}
-		bool fDelaying = false;
+        private Guid _fId = Guid.NewGuid();
 
-		/// <summary>
-		/// Gets or sets the total hit point damage taken by the token.
-		/// </summary>
-		public int Damage
-		{
-			get { return fDamage; }
-			set { fDamage = value; }
-		}
-		int fDamage = 0;
+        private int _fInitiative = int.MinValue;
 
-		/// <summary>
-		/// Gets or sets the token's temporary hit points.
-		/// </summary>
-		public int TempHP
-		{
-			get { return fTempHP; }
-			set { fTempHP = value; }
-		}
-		int fTempHP = 0;
+        private Point _fLocation = NoPoint;
 
-		/// <summary>
-		/// Gets or sets the token's altitude.
-		/// </summary>
-		public int Altitude
-		{
-			get { return fAltitude; }
-			set { fAltitude = value; }
-		}
-		int fAltitude = 0;
+        private int _fTempHp;
 
-		/// <summary>
-		/// Gets or sets the list of expended powers.
-		/// </summary>
-		public List<Guid> UsedPowers
-		{
-			get { return fUsedPowers; }
-			set { fUsedPowers = value; }
-		}
-		List<Guid> fUsedPowers = new List<Guid>();
+        private List<Guid> _fUsedPowers = new List<Guid>();
 
-		/// <summary>
-		/// Gets or sets the list of conditions affecting the token.
-		/// </summary>
-		public List<OngoingCondition> Conditions
-		{
-			get { return fConditions; }
-			set { fConditions = value; }
-		}
-		List<OngoingCondition> fConditions = new List<OngoingCondition>();
+        private bool _fVisible = true;
 
-		/// <summary>
-		/// Resets the CombatData for a new encounter.
-		/// </summary>
-		/// <param name="reset_damage">True to reset damage, false otherwise</param>
-		public void Reset(bool reset_damage)
-		{
-			fLocation = CombatData.NoPoint;
-			fVisible = true;
-			fInitiative = int.MinValue;
-			fDelaying = false;
-			fTempHP = 0;
-			fAltitude = 0;
+        /// <summary>
+        ///     Gets or sets the unique ID of this token.
+        /// </summary>
+        public Guid Id
+        {
+            get => _fId;
+            set => _fId = value;
+        }
 
-			fUsedPowers.Clear();
-			fConditions.Clear();
+        /// <summary>
+        ///     Gets or sets the name to be displayed for this token.
+        /// </summary>
+        public string DisplayName
+        {
+            get => _fDisplayName;
+            set => _fDisplayName = value;
+        }
 
-			if (reset_damage)
-				fDamage = 0;
-		}
+        /// <summary>
+        ///     Gets or sets the token location.
+        /// </summary>
+        public Point Location
+        {
+            get => _fLocation;
+            set => _fLocation = value;
+        }
 
-		/// <summary>
-		/// Creates a copy of the CombatData.
-		/// </summary>
-		/// <returns>Returns the copy.</returns>
-		public CombatData Copy()
-		{
-			CombatData data = new CombatData();
+        /// <summary>
+        ///     Gets or sets a value indicating whether the token is visible to the PCs.
+        /// </summary>
+        public bool Visible
+        {
+            get => _fVisible;
+            set => _fVisible = value;
+        }
 
-			data.ID = fID;
-			data.DisplayName = fDisplayName;
-			data.Location = new Point(fLocation.X, fLocation.Y);
-			data.Visible = fVisible;
-			data.Initiative = fInitiative;
-			data.Delaying = fDelaying;
-			data.Damage = fDamage;
-			data.TempHP = fTempHP;
-			data.Altitude = fAltitude;
+        /// <summary>
+        ///     Gets or sets the token's initiative score.
+        /// </summary>
+        public int Initiative
+        {
+            get => _fInitiative;
+            set => _fInitiative = value;
+        }
 
-			foreach (Guid power_id in fUsedPowers)
-				data.UsedPowers.Add(power_id);
+        /// <summary>
+        ///     Gets or sets a value indicating whether the token is delaying / readying its action.
+        /// </summary>
+        public bool Delaying
+        {
+            get => _fDelaying;
+            set => _fDelaying = value;
+        }
 
-			foreach (OngoingCondition c in fConditions)
-				data.Conditions.Add(c.Copy());
+        /// <summary>
+        ///     Gets or sets the total hit point damage taken by the token.
+        /// </summary>
+        public int Damage
+        {
+            get => _fDamage;
+            set => _fDamage = value;
+        }
 
-			return data;
-		}
+        /// <summary>
+        ///     Gets or sets the token's temporary hit points.
+        /// </summary>
+        public int TempHp
+        {
+            get => _fTempHp;
+            set => _fTempHp = value;
+        }
 
-		/// <summary>
-		/// Returns the display name.
-		/// </summary>
-		/// <returns></returns>
-		public override string ToString()
-		{
-			return fDisplayName;
-		}
+        /// <summary>
+        ///     Gets or sets the token's altitude.
+        /// </summary>
+        public int Altitude
+        {
+            get => _fAltitude;
+            set => _fAltitude = value;
+        }
 
-		/// <summary>
-		/// Compares this CombatData to another.
-		/// </summary>
-		/// <param name="rhs">The CombatData to compare to.</param>
-		/// <returns>Returns -1 if this CombatData should be sorted before the other, +1 if the other should be sorted first, 0 otherwise.</returns>
-		public int CompareTo(CombatData rhs)
-		{
-			return fDisplayName.CompareTo(rhs.DisplayName);
-		}
-	}
+        /// <summary>
+        ///     Gets or sets the list of expended powers.
+        /// </summary>
+        public List<Guid> UsedPowers
+        {
+            get => _fUsedPowers;
+            set => _fUsedPowers = value;
+        }
+
+        /// <summary>
+        ///     Gets or sets the list of conditions affecting the token.
+        /// </summary>
+        public List<OngoingCondition> Conditions
+        {
+            get => _fConditions;
+            set => _fConditions = value;
+        }
+
+        /// <summary>
+        ///     Resets the CombatData for a new encounter.
+        /// </summary>
+        /// <param name="resetDamage">True to reset damage, false otherwise</param>
+        public void Reset(bool resetDamage)
+        {
+            _fLocation = NoPoint;
+            _fVisible = true;
+            _fInitiative = int.MinValue;
+            _fDelaying = false;
+            _fTempHp = 0;
+            _fAltitude = 0;
+
+            _fUsedPowers.Clear();
+            _fConditions.Clear();
+
+            if (resetDamage)
+                _fDamage = 0;
+        }
+
+        /// <summary>
+        ///     Creates a copy of the CombatData.
+        /// </summary>
+        /// <returns>Returns the copy.</returns>
+        public CombatData Copy()
+        {
+            var data = new CombatData();
+
+            data.Id = _fId;
+            data.DisplayName = _fDisplayName;
+            data.Location = new Point(_fLocation.X, _fLocation.Y);
+            data.Visible = _fVisible;
+            data.Initiative = _fInitiative;
+            data.Delaying = _fDelaying;
+            data.Damage = _fDamage;
+            data.TempHp = _fTempHp;
+            data.Altitude = _fAltitude;
+
+            foreach (var powerId in _fUsedPowers)
+                data.UsedPowers.Add(powerId);
+
+            foreach (var c in _fConditions)
+                data.Conditions.Add(c.Copy());
+
+            return data;
+        }
+
+        /// <summary>
+        ///     Returns the display name.
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            return _fDisplayName;
+        }
+
+        /// <summary>
+        ///     Compares this CombatData to another.
+        /// </summary>
+        /// <param name="rhs">The CombatData to compare to.</param>
+        /// <returns>
+        ///     Returns -1 if this CombatData should be sorted before the other, +1 if the other should be sorted first, 0
+        ///     otherwise.
+        /// </returns>
+        public int CompareTo(CombatData rhs)
+        {
+            return _fDisplayName.CompareTo(rhs.DisplayName);
+        }
+    }
 }

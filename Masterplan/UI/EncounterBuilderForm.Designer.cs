@@ -184,9 +184,9 @@
 			this.BackgroundPanel.SuspendLayout();
 			this.NoteToolbar.SuspendLayout();
 			this.SuspendLayout();
-			// 
+			//
 			// DifficultyList
-			// 
+			//
 			this.DifficultyList.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.DiffHdr,
             this.DiffXPHdr,
@@ -203,26 +203,26 @@
 			this.DifficultyList.TabIndex = 0;
 			this.DifficultyList.UseCompatibleStateImageBehavior = false;
 			this.DifficultyList.View = System.Windows.Forms.View.Details;
-			// 
+			//
 			// DiffHdr
-			// 
+			//
 			this.DiffHdr.Text = "Difficulty";
 			this.DiffHdr.Width = 204;
-			// 
+			//
 			// DiffXPHdr
-			// 
+			//
 			this.DiffXPHdr.Text = "XP Range";
 			this.DiffXPHdr.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
 			this.DiffXPHdr.Width = 120;
-			// 
+			//
 			// DiffLevels
-			// 
+			//
 			this.DiffLevels.Text = "Creature Levels";
 			this.DiffLevels.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
 			this.DiffLevels.Width = 120;
-			// 
+			//
 			// SlotList
-			// 
+			//
 			this.SlotList.AllowDrop = true;
 			this.SlotList.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.ThreatHdr,
@@ -246,29 +246,29 @@
 			this.SlotList.DragDrop += new System.Windows.Forms.DragEventHandler(this.SlotList_DragDrop);
 			this.SlotList.KeyDown += new System.Windows.Forms.KeyEventHandler(this.SlotList_KeyDown);
 			this.SlotList.DragOver += new System.Windows.Forms.DragEventHandler(this.SlotList_DragOver);
-			// 
+			//
 			// ThreatHdr
-			// 
+			//
 			this.ThreatHdr.Text = "Threat";
 			this.ThreatHdr.Width = 207;
-			// 
+			//
 			// ThreatInfoHdr
-			// 
+			//
 			this.ThreatInfoHdr.Text = "Info";
 			this.ThreatInfoHdr.Width = 120;
-			// 
+			//
 			// CountHdr
-			// 
+			//
 			this.CountHdr.Text = "Count";
 			this.CountHdr.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			// 
+			//
 			// XPHdr
-			// 
+			//
 			this.XPHdr.Text = "XP";
 			this.XPHdr.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			// 
+			//
 			// ThreatContextMenu
-			// 
+			//
 			this.ThreatContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.EditStatBlock,
             this.EditApplyTheme,
@@ -284,71 +284,71 @@
 			this.ThreatContextMenu.Name = "ThreatContextMenu";
 			this.ThreatContextMenu.Size = new System.Drawing.Size(213, 198);
 			this.ThreatContextMenu.Opening += new System.ComponentModel.CancelEventHandler(this.ThreatContextMenu_Opening);
-			// 
+			//
 			// EditStatBlock
-			// 
+			//
 			this.EditStatBlock.Name = "EditStatBlock";
 			this.EditStatBlock.Size = new System.Drawing.Size(212, 22);
 			this.EditStatBlock.Text = "Edit Stat Block...";
 			this.EditStatBlock.Click += new System.EventHandler(this.EditStatBlock_Click);
-			// 
+			//
 			// EditApplyTheme
-			// 
+			//
 			this.EditApplyTheme.Name = "EditApplyTheme";
 			this.EditApplyTheme.Size = new System.Drawing.Size(212, 22);
 			this.EditApplyTheme.Text = "Apply Theme...";
 			this.EditApplyTheme.Click += new System.EventHandler(this.EditApplyTheme_Click);
-			// 
+			//
 			// toolStripSeparator14
-			// 
+			//
 			this.toolStripSeparator14.Name = "toolStripSeparator14";
 			this.toolStripSeparator14.Size = new System.Drawing.Size(209, 6);
-			// 
+			//
 			// EditRemoveTemplate
-			// 
+			//
 			this.EditRemoveTemplate.Name = "EditRemoveTemplate";
 			this.EditRemoveTemplate.Size = new System.Drawing.Size(212, 22);
 			this.EditRemoveTemplate.Text = "Remove Template";
 			this.EditRemoveTemplate.Click += new System.EventHandler(this.EditRemoveTemplate_Click);
-			// 
+			//
 			// EditRemoveLevelAdj
-			// 
+			//
 			this.EditRemoveLevelAdj.Name = "EditRemoveLevelAdj";
 			this.EditRemoveLevelAdj.Size = new System.Drawing.Size(212, 22);
 			this.EditRemoveLevelAdj.Text = "Remove Level Adjustment";
 			this.EditRemoveLevelAdj.Click += new System.EventHandler(this.EditRemoveLevelAdj_Click);
-			// 
+			//
 			// EditClearTheme
-			// 
+			//
 			this.EditClearTheme.Name = "EditClearTheme";
 			this.EditClearTheme.Size = new System.Drawing.Size(212, 22);
 			this.EditClearTheme.Text = "Remove Theme";
 			this.EditClearTheme.Click += new System.EventHandler(this.EditClearTheme_Click);
-			// 
+			//
 			// toolStripSeparator16
-			// 
+			//
 			this.toolStripSeparator16.Name = "toolStripSeparator16";
 			this.toolStripSeparator16.Size = new System.Drawing.Size(209, 6);
-			// 
+			//
 			// EditSetFaction
-			// 
+			//
 			this.EditSetFaction.Name = "EditSetFaction";
 			this.EditSetFaction.Size = new System.Drawing.Size(212, 22);
 			this.EditSetFaction.Text = "Set Faction";
-			// 
+			//
 			// EditSetWave
-			// 
+			//
 			this.EditSetWave.Name = "EditSetWave";
 			this.EditSetWave.Size = new System.Drawing.Size(212, 22);
 			this.EditSetWave.Text = "Set Wave";
-			// 
+			//
 			// toolStripSeparator9
-			// 
+			//
 			this.toolStripSeparator9.Name = "toolStripSeparator9";
 			this.toolStripSeparator9.Size = new System.Drawing.Size(209, 6);
-			// 
+			//
 			// EditSwap
-			// 
+			//
 			this.EditSwap.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.SwapStandard,
             this.toolStripMenuItem2,
@@ -359,47 +359,47 @@
 			this.EditSwap.Name = "EditSwap";
 			this.EditSwap.Size = new System.Drawing.Size(212, 22);
 			this.EditSwap.Text = "Swap For";
-			// 
+			//
 			// SwapStandard
-			// 
+			//
 			this.SwapStandard.Name = "SwapStandard";
 			this.SwapStandard.Size = new System.Drawing.Size(169, 22);
 			this.SwapStandard.Text = "Standard Creature";
 			this.SwapStandard.Click += new System.EventHandler(this.SwapStandard_Click);
-			// 
+			//
 			// toolStripMenuItem2
-			// 
+			//
 			this.toolStripMenuItem2.Name = "toolStripMenuItem2";
 			this.toolStripMenuItem2.Size = new System.Drawing.Size(166, 6);
-			// 
+			//
 			// SwapElite
-			// 
+			//
 			this.SwapElite.Name = "SwapElite";
 			this.SwapElite.Size = new System.Drawing.Size(169, 22);
 			this.SwapElite.Text = "Elite Creature";
 			this.SwapElite.Click += new System.EventHandler(this.SwapElite_Click);
-			// 
+			//
 			// SwapSolo
-			// 
+			//
 			this.SwapSolo.Name = "SwapSolo";
 			this.SwapSolo.Size = new System.Drawing.Size(169, 22);
 			this.SwapSolo.Text = "Solo Creature";
 			this.SwapSolo.Click += new System.EventHandler(this.SwapSolo_Click);
-			// 
+			//
 			// toolStripSeparator11
-			// 
+			//
 			this.toolStripSeparator11.Name = "toolStripSeparator11";
 			this.toolStripSeparator11.Size = new System.Drawing.Size(166, 6);
-			// 
+			//
 			// SwapMinions
-			// 
+			//
 			this.SwapMinions.Name = "SwapMinions";
 			this.SwapMinions.Size = new System.Drawing.Size(169, 22);
 			this.SwapMinions.Text = "Minions";
 			this.SwapMinions.Click += new System.EventHandler(this.SwapMinions_Click);
-			// 
+			//
 			// EncToolbar
-			// 
+			//
 			this.EncToolbar.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.AddBtn,
             this.RemoveBtn,
@@ -414,9 +414,9 @@
 			this.EncToolbar.Size = new System.Drawing.Size(472, 25);
 			this.EncToolbar.TabIndex = 0;
 			this.EncToolbar.Text = "toolStrip1";
-			// 
+			//
 			// AddBtn
-			// 
+			//
 			this.AddBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
 			this.AddBtn.Image = ((System.Drawing.Image)(resources.GetObject("AddBtn.Image")));
 			this.AddBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -425,9 +425,9 @@
 			this.AddBtn.Text = "+";
 			this.AddBtn.ToolTipText = "Adjust number (hold shift to adjust level)";
 			this.AddBtn.Click += new System.EventHandler(this.AddBtn_Click);
-			// 
+			//
 			// RemoveBtn
-			// 
+			//
 			this.RemoveBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
 			this.RemoveBtn.Image = ((System.Drawing.Image)(resources.GetObject("RemoveBtn.Image")));
 			this.RemoveBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -436,14 +436,14 @@
 			this.RemoveBtn.Text = "-";
 			this.RemoveBtn.ToolTipText = "Adjust number (hold shift to adjust level)";
 			this.RemoveBtn.Click += new System.EventHandler(this.RemoveBtn_Click);
-			// 
+			//
 			// toolStripSeparator1
-			// 
+			//
 			this.toolStripSeparator1.Name = "toolStripSeparator1";
 			this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
-			// 
+			//
 			// StatBlockBtn
-			// 
+			//
 			this.StatBlockBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
 			this.StatBlockBtn.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.StatBlockEdit});
@@ -453,21 +453,21 @@
 			this.StatBlockBtn.Size = new System.Drawing.Size(75, 22);
 			this.StatBlockBtn.Text = "Stat Block";
 			this.StatBlockBtn.ButtonClick += new System.EventHandler(this.StatBlockBtn_Click);
-			// 
+			//
 			// StatBlockEdit
-			// 
+			//
 			this.StatBlockEdit.Name = "StatBlockEdit";
 			this.StatBlockEdit.Size = new System.Drawing.Size(103, 22);
 			this.StatBlockEdit.Text = "Edit...";
 			this.StatBlockEdit.Click += new System.EventHandler(this.EditStatBlock_Click);
-			// 
+			//
 			// toolStripSeparator4
-			// 
+			//
 			this.toolStripSeparator4.Name = "toolStripSeparator4";
 			this.toolStripSeparator4.Size = new System.Drawing.Size(6, 25);
-			// 
+			//
 			// AddMenu
-			// 
+			//
 			this.AddMenu.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
 			this.AddMenu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.ToolsAddCreature,
@@ -478,33 +478,33 @@
 			this.AddMenu.Name = "AddMenu";
 			this.AddMenu.Size = new System.Drawing.Size(42, 22);
 			this.AddMenu.Text = "Add";
-			// 
+			//
 			// ToolsAddCreature
-			// 
+			//
 			this.ToolsAddCreature.Name = "ToolsAddCreature";
 			this.ToolsAddCreature.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.M)));
 			this.ToolsAddCreature.Size = new System.Drawing.Size(270, 22);
 			this.ToolsAddCreature.Text = "Add Custom Creature...";
 			this.ToolsAddCreature.Click += new System.EventHandler(this.ToolsAddCreature_Click);
-			// 
+			//
 			// ToolsAddTrap
-			// 
+			//
 			this.ToolsAddTrap.Name = "ToolsAddTrap";
 			this.ToolsAddTrap.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.T)));
 			this.ToolsAddTrap.Size = new System.Drawing.Size(270, 22);
 			this.ToolsAddTrap.Text = "Add Custom Trap...";
 			this.ToolsAddTrap.Click += new System.EventHandler(this.ToolsAddTrap_Click);
-			// 
+			//
 			// ToolsAddChallenge
-			// 
+			//
 			this.ToolsAddChallenge.Name = "ToolsAddChallenge";
 			this.ToolsAddChallenge.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
 			this.ToolsAddChallenge.Size = new System.Drawing.Size(270, 22);
 			this.ToolsAddChallenge.Text = "Add Custom Skill Challenge...";
 			this.ToolsAddChallenge.Click += new System.EventHandler(this.ToolsAddChallenge_Click);
-			// 
+			//
 			// ToolsMenu
-			// 
+			//
 			this.ToolsMenu.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
 			this.ToolsMenu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.ToolsClearAll,
@@ -521,66 +521,66 @@
 			this.ToolsMenu.Size = new System.Drawing.Size(49, 22);
 			this.ToolsMenu.Text = "Tools";
 			this.ToolsMenu.DropDownOpening += new System.EventHandler(this.ToolsMenu_DropDownOpening);
-			// 
+			//
 			// ToolsClearAll
-			// 
+			//
 			this.ToolsClearAll.Name = "ToolsClearAll";
 			this.ToolsClearAll.Size = new System.Drawing.Size(212, 22);
 			this.ToolsClearAll.Text = "Clear All";
 			this.ToolsClearAll.Click += new System.EventHandler(this.ToolsClearAll_Click);
-			// 
+			//
 			// toolStripSeparator3
-			// 
+			//
 			this.toolStripSeparator3.Name = "toolStripSeparator3";
 			this.toolStripSeparator3.Size = new System.Drawing.Size(209, 6);
-			// 
+			//
 			// ToolsUseTemplate
-			// 
+			//
 			this.ToolsUseTemplate.Name = "ToolsUseTemplate";
 			this.ToolsUseTemplate.Size = new System.Drawing.Size(212, 22);
 			this.ToolsUseTemplate.Text = "Use Encounter Template...";
 			this.ToolsUseTemplate.Click += new System.EventHandler(this.ToolsUseTemplate_Click);
-			// 
+			//
 			// ToolsUseDeck
-			// 
+			//
 			this.ToolsUseDeck.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.decksToolStripMenuItem});
 			this.ToolsUseDeck.Name = "ToolsUseDeck";
 			this.ToolsUseDeck.Size = new System.Drawing.Size(212, 22);
 			this.ToolsUseDeck.Text = "Use Encounter Deck";
-			// 
+			//
 			// decksToolStripMenuItem
-			// 
+			//
 			this.decksToolStripMenuItem.Name = "decksToolStripMenuItem";
 			this.decksToolStripMenuItem.Size = new System.Drawing.Size(112, 22);
 			this.decksToolStripMenuItem.Text = "(decks)";
-			// 
+			//
 			// toolStripSeparator2
-			// 
+			//
 			this.toolStripSeparator2.Name = "toolStripSeparator2";
 			this.toolStripSeparator2.Size = new System.Drawing.Size(209, 6);
-			// 
+			//
 			// ToolsApplyTheme
-			// 
+			//
 			this.ToolsApplyTheme.Name = "ToolsApplyTheme";
 			this.ToolsApplyTheme.Size = new System.Drawing.Size(212, 22);
 			this.ToolsApplyTheme.Text = "Apply Theme to All...";
 			this.ToolsApplyTheme.Click += new System.EventHandler(this.ToolsApplyTheme_Click);
-			// 
+			//
 			// toolStripSeparator13
-			// 
+			//
 			this.toolStripSeparator13.Name = "toolStripSeparator13";
 			this.toolStripSeparator13.Size = new System.Drawing.Size(209, 6);
-			// 
+			//
 			// ToolsExport
-			// 
+			//
 			this.ToolsExport.Name = "ToolsExport";
 			this.ToolsExport.Size = new System.Drawing.Size(212, 22);
 			this.ToolsExport.Text = "Export Encounter File...";
 			this.ToolsExport.Click += new System.EventHandler(this.ToolsExport_Click);
-			// 
+			//
 			// AutoBuildBtn
-			// 
+			//
 			this.AutoBuildBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
 			this.AutoBuildBtn.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.AutoBuildAdvanced});
@@ -590,16 +590,16 @@
 			this.AutoBuildBtn.Size = new System.Drawing.Size(76, 22);
 			this.AutoBuildBtn.Text = "AutoBuild";
 			this.AutoBuildBtn.ButtonClick += new System.EventHandler(this.AutoBuildBtn_Click);
-			// 
+			//
 			// AutoBuildAdvanced
-			// 
+			//
 			this.AutoBuildAdvanced.Name = "AutoBuildAdvanced";
 			this.AutoBuildAdvanced.Size = new System.Drawing.Size(136, 22);
 			this.AutoBuildAdvanced.Text = "Advanced...";
 			this.AutoBuildAdvanced.Click += new System.EventHandler(this.AutoBuildAdvanced_Click);
-			// 
+			//
 			// SourceItemList
-			// 
+			//
 			this.SourceItemList.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.NameHdr,
             this.InfoHdr});
@@ -617,19 +617,19 @@
 			this.SourceItemList.DoubleClick += new System.EventHandler(this.ThreatList_DoubleClick);
 			this.SourceItemList.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.SourceItemList_ColumnClick);
 			this.SourceItemList.ItemDrag += new System.Windows.Forms.ItemDragEventHandler(this.OpponentList_ItemDrag);
-			// 
+			//
 			// NameHdr
-			// 
+			//
 			this.NameHdr.Text = "Creatures";
 			this.NameHdr.Width = 139;
-			// 
+			//
 			// InfoHdr
-			// 
+			//
 			this.InfoHdr.Text = "Info";
 			this.InfoHdr.Width = 140;
-			// 
+			//
 			// ThreatToolbar
-			// 
+			//
 			this.ThreatToolbar.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.CreaturesBtn,
             this.TrapsBtn,
@@ -640,9 +640,9 @@
 			this.ThreatToolbar.Size = new System.Drawing.Size(320, 25);
 			this.ThreatToolbar.TabIndex = 0;
 			this.ThreatToolbar.Text = "toolStrip2";
-			// 
+			//
 			// CreaturesBtn
-			// 
+			//
 			this.CreaturesBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
 			this.CreaturesBtn.Image = ((System.Drawing.Image)(resources.GetObject("CreaturesBtn.Image")));
 			this.CreaturesBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -650,9 +650,9 @@
 			this.CreaturesBtn.Size = new System.Drawing.Size(61, 22);
 			this.CreaturesBtn.Text = "Creatures";
 			this.CreaturesBtn.Click += new System.EventHandler(this.ViewCreatures_Click);
-			// 
+			//
 			// TrapsBtn
-			// 
+			//
 			this.TrapsBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
 			this.TrapsBtn.Image = ((System.Drawing.Image)(resources.GetObject("TrapsBtn.Image")));
 			this.TrapsBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -660,9 +660,9 @@
 			this.TrapsBtn.Size = new System.Drawing.Size(93, 22);
 			this.TrapsBtn.Text = "Traps / Hazards";
 			this.TrapsBtn.Click += new System.EventHandler(this.ViewTraps_Click);
-			// 
+			//
 			// ChallengesBtn
-			// 
+			//
 			this.ChallengesBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
 			this.ChallengesBtn.Image = ((System.Drawing.Image)(resources.GetObject("ChallengesBtn.Image")));
 			this.ChallengesBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -670,9 +670,9 @@
 			this.ChallengesBtn.Size = new System.Drawing.Size(93, 22);
 			this.ChallengesBtn.Text = "Skill Challenges";
 			this.ChallengesBtn.Click += new System.EventHandler(this.ViewChallenges_Click);
-			// 
+			//
 			// ViewMenu
-			// 
+			//
 			this.ViewMenu.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
 			this.ViewMenu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.ViewTemplates,
@@ -685,38 +685,38 @@
 			this.ViewMenu.Size = new System.Drawing.Size(48, 22);
 			this.ViewMenu.Text = "More";
 			this.ViewMenu.DropDownOpening += new System.EventHandler(this.ViewMenu_DropDownOpening);
-			// 
+			//
 			// ViewTemplates
-			// 
+			//
 			this.ViewTemplates.Font = new System.Drawing.Font("Segoe UI", 9F);
 			this.ViewTemplates.Name = "ViewTemplates";
 			this.ViewTemplates.Size = new System.Drawing.Size(177, 22);
 			this.ViewTemplates.Text = "Creature Templates";
 			this.ViewTemplates.Click += new System.EventHandler(this.ViewTemplates_Click);
-			// 
+			//
 			// ViewNPCs
-			// 
+			//
 			this.ViewNPCs.Font = new System.Drawing.Font("Segoe UI", 9F);
 			this.ViewNPCs.Name = "ViewNPCs";
 			this.ViewNPCs.Size = new System.Drawing.Size(177, 22);
 			this.ViewNPCs.Text = "NPCs";
 			this.ViewNPCs.Click += new System.EventHandler(this.ViewNPCs_Click);
-			// 
+			//
 			// toolStripSeparator12
-			// 
+			//
 			this.toolStripSeparator12.Name = "toolStripSeparator12";
 			this.toolStripSeparator12.Size = new System.Drawing.Size(174, 6);
-			// 
+			//
 			// ViewGroups
-			// 
+			//
 			this.ViewGroups.Font = new System.Drawing.Font("Segoe UI", 9F);
 			this.ViewGroups.Name = "ViewGroups";
 			this.ViewGroups.Size = new System.Drawing.Size(177, 22);
 			this.ViewGroups.Text = "Show in Groups";
 			this.ViewGroups.Click += new System.EventHandler(this.ViewGroups_Click);
-			// 
+			//
 			// Pages
-			// 
+			//
 			this.Pages.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
 						| System.Windows.Forms.AnchorStyles.Left)
 						| System.Windows.Forms.AnchorStyles.Right)));
@@ -728,9 +728,9 @@
 			this.Pages.SelectedIndex = 0;
 			this.Pages.Size = new System.Drawing.Size(810, 395);
 			this.Pages.TabIndex = 0;
-			// 
+			//
 			// ThreatsPage
-			// 
+			//
 			this.ThreatsPage.Controls.Add(this.HSplitter);
 			this.ThreatsPage.Location = new System.Drawing.Point(4, 22);
 			this.ThreatsPage.Name = "ThreatsPage";
@@ -739,52 +739,52 @@
 			this.ThreatsPage.TabIndex = 0;
 			this.ThreatsPage.Text = "Threats";
 			this.ThreatsPage.UseVisualStyleBackColor = true;
-			// 
+			//
 			// HSplitter
-			// 
+			//
 			this.HSplitter.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.HSplitter.FixedPanel = System.Windows.Forms.FixedPanel.Panel2;
 			this.HSplitter.Location = new System.Drawing.Point(3, 3);
 			this.HSplitter.Name = "HSplitter";
-			// 
+			//
 			// HSplitter.Panel1
-			// 
+			//
 			this.HSplitter.Panel1.Controls.Add(this.VSplitter);
-			// 
+			//
 			// HSplitter.Panel2
-			// 
+			//
 			this.HSplitter.Panel2.Controls.Add(this.SourceItemList);
 			this.HSplitter.Panel2.Controls.Add(this.FilterPanel);
 			this.HSplitter.Panel2.Controls.Add(this.ThreatToolbar);
 			this.HSplitter.Size = new System.Drawing.Size(796, 363);
 			this.HSplitter.SplitterDistance = 472;
 			this.HSplitter.TabIndex = 2;
-			// 
+			//
 			// VSplitter
-			// 
+			//
 			this.VSplitter.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.VSplitter.FixedPanel = System.Windows.Forms.FixedPanel.Panel2;
 			this.VSplitter.Location = new System.Drawing.Point(0, 0);
 			this.VSplitter.Name = "VSplitter";
 			this.VSplitter.Orientation = System.Windows.Forms.Orientation.Horizontal;
-			// 
+			//
 			// VSplitter.Panel1
-			// 
+			//
 			this.VSplitter.Panel1.Controls.Add(this.HintStatusbar);
 			this.VSplitter.Panel1.Controls.Add(this.SlotList);
 			this.VSplitter.Panel1.Controls.Add(this.EncToolbar);
-			// 
+			//
 			// VSplitter.Panel2
-			// 
+			//
 			this.VSplitter.Panel2.Controls.Add(this.DifficultyList);
 			this.VSplitter.Panel2.Controls.Add(this.XPGauge);
 			this.VSplitter.Panel2.Controls.Add(this.XPStatusbar);
 			this.VSplitter.Size = new System.Drawing.Size(472, 363);
 			this.VSplitter.SplitterDistance = 231;
 			this.VSplitter.TabIndex = 0;
-			// 
+			//
 			// HintStatusbar
-			// 
+			//
 			this.HintStatusbar.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.HintLbl});
 			this.HintStatusbar.Location = new System.Drawing.Point(0, 209);
@@ -793,16 +793,16 @@
 			this.HintStatusbar.SizingGrip = false;
 			this.HintStatusbar.TabIndex = 2;
 			this.HintStatusbar.Text = "statusStrip1";
-			// 
+			//
 			// HintLbl
-			// 
+			//
 			this.HintLbl.Name = "HintLbl";
 			this.HintLbl.Size = new System.Drawing.Size(415, 17);
 			this.HintLbl.Text = "Drag items from the right into this list; double-click to view; right-click to ed" +
 				"it";
-			// 
+			//
 			// XPStatusbar
-			// 
+			//
 			this.XPStatusbar.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.XPLbl,
             this.LevelLbl,
@@ -815,33 +815,33 @@
 			this.XPStatusbar.SizingGrip = false;
 			this.XPStatusbar.TabIndex = 1;
 			this.XPStatusbar.Text = "statusStrip1";
-			// 
+			//
 			// XPLbl
-			// 
+			//
 			this.XPLbl.Name = "XPLbl";
 			this.XPLbl.Size = new System.Drawing.Size(29, 17);
 			this.XPLbl.Text = "[XP]";
-			// 
+			//
 			// LevelLbl
-			// 
+			//
 			this.LevelLbl.Name = "LevelLbl";
 			this.LevelLbl.Size = new System.Drawing.Size(39, 17);
 			this.LevelLbl.Text = "[level]";
-			// 
+			//
 			// DiffLbl
-			// 
+			//
 			this.DiffLbl.Name = "DiffLbl";
 			this.DiffLbl.Size = new System.Drawing.Size(33, 17);
 			this.DiffLbl.Text = "[diff]";
-			// 
+			//
 			// CountLbl
-			// 
+			//
 			this.CountLbl.Name = "CountLbl";
 			this.CountLbl.Size = new System.Drawing.Size(46, 17);
 			this.CountLbl.Text = "[count]";
-			// 
+			//
 			// PartyLbl
-			// 
+			//
 			this.PartyLbl.IsLink = true;
 			this.PartyLbl.Name = "PartyLbl";
 			this.PartyLbl.Size = new System.Drawing.Size(310, 17);
@@ -849,9 +849,9 @@
 			this.PartyLbl.Text = "Change Party";
 			this.PartyLbl.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			this.PartyLbl.Click += new System.EventHandler(this.PartyLbl_Click);
-			// 
+			//
 			// MapPage
-			// 
+			//
 			this.MapPage.Controls.Add(this.MapSplitter);
 			this.MapPage.Controls.Add(this.MapToolbar);
 			this.MapPage.Location = new System.Drawing.Point(4, 22);
@@ -861,27 +861,27 @@
 			this.MapPage.TabIndex = 1;
 			this.MapPage.Text = "Encounter Map";
 			this.MapPage.UseVisualStyleBackColor = true;
-			// 
+			//
 			// MapSplitter
-			// 
+			//
 			this.MapSplitter.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.MapSplitter.FixedPanel = System.Windows.Forms.FixedPanel.Panel2;
 			this.MapSplitter.Location = new System.Drawing.Point(3, 28);
 			this.MapSplitter.Name = "MapSplitter";
-			// 
+			//
 			// MapSplitter.Panel1
-			// 
+			//
 			this.MapSplitter.Panel1.Controls.Add(this.MapView);
-			// 
+			//
 			// MapSplitter.Panel2
-			// 
+			//
 			this.MapSplitter.Panel2.Controls.Add(this.MapThreatList);
 			this.MapSplitter.Size = new System.Drawing.Size(796, 338);
 			this.MapSplitter.SplitterDistance = 586;
 			this.MapSplitter.TabIndex = 2;
-			// 
+			//
 			// MapContextMenu
-			// 
+			//
 			this.MapContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.MapContextView,
             this.toolStripSeparator15,
@@ -894,66 +894,66 @@
             this.MapContextVisible});
 			this.MapContextMenu.Name = "MapContextMenu";
 			this.MapContextMenu.Size = new System.Drawing.Size(204, 154);
-			// 
+			//
 			// MapContextView
-			// 
+			//
 			this.MapContextView.Name = "MapContextView";
 			this.MapContextView.Size = new System.Drawing.Size(203, 22);
 			this.MapContextView.Text = "View Stat Block";
 			this.MapContextView.Click += new System.EventHandler(this.MapContextView_Click);
-			// 
+			//
 			// toolStripSeparator15
-			// 
+			//
 			this.toolStripSeparator15.Name = "toolStripSeparator15";
 			this.toolStripSeparator15.Size = new System.Drawing.Size(200, 6);
-			// 
+			//
 			// MapContextSetPicture
-			// 
+			//
 			this.MapContextSetPicture.Name = "MapContextSetPicture";
 			this.MapContextSetPicture.Size = new System.Drawing.Size(203, 22);
 			this.MapContextSetPicture.Text = "Set Picture...";
 			this.MapContextSetPicture.Click += new System.EventHandler(this.MapContextSetPicture_Click);
-			// 
+			//
 			// toolStripMenuItem4
-			// 
+			//
 			this.toolStripMenuItem4.Name = "toolStripMenuItem4";
 			this.toolStripMenuItem4.Size = new System.Drawing.Size(200, 6);
-			// 
+			//
 			// MapContextRemove
-			// 
+			//
 			this.MapContextRemove.Name = "MapContextRemove";
 			this.MapContextRemove.Size = new System.Drawing.Size(203, 22);
 			this.MapContextRemove.Text = "Remove from Map";
 			this.MapContextRemove.Click += new System.EventHandler(this.MapContextRemove_Click);
-			// 
+			//
 			// MapContextRemoveEncounter
-			// 
+			//
 			this.MapContextRemoveEncounter.Name = "MapContextRemoveEncounter";
 			this.MapContextRemoveEncounter.Size = new System.Drawing.Size(203, 22);
 			this.MapContextRemoveEncounter.Text = "Remove from Encounter";
 			this.MapContextRemoveEncounter.Click += new System.EventHandler(this.MapContextRemoveEncounter_Click);
-			// 
+			//
 			// MapContextCopy
-			// 
+			//
 			this.MapContextCopy.Name = "MapContextCopy";
 			this.MapContextCopy.Size = new System.Drawing.Size(203, 22);
 			this.MapContextCopy.Text = "Create Copy";
 			this.MapContextCopy.Click += new System.EventHandler(this.MapContextCopy_Click);
-			// 
+			//
 			// toolStripSeparator5
-			// 
+			//
 			this.toolStripSeparator5.Name = "toolStripSeparator5";
 			this.toolStripSeparator5.Size = new System.Drawing.Size(200, 6);
-			// 
+			//
 			// MapContextVisible
-			// 
+			//
 			this.MapContextVisible.Name = "MapContextVisible";
 			this.MapContextVisible.Size = new System.Drawing.Size(203, 22);
 			this.MapContextVisible.Text = "Visible";
 			this.MapContextVisible.Click += new System.EventHandler(this.MapContextVisible_Click);
-			// 
+			//
 			// MapThreatList
-			// 
+			//
 			this.MapThreatList.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.ThreatNameHdr});
 			this.MapThreatList.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -969,14 +969,14 @@
 			this.MapThreatList.View = System.Windows.Forms.View.Details;
 			this.MapThreatList.DoubleClick += new System.EventHandler(this.MapThreatList_DoubleClick);
 			this.MapThreatList.ItemDrag += new System.Windows.Forms.ItemDragEventHandler(this.MapThreatList_ItemDrag);
-			// 
+			//
 			// ThreatNameHdr
-			// 
+			//
 			this.ThreatNameHdr.Text = "Creature";
 			this.ThreatNameHdr.Width = 171;
-			// 
+			//
 			// MapToolbar
-			// 
+			//
 			this.MapToolbar.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.MapBtn,
             this.toolStripSeparator6,
@@ -987,9 +987,9 @@
 			this.MapToolbar.Size = new System.Drawing.Size(796, 25);
 			this.MapToolbar.TabIndex = 0;
 			this.MapToolbar.Text = "toolStrip1";
-			// 
+			//
 			// MapBtn
-			// 
+			//
 			this.MapBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
 			this.MapBtn.Image = ((System.Drawing.Image)(resources.GetObject("MapBtn.Image")));
 			this.MapBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -997,14 +997,14 @@
 			this.MapBtn.Size = new System.Drawing.Size(69, 22);
 			this.MapBtn.Text = "Select Map";
 			this.MapBtn.Click += new System.EventHandler(this.MapBtn_Click);
-			// 
+			//
 			// toolStripSeparator6
-			// 
+			//
 			this.toolStripSeparator6.Name = "toolStripSeparator6";
 			this.toolStripSeparator6.Size = new System.Drawing.Size(6, 25);
-			// 
+			//
 			// MapToolsMenu
-			// 
+			//
 			this.MapToolsMenu.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
 			this.MapToolsMenu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.MapToolsLOS,
@@ -1019,56 +1019,56 @@
 			this.MapToolsMenu.Name = "MapToolsMenu";
 			this.MapToolsMenu.Size = new System.Drawing.Size(49, 22);
 			this.MapToolsMenu.Text = "Tools";
-			// 
+			//
 			// MapToolsLOS
-			// 
+			//
 			this.MapToolsLOS.Name = "MapToolsLOS";
 			this.MapToolsLOS.Size = new System.Drawing.Size(168, 22);
 			this.MapToolsLOS.Text = "Line of Sight";
 			this.MapToolsLOS.Click += new System.EventHandler(this.MapToolsLOS_Click);
-			// 
+			//
 			// MapToolsGridlines
-			// 
+			//
 			this.MapToolsGridlines.Name = "MapToolsGridlines";
 			this.MapToolsGridlines.Size = new System.Drawing.Size(168, 22);
 			this.MapToolsGridlines.Text = "Gridlines";
 			this.MapToolsGridlines.Click += new System.EventHandler(this.MapToolsGridlines_Click);
-			// 
+			//
 			// MapToolsGridLabels
-			// 
+			//
 			this.MapToolsGridLabels.Name = "MapToolsGridLabels";
 			this.MapToolsGridLabels.Size = new System.Drawing.Size(168, 22);
 			this.MapToolsGridLabels.Text = "Grid Labels";
 			this.MapToolsGridLabels.Click += new System.EventHandler(this.MapToolsGridLabels_Click);
-			// 
+			//
 			// MapToolsPictureTokens
-			// 
+			//
 			this.MapToolsPictureTokens.Name = "MapToolsPictureTokens";
 			this.MapToolsPictureTokens.Size = new System.Drawing.Size(168, 22);
 			this.MapToolsPictureTokens.Text = "Picture Tokens";
 			this.MapToolsPictureTokens.Click += new System.EventHandler(this.MapToolsPictureTokens_Click);
-			// 
+			//
 			// toolStripMenuItem5
-			// 
+			//
 			this.toolStripMenuItem5.Name = "toolStripMenuItem5";
 			this.toolStripMenuItem5.Size = new System.Drawing.Size(165, 6);
-			// 
+			//
 			// MapToolsPrint
-			// 
+			//
 			this.MapToolsPrint.Name = "MapToolsPrint";
 			this.MapToolsPrint.Size = new System.Drawing.Size(168, 22);
 			this.MapToolsPrint.Text = "Print";
 			this.MapToolsPrint.Click += new System.EventHandler(this.PrintBtn_Click);
-			// 
+			//
 			// MapToolsScreenshot
-			// 
+			//
 			this.MapToolsScreenshot.Name = "MapToolsScreenshot";
 			this.MapToolsScreenshot.Size = new System.Drawing.Size(168, 22);
 			this.MapToolsScreenshot.Text = "Export Screenshot";
 			this.MapToolsScreenshot.Click += new System.EventHandler(this.ExportBtn_Click);
-			// 
+			//
 			// MapCreaturesMenu
-			// 
+			//
 			this.MapCreaturesMenu.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
 			this.MapCreaturesMenu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.MapCreaturesRemove,
@@ -1083,54 +1083,54 @@
 			this.MapCreaturesMenu.Name = "MapCreaturesMenu";
 			this.MapCreaturesMenu.Size = new System.Drawing.Size(85, 22);
 			this.MapCreaturesMenu.Text = "Map Tokens";
-			// 
+			//
 			// MapCreaturesRemove
-			// 
+			//
 			this.MapCreaturesRemove.Name = "MapCreaturesRemove";
 			this.MapCreaturesRemove.Size = new System.Drawing.Size(193, 22);
 			this.MapCreaturesRemove.Text = "Remove All";
 			this.MapCreaturesRemove.Click += new System.EventHandler(this.MapCreaturesRemoveAll_Click);
-			// 
+			//
 			// toolStripSeparator7
-			// 
+			//
 			this.toolStripSeparator7.Name = "toolStripSeparator7";
 			this.toolStripSeparator7.Size = new System.Drawing.Size(190, 6);
-			// 
+			//
 			// MapCreaturesShowAll
-			// 
+			//
 			this.MapCreaturesShowAll.Name = "MapCreaturesShowAll";
 			this.MapCreaturesShowAll.Size = new System.Drawing.Size(193, 22);
 			this.MapCreaturesShowAll.Text = "Show All";
 			this.MapCreaturesShowAll.Click += new System.EventHandler(this.MapCreaturesShowAll_Click);
-			// 
+			//
 			// MapCreaturesHideAll
-			// 
+			//
 			this.MapCreaturesHideAll.Name = "MapCreaturesHideAll";
 			this.MapCreaturesHideAll.Size = new System.Drawing.Size(193, 22);
 			this.MapCreaturesHideAll.Text = "Hide All";
 			this.MapCreaturesHideAll.Click += new System.EventHandler(this.MapCreaturesHideAll_Click);
-			// 
+			//
 			// toolStripSeparator8
-			// 
+			//
 			this.toolStripSeparator8.Name = "toolStripSeparator8";
 			this.toolStripSeparator8.Size = new System.Drawing.Size(190, 6);
-			// 
+			//
 			// CreaturesAddCustom
-			// 
+			//
 			this.CreaturesAddCustom.Name = "CreaturesAddCustom";
 			this.CreaturesAddCustom.Size = new System.Drawing.Size(193, 22);
 			this.CreaturesAddCustom.Text = "Add Custom Token...";
 			this.CreaturesAddCustom.Click += new System.EventHandler(this.AddToken_Click);
-			// 
+			//
 			// CreaturesAddOverlay
-			// 
+			//
 			this.CreaturesAddOverlay.Name = "CreaturesAddOverlay";
 			this.CreaturesAddOverlay.Size = new System.Drawing.Size(193, 22);
 			this.CreaturesAddOverlay.Text = "Add Custom Overlay...";
 			this.CreaturesAddOverlay.Click += new System.EventHandler(this.CreaturesAddOverlay_Click);
-			// 
+			//
 			// NotesPage
-			// 
+			//
 			this.NotesPage.Controls.Add(this.NoteSplitter);
 			this.NotesPage.Controls.Add(this.NoteToolbar);
 			this.NotesPage.Location = new System.Drawing.Point(4, 22);
@@ -1140,27 +1140,27 @@
 			this.NotesPage.TabIndex = 2;
 			this.NotesPage.Text = "Notes";
 			this.NotesPage.UseVisualStyleBackColor = true;
-			// 
+			//
 			// NoteSplitter
-			// 
+			//
 			this.NoteSplitter.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.NoteSplitter.FixedPanel = System.Windows.Forms.FixedPanel.Panel1;
 			this.NoteSplitter.Location = new System.Drawing.Point(3, 28);
 			this.NoteSplitter.Name = "NoteSplitter";
-			// 
+			//
 			// NoteSplitter.Panel1
-			// 
+			//
 			this.NoteSplitter.Panel1.Controls.Add(this.NoteList);
-			// 
+			//
 			// NoteSplitter.Panel2
-			// 
+			//
 			this.NoteSplitter.Panel2.Controls.Add(this.BackgroundPanel);
 			this.NoteSplitter.Size = new System.Drawing.Size(796, 338);
 			this.NoteSplitter.SplitterDistance = 180;
 			this.NoteSplitter.TabIndex = 2;
-			// 
+			//
 			// NoteList
-			// 
+			//
 			this.NoteList.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.NoteHdr});
 			this.NoteList.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -1176,14 +1176,14 @@
 			this.NoteList.View = System.Windows.Forms.View.Details;
 			this.NoteList.SelectedIndexChanged += new System.EventHandler(this.NoteList_SelectedIndexChanged);
 			this.NoteList.DoubleClick += new System.EventHandler(this.NoteEditBtn_Click);
-			// 
+			//
 			// NoteHdr
-			// 
+			//
 			this.NoteHdr.Text = "Notes";
 			this.NoteHdr.Width = 150;
-			// 
+			//
 			// BackgroundPanel
-			// 
+			//
 			this.BackgroundPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.BackgroundPanel.Controls.Add(this.NoteDetails);
 			this.BackgroundPanel.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -1191,9 +1191,9 @@
 			this.BackgroundPanel.Name = "BackgroundPanel";
 			this.BackgroundPanel.Size = new System.Drawing.Size(612, 338);
 			this.BackgroundPanel.TabIndex = 0;
-			// 
+			//
 			// NoteDetails
-			// 
+			//
 			this.NoteDetails.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.NoteDetails.IsWebBrowserContextMenuEnabled = false;
 			this.NoteDetails.Location = new System.Drawing.Point(0, 0);
@@ -1202,9 +1202,9 @@
 			this.NoteDetails.Size = new System.Drawing.Size(610, 336);
 			this.NoteDetails.TabIndex = 0;
 			this.NoteDetails.Navigating += new System.Windows.Forms.WebBrowserNavigatingEventHandler(this.NoteDetails_Navigating);
-			// 
+			//
 			// NoteToolbar
-			// 
+			//
 			this.NoteToolbar.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.NoteAddBtn,
             this.NoteRemoveBtn,
@@ -1217,9 +1217,9 @@
 			this.NoteToolbar.Size = new System.Drawing.Size(796, 25);
 			this.NoteToolbar.TabIndex = 1;
 			this.NoteToolbar.Text = "toolStrip1";
-			// 
+			//
 			// NoteAddBtn
-			// 
+			//
 			this.NoteAddBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
 			this.NoteAddBtn.Image = ((System.Drawing.Image)(resources.GetObject("NoteAddBtn.Image")));
 			this.NoteAddBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -1227,9 +1227,9 @@
 			this.NoteAddBtn.Size = new System.Drawing.Size(33, 22);
 			this.NoteAddBtn.Text = "Add";
 			this.NoteAddBtn.Click += new System.EventHandler(this.NoteAddBtn_Click);
-			// 
+			//
 			// NoteRemoveBtn
-			// 
+			//
 			this.NoteRemoveBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
 			this.NoteRemoveBtn.Image = ((System.Drawing.Image)(resources.GetObject("NoteRemoveBtn.Image")));
 			this.NoteRemoveBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -1237,9 +1237,9 @@
 			this.NoteRemoveBtn.Size = new System.Drawing.Size(54, 22);
 			this.NoteRemoveBtn.Text = "Remove";
 			this.NoteRemoveBtn.Click += new System.EventHandler(this.NoteRemoveBtn_Click);
-			// 
+			//
 			// NoteEditBtn
-			// 
+			//
 			this.NoteEditBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
 			this.NoteEditBtn.Image = ((System.Drawing.Image)(resources.GetObject("NoteEditBtn.Image")));
 			this.NoteEditBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -1247,14 +1247,14 @@
 			this.NoteEditBtn.Size = new System.Drawing.Size(31, 22);
 			this.NoteEditBtn.Text = "Edit";
 			this.NoteEditBtn.Click += new System.EventHandler(this.NoteEditBtn_Click);
-			// 
+			//
 			// toolStripSeparator21
-			// 
+			//
 			this.toolStripSeparator21.Name = "toolStripSeparator21";
 			this.toolStripSeparator21.Size = new System.Drawing.Size(6, 25);
-			// 
+			//
 			// NoteUpBtn
-			// 
+			//
 			this.NoteUpBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
 			this.NoteUpBtn.Image = ((System.Drawing.Image)(resources.GetObject("NoteUpBtn.Image")));
 			this.NoteUpBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -1262,9 +1262,9 @@
 			this.NoteUpBtn.Size = new System.Drawing.Size(59, 22);
 			this.NoteUpBtn.Text = "Move Up";
 			this.NoteUpBtn.Click += new System.EventHandler(this.NoteUpBtn_Click);
-			// 
+			//
 			// NoteDownBtn
-			// 
+			//
 			this.NoteDownBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
 			this.NoteDownBtn.Image = ((System.Drawing.Image)(resources.GetObject("NoteDownBtn.Image")));
 			this.NoteDownBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -1272,9 +1272,9 @@
 			this.NoteDownBtn.Size = new System.Drawing.Size(75, 22);
 			this.NoteDownBtn.Text = "Move Down";
 			this.NoteDownBtn.Click += new System.EventHandler(this.NoteDownBtn_Click);
-			// 
+			//
 			// OKBtn
-			// 
+			//
 			this.OKBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.OKBtn.DialogResult = System.Windows.Forms.DialogResult.OK;
 			this.OKBtn.Location = new System.Drawing.Point(666, 413);
@@ -1283,9 +1283,9 @@
 			this.OKBtn.TabIndex = 3;
 			this.OKBtn.Text = "OK";
 			this.OKBtn.UseVisualStyleBackColor = true;
-			// 
+			//
 			// CancelBtn
-			// 
+			//
 			this.CancelBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.CancelBtn.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this.CancelBtn.Location = new System.Drawing.Point(747, 413);
@@ -1294,9 +1294,9 @@
 			this.CancelBtn.TabIndex = 4;
 			this.CancelBtn.Text = "Cancel";
 			this.CancelBtn.UseVisualStyleBackColor = true;
-			// 
+			//
 			// InfoBtn
-			// 
+			//
 			this.InfoBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
 			this.InfoBtn.Location = new System.Drawing.Point(12, 413);
 			this.InfoBtn.Name = "InfoBtn";
@@ -1305,9 +1305,9 @@
 			this.InfoBtn.Text = "Information";
 			this.InfoBtn.UseVisualStyleBackColor = true;
 			this.InfoBtn.Click += new System.EventHandler(this.InfoBtn_Click);
-			// 
+			//
 			// DieRollerBtn
-			// 
+			//
 			this.DieRollerBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
 			this.DieRollerBtn.Location = new System.Drawing.Point(93, 413);
 			this.DieRollerBtn.Name = "DieRollerBtn";
@@ -1316,19 +1316,19 @@
 			this.DieRollerBtn.Text = "Die Roller";
 			this.DieRollerBtn.UseVisualStyleBackColor = true;
 			this.DieRollerBtn.Click += new System.EventHandler(this.DieRollerBtn_Click);
-			// 
+			//
 			// XPGauge
-			// 
+			//
 			this.XPGauge.Dock = System.Windows.Forms.DockStyle.Bottom;
 			this.XPGauge.Location = new System.Drawing.Point(0, 86);
 			this.XPGauge.Name = "XPGauge";
 			this.XPGauge.Party = null;
 			this.XPGauge.Size = new System.Drawing.Size(472, 20);
 			this.XPGauge.TabIndex = 1;
-			this.XPGauge.XP = 0;
-			// 
+			this.XPGauge.Xp = 0;
+			//
 			// FilterPanel
-			// 
+			//
 			this.FilterPanel.AutoSize = true;
 			this.FilterPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.FilterPanel.Dock = System.Windows.Forms.DockStyle.Top;
@@ -1339,9 +1339,9 @@
 			this.FilterPanel.Size = new System.Drawing.Size(320, 24);
 			this.FilterPanel.TabIndex = 0;
 			this.FilterPanel.FilterChanged += new System.EventHandler(this.FilterPanel_FilterChanged);
-			// 
+			//
 			// MapView
-			// 
+			//
 			this.MapView.AllowDrawing = false;
 			this.MapView.AllowDrop = true;
 			this.MapView.AllowLinkCreation = false;
@@ -1387,9 +1387,9 @@
 			this.MapView.SelectedTokensChanged += new System.EventHandler(this.MapView_SelectedTokensChanged);
 			this.MapView.HoverTokenChanged += new System.EventHandler(this.MapView_HoverTokenChanged);
 			this.MapView.ItemMoved += new Masterplan.Events.MovementEventHandler(this.MapView_ItemMoved);
-			// 
+			//
 			// EncounterBuilderForm
-			// 
+			//
 			this.AcceptButton = this.OKBtn;
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -1579,4 +1579,3 @@
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator9;
 	}
 }
-

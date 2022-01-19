@@ -1,169 +1,166 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Windows.Forms;
-
 using Masterplan.Data;
 using Masterplan.Tools;
 using Masterplan.Tools.Generators;
 
 namespace Masterplan.UI
 {
-	partial class AutoBuildForm : Form
-	{
-		const string RANDOM = "Random";
+    internal partial class AutoBuildForm : Form
+    {
+        public enum Mode
+        {
+            Encounter,
+            Delve,
+            Deck
+        }
 
-		public enum Mode { Encounter, Delve, Deck }
+        private const string Random = "Random";
 
-		public AutoBuildForm(Mode mode)
-		{
-			InitializeComponent();
+        private readonly Mode _fMode = Mode.Encounter;
 
-			fData = new AutoBuildData();
-			fMode = mode;
+        public AutoBuildData Data { get; }
+
+        public AutoBuildForm(Mode mode)
+        {
+            InitializeComponent();
+
+            Data = new AutoBuildData();
+            _fMode = mode;
 
             init_options();
 
-			switch (fMode)
-			{
-				case Mode.Encounter:
-					{
-						TemplateBox.Items.Add(RANDOM);
-						List<string> names = EncounterBuilder.FindTemplateNames();
-						foreach (string name in names)
-							TemplateBox.Items.Add(name);
-						TemplateBox.SelectedItem = (fData.Type != "") ? fData.Type : RANDOM;
-
-						DiffBox.Items.Add(Difficulty.Random);
-						DiffBox.Items.Add(Difficulty.Easy);
-						DiffBox.Items.Add(Difficulty.Moderate);
-						DiffBox.Items.Add(Difficulty.Hard);
-						DiffBox.SelectedItem = fData.Difficulty;
-
-						LevelBox.Value = fData.Level;
-						update_cats();
-					}
-					break;
-				case Mode.Delve:
-					{
-						TemplateLbl.Enabled = false;
-						TemplateBox.Enabled = false;
-						TemplateBox.Items.Add("(not applicable)");
-						TemplateBox.SelectedIndex = 0;
-
-						DiffLbl.Enabled = false;
-						DiffBox.Enabled = false;
-						DiffBox.Items.Add("(not applicable)");
-						DiffBox.SelectedIndex = 0;
-
-						LevelBox.Value = fData.Level;
-						update_cats();
-					}
-					break;
-				case Mode.Deck:
-					{
-						TemplateLbl.Enabled = false;
-						TemplateBox.Enabled = false;
-						TemplateBox.Items.Add("(not applicable)");
-						TemplateBox.SelectedIndex = 0;
-
-						DiffLbl.Enabled = false;
-						DiffBox.Enabled = false;
-						DiffBox.Items.Add("(not applicable)");
-						DiffBox.SelectedIndex = 0;
-
-						LevelBox.Value = fData.Level;
-						update_cats();
-					}
-					break;
-			}
-		}
-
-        void init_options()
-        {
-            BinarySearchTree<string> category_tree = new BinarySearchTree<string>();
-            BinarySearchTree<string> keyword_tree = new BinarySearchTree<string>();
-
-            foreach (Creature c in Session.Creatures)
+            switch (_fMode)
             {
-                if ((c.Category != null) && (c.Category != ""))
-                    category_tree.Add(c.Category);
-
-                if ((c.Keywords != null) && (c.Keywords != ""))
+                case Mode.Encounter:
                 {
-                    string[] tokens = c.Keywords.Split(new string[] { ",", ";" }, StringSplitOptions.RemoveEmptyEntries);
-                    foreach (string token in tokens)
-                        keyword_tree.Add(token.Trim().ToLower());
+                    TemplateBox.Items.Add(Random);
+                    var names = EncounterBuilder.FindTemplateNames();
+                    foreach (var name in names)
+                        TemplateBox.Items.Add(name);
+                    TemplateBox.SelectedItem = Data.Type != "" ? Data.Type : Random;
+
+                    DiffBox.Items.Add(Difficulty.Random);
+                    DiffBox.Items.Add(Difficulty.Easy);
+                    DiffBox.Items.Add(Difficulty.Moderate);
+                    DiffBox.Items.Add(Difficulty.Hard);
+                    DiffBox.SelectedItem = Data.Difficulty;
+
+                    LevelBox.Value = Data.Level;
+                    update_cats();
+                }
+                    break;
+                case Mode.Delve:
+                {
+                    TemplateLbl.Enabled = false;
+                    TemplateBox.Enabled = false;
+                    TemplateBox.Items.Add("(not applicable)");
+                    TemplateBox.SelectedIndex = 0;
+
+                    DiffLbl.Enabled = false;
+                    DiffBox.Enabled = false;
+                    DiffBox.Items.Add("(not applicable)");
+                    DiffBox.SelectedIndex = 0;
+
+                    LevelBox.Value = Data.Level;
+                    update_cats();
+                }
+                    break;
+                case Mode.Deck:
+                {
+                    TemplateLbl.Enabled = false;
+                    TemplateBox.Enabled = false;
+                    TemplateBox.Items.Add("(not applicable)");
+                    TemplateBox.SelectedIndex = 0;
+
+                    DiffLbl.Enabled = false;
+                    DiffBox.Enabled = false;
+                    DiffBox.Items.Add("(not applicable)");
+                    DiffBox.SelectedIndex = 0;
+
+                    LevelBox.Value = Data.Level;
+                    update_cats();
+                }
+                    break;
+            }
+        }
+
+        private void init_options()
+        {
+            var categoryTree = new BinarySearchTree<string>();
+            var keywordTree = new BinarySearchTree<string>();
+
+            foreach (var c in Session.Creatures)
+            {
+                if (c.Category != null && c.Category != "")
+                    categoryTree.Add(c.Category);
+
+                if (c.Keywords != null && c.Keywords != "")
+                {
+                    var tokens = c.Keywords.Split(new[] { ",", ";" }, StringSplitOptions.RemoveEmptyEntries);
+                    foreach (var token in tokens)
+                        keywordTree.Add(token.Trim().ToLower());
                 }
             }
 
-            if (category_tree.Count == 0)
+            if (categoryTree.Count == 0)
             {
                 CatLbl.Enabled = false;
                 CatBtn.Enabled = false;
             }
 
-            List<string> keywords = keyword_tree.SortedList;
-            foreach (string keyword in keywords)
+            var keywords = keywordTree.SortedList;
+            foreach (var keyword in keywords)
                 KeywordBox.Items.Add(keyword);
         }
 
-		public AutoBuildData Data
-		{
-			get { return fData; }
-		}
-		AutoBuildData fData = null;
+        private void OKBtn_Click(object sender, EventArgs e)
+        {
+            var tokens = KeywordBox.Text.ToLower().Split(null);
+            Data.Keywords.Clear();
+            foreach (var token in tokens)
+                if (token != "")
+                    Data.Keywords.Add(token);
 
-		Mode fMode = Mode.Encounter;
+            switch (_fMode)
+            {
+                case Mode.Encounter:
+                {
+                    Data.Type = TemplateBox.Text != Random ? TemplateBox.Text : "";
+                    Data.Difficulty = (Difficulty)DiffBox.SelectedItem;
+                    Data.Level = (int)LevelBox.Value;
+                }
+                    break;
+                case Mode.Delve:
+                {
+                    Data.Type = "";
+                    Data.Difficulty = Difficulty.Random;
+                    Data.Level = (int)LevelBox.Value;
+                }
+                    break;
+                case Mode.Deck:
+                {
+                    Data.Type = "";
+                    Data.Difficulty = Difficulty.Random;
+                    Data.Level = (int)LevelBox.Value;
+                }
+                    break;
+            }
+        }
 
-		private void OKBtn_Click(object sender, EventArgs e)
-		{
-			string[] tokens = KeywordBox.Text.ToLower().Split(null);
-			fData.Keywords.Clear();
-			foreach (string token in tokens)
-			{
-				if (token != "")
-					fData.Keywords.Add(token);
-			}
+        private void CatBtn_Click(object sender, EventArgs e)
+        {
+            var dlg = new CategoryListForm(Data.Categories);
+            if (dlg.ShowDialog() == DialogResult.OK)
+            {
+                Data.Categories = dlg.Categories;
+                update_cats();
+            }
+        }
 
-			switch (fMode)
-			{
-				case Mode.Encounter:
-					{
-						fData.Type = (TemplateBox.Text != RANDOM) ? TemplateBox.Text : "";
-						fData.Difficulty = (Difficulty)DiffBox.SelectedItem;
-						fData.Level = (int)LevelBox.Value;
-					}
-					break;
-				case Mode.Delve:
-					{
-						fData.Type = "";
-						fData.Difficulty = Difficulty.Random;
-						fData.Level = (int)LevelBox.Value;
-					}
-					break;
-				case Mode.Deck:
-					{
-						fData.Type = "";
-						fData.Difficulty = Difficulty.Random;
-						fData.Level = (int)LevelBox.Value;
-					}
-					break;
-			}
-		}
-
-		private void CatBtn_Click(object sender, EventArgs e)
-		{
-			CategoryListForm dlg = new CategoryListForm(fData.Categories);
-			if (dlg.ShowDialog() == DialogResult.OK)
-			{
-				fData.Categories = dlg.Categories;
-				update_cats();
-			}
-		}
-
-		void update_cats()
-		{
-			CatBtn.Text = (fData.Categories == null) ? "All Categories" : fData.Categories.Count + " Categories";
-		}
-	}
+        private void update_cats()
+        {
+            CatBtn.Text = Data.Categories == null ? "All Categories" : Data.Categories.Count + " Categories";
+        }
+    }
 }

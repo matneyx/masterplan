@@ -2,250 +2,254 @@
 
 namespace Masterplan.Data
 {
-	/// <summary>
-	/// Creature or trap.
-	/// </summary>
-	public enum ThreatType
-	{
-		/// <summary>
-		/// Creature.
-		/// </summary>
-		Creature,
+    /// <summary>
+    ///     Creature or trap.
+    /// </summary>
+    public enum ThreatType
+    {
+        /// <summary>
+        ///     Creature.
+        /// </summary>
+        Creature,
 
-		/// <summary>
-		/// Trap.
-		/// </summary>
-		Trap
-	}
+        /// <summary>
+        ///     Trap.
+        /// </summary>
+        Trap
+    }
 
-	/// <summary>
-	/// Creature / trap roles.
-	/// </summary>
-	public enum RoleType
-	{
-		/// <summary>
-		/// Artillery role.
-		/// </summary>
-		Artillery,
+    /// <summary>
+    ///     Creature / trap roles.
+    /// </summary>
+    public enum RoleType
+    {
+        /// <summary>
+        ///     Artillery role.
+        /// </summary>
+        Artillery,
 
-		/// <summary>
-		/// Blaster role.
-		/// </summary>
-		Blaster,
+        /// <summary>
+        ///     Blaster role.
+        /// </summary>
+        Blaster,
 
-		/// <summary>
-		/// Brute role.
-		/// </summary>
-		Brute,
+        /// <summary>
+        ///     Brute role.
+        /// </summary>
+        Brute,
 
-		/// <summary>
-		/// Controller role.
-		/// </summary>
-		Controller,
+        /// <summary>
+        ///     Controller role.
+        /// </summary>
+        Controller,
 
-		/// <summary>
-		/// Lurker role.
-		/// </summary>
-		Lurker,
+        /// <summary>
+        ///     Lurker role.
+        /// </summary>
+        Lurker,
 
-		/// <summary>
-		/// Obstacle role.
-		/// </summary>
-		Obstacle,
+        /// <summary>
+        ///     Obstacle role.
+        /// </summary>
+        Obstacle,
 
-		/// <summary>
-		/// Skirmisher role.
-		/// </summary>
-		Skirmisher,
+        /// <summary>
+        ///     Skirmisher role.
+        /// </summary>
+        Skirmisher,
 
-		/// <summary>
-		/// Soldier role.
-		/// </summary>
-		Soldier,
+        /// <summary>
+        ///     Soldier role.
+        /// </summary>
+        Soldier,
 
-		/// <summary>
-		/// Warder role.
-		/// </summary>
-		Warder
-	}
+        /// <summary>
+        ///     Warder role.
+        /// </summary>
+        Warder
+    }
 
-	/// <summary>
-	/// Standard / elite / solo.
-	/// </summary>
-	public enum RoleFlag
-	{
-		/// <summary>
-		/// Standard.
-		/// </summary>
-		Standard,
+    /// <summary>
+    ///     Standard / elite / solo.
+    /// </summary>
+    public enum RoleFlag
+    {
+        /// <summary>
+        ///     Standard.
+        /// </summary>
+        Standard,
 
-		/// <summary>
-		/// Elite.
-		/// </summary>
-		Elite,
+        /// <summary>
+        ///     Elite.
+        /// </summary>
+        Elite,
 
-		/// <summary>
-		/// Solo.
-		/// </summary>
-		Solo
-	}
+        /// <summary>
+        ///     Solo.
+        /// </summary>
+        Solo
+    }
 
-	/// <summary>
-	/// Interface for a role.
-	/// Classes Minion and ComplexRole implement this interface.
-	/// </summary>
-	public interface IRole
-	{
-		/// <summary>
-		/// Creates a copy of the role.
-		/// </summary>
-		/// <returns>Returns the copy.</returns>
-		IRole Copy();
-	}
+    /// <summary>
+    ///     Interface for a role.
+    ///     Classes Minion and ComplexRole implement this interface.
+    /// </summary>
+    public interface IRole
+    {
+        /// <summary>
+        ///     Creates a copy of the role.
+        /// </summary>
+        /// <returns>Returns the copy.</returns>
+        IRole Copy();
+    }
 
-	/// <summary>
-	/// Minion role.
-	/// </summary>
-	[Serializable]
-	public class Minion : IRole
-	{
-		/// <summary>
-		/// Gets or sets a value indicating whether this minion has a role.
-		/// </summary>
-		public bool HasRole
-		{
-			get { return fHasRole; }
-			set { fHasRole = value; }
-		}
-		bool fHasRole = false;
+    /// <summary>
+    ///     Minion role.
+    /// </summary>
+    [Serializable]
+    public class Minion : IRole
+    {
+        private bool _fHasRole;
 
-		/// <summary>
-		/// Gets or sets the minion role.
-		/// </summary>
-		public RoleType Type
-		{
-			get { return fType; }
-			set { fType = value; }
-		}
-		RoleType fType = RoleType.Artillery;
+        private RoleType _fType = RoleType.Artillery;
 
-		/// <summary>
-		/// Creates a copy of the Minion.
-		/// </summary>
-		/// <returns>Returns the copy.</returns>
-		public IRole Copy()
-		{
-			Minion m = new Minion();
+        /// <summary>
+        ///     Gets or sets a value indicating whether this minion has a role.
+        /// </summary>
+        public bool HasRole
+        {
+            get => _fHasRole;
+            set => _fHasRole = value;
+        }
 
-			m.HasRole = fHasRole;
-			m.Type = fType;
+        /// <summary>
+        ///     Gets or sets the minion role.
+        /// </summary>
+        public RoleType Type
+        {
+            get => _fType;
+            set => _fType = value;
+        }
 
-			return m;
-		}
+        /// <summary>
+        ///     Minion
+        ///     or
+        ///     Minion [role]
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            if (_fHasRole)
+                return "Minion " + _fType;
+            return "Minion";
+        }
 
-		/// <summary>
-		/// Minion
-		/// or
-		/// Minion [role]
-		/// </summary>
-		/// <returns></returns>
-		public override string ToString()
-		{
-			if (fHasRole)
-				return "Minion " + fType;
-			else
-				return "Minion";
-		}
-	}
+        /// <summary>
+        ///     Creates a copy of the Minion.
+        /// </summary>
+        /// <returns>Returns the copy.</returns>
+        public IRole Copy()
+        {
+            var m = new Minion();
 
-	/// <summary>
-	/// Class representing a creature / trap role.
-	/// </summary>
-	[Serializable]
-	public class ComplexRole : IRole
-	{
-		/// <summary>
-		/// Default constructor.
-		/// </summary>
-		public ComplexRole()
-		{
-		}
+            m.HasRole = _fHasRole;
+            m.Type = _fType;
 
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		/// <param name="type">The role to set.</param>
-		public ComplexRole(RoleType type)
-		{
-			fType = type;
-		}
+            return m;
+        }
+    }
 
-		/// <summary>
-		/// Gets or sets the role type.
-		/// </summary>
-		public RoleType Type
-		{
-			get { return fType; }
-			set { fType = value; }
-		}
-		RoleType fType = RoleType.Artillery;
+    /// <summary>
+    ///     Class representing a creature / trap role.
+    /// </summary>
+    [Serializable]
+    public class ComplexRole : IRole
+    {
+        private RoleFlag _fFlag = RoleFlag.Standard;
 
-		/// <summary>
-		/// Gets or sets the role modifier (elite / solo).
-		/// </summary>
-		public RoleFlag Flag
-		{
-			get { return fFlag; }
-			set { fFlag = value; }
-		}
-		RoleFlag fFlag = RoleFlag.Standard;
+        private bool _fLeader;
 
-		/// <summary>
-		/// Gets or sets the Leader role.
-		/// </summary>
-		public bool Leader
-		{
-			get { return fLeader; }
-			set { fLeader = value; }
-		}
-		bool fLeader = false;
+        private RoleType _fType = RoleType.Artillery;
 
-		/// <summary>
-		/// Creates a copy of the role.
-		/// </summary>
-		/// <returns>Returns the copy.</returns>
-		public IRole Copy()
-		{
-			ComplexRole cr = new ComplexRole();
+        /// <summary>
+        ///     Gets or sets the role type.
+        /// </summary>
+        public RoleType Type
+        {
+            get => _fType;
+            set => _fType = value;
+        }
 
-			cr.Type = fType;
-			cr.Flag = fFlag;
-			cr.Leader = fLeader;
+        /// <summary>
+        ///     Gets or sets the role modifier (elite / solo).
+        /// </summary>
+        public RoleFlag Flag
+        {
+            get => _fFlag;
+            set => _fFlag = value;
+        }
 
-			return cr;
-		}
+        /// <summary>
+        ///     Gets or sets the Leader role.
+        /// </summary>
+        public bool Leader
+        {
+            get => _fLeader;
+            set => _fLeader = value;
+        }
 
-		/// <summary>
-		/// [Elite / Solo] [role] [(L)]
-		/// </summary>
-		/// <returns></returns>
-		public override string ToString()
-		{
-			string flag = "";
-			switch (fFlag)
-			{
-				case RoleFlag.Elite:
-					flag = "Elite ";
-					break;
-				case RoleFlag.Solo:
-					flag = "Solo ";
-					break;
-			}
+        /// <summary>
+        ///     Default constructor.
+        /// </summary>
+        public ComplexRole()
+        {
+        }
 
-			string role = fType.ToString();
-			string leader = (fLeader) ? " (L)" : "";
+        /// <summary>
+        ///     Constructor.
+        /// </summary>
+        /// <param name="type">The role to set.</param>
+        public ComplexRole(RoleType type)
+        {
+            _fType = type;
+        }
 
-			return flag + role + leader;
-		}
-	}
+        /// <summary>
+        ///     [Elite / Solo] [role] [(L)]
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            var flag = "";
+            switch (_fFlag)
+            {
+                case RoleFlag.Elite:
+                    flag = "Elite ";
+                    break;
+                case RoleFlag.Solo:
+                    flag = "Solo ";
+                    break;
+            }
+
+            var role = _fType.ToString();
+            var leader = _fLeader ? " (L)" : "";
+
+            return flag + role + leader;
+        }
+
+        /// <summary>
+        ///     Creates a copy of the role.
+        /// </summary>
+        /// <returns>Returns the copy.</returns>
+        public IRole Copy()
+        {
+            var cr = new ComplexRole();
+
+            cr.Type = _fType;
+            cr.Flag = _fFlag;
+            cr.Leader = _fLeader;
+
+            return cr;
+        }
+    }
 }

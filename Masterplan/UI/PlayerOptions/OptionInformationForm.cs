@@ -1,32 +1,27 @@
 ﻿using System;
 using System.Windows.Forms;
-
 using Masterplan.Tools;
 
-namespace Masterplan.UI
+namespace Masterplan.UI.PlayerOptions
 {
-	partial class OptionInformationForm : Form
-	{
-		public OptionInformationForm(Pair<int, string> info)
-		{
-			InitializeComponent();
+    internal partial class OptionInformationForm : Form
+    {
+        public Pair<int, string> Information { get; }
 
-			fInfo = info;
+        public OptionInformationForm(Pair<int, string> info)
+        {
+            InitializeComponent();
 
-			DCBox.Value = fInfo.First;
-			DetailsBox.Text = fInfo.Second;
-		}
+            Information = info;
 
-		public Pair<int, string> Information
-		{
-			get { return fInfo; }
-		}
-		Pair<int, string> fInfo = null;
+            DCBox.Value = Information.First;
+            DetailsBox.Text = Information.Second;
+        }
 
-		private void OKBtn_Click(object sender, EventArgs e)
-		{
-			fInfo.First = (int)DCBox.Value;
-			fInfo.Second = DetailsBox.Text;
-		}
-	}
+        private void OKBtn_Click(object sender, EventArgs e)
+        {
+            Information.First = (int)DCBox.Value;
+            Information.Second = DetailsBox.Text;
+        }
+    }
 }

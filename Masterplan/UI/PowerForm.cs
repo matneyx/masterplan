@@ -1,177 +1,172 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
-
 using Masterplan.Data;
 using Masterplan.Tools;
 
 namespace Masterplan.UI
 {
-	partial class PowerForm : Form
-	{
-		public PowerForm(CreaturePower power, bool functional_template, bool unused)
-		{
-			InitializeComponent();
+    internal partial class PowerForm : Form
+    {
+        private readonly bool _fFunctionalTemplate;
 
-			Pages.TabPages.Remove(AdvicePage);
+        private int _fLevel;
+        private IRole _fRole;
 
-			RangeBox.Items.Add("Melee");
-			RangeBox.Items.Add("Melee Touch");
-			RangeBox.Items.Add("Melee Weapon");
+        public CreaturePower Power { get; }
+
+        public PowerForm(CreaturePower power, bool functionalTemplate, bool unused)
+        {
+            InitializeComponent();
+
+            Pages.TabPages.Remove(AdvicePage);
+
+            RangeBox.Items.Add("Melee");
+            RangeBox.Items.Add("Melee Touch");
+            RangeBox.Items.Add("Melee Weapon");
             RangeBox.Items.Add("Melee N");
             RangeBox.Items.Add("Reach N");
             RangeBox.Items.Add("Ranged N");
-			RangeBox.Items.Add("Close Blast N");
-			RangeBox.Items.Add("Close Burst N");
-			RangeBox.Items.Add("Area Burst N within N");
-			RangeBox.Items.Add("Personal");
+            RangeBox.Items.Add("Close Blast N");
+            RangeBox.Items.Add("Close Burst N");
+            RangeBox.Items.Add("Area Burst N within N");
+            RangeBox.Items.Add("Personal");
 
-			fPower = power.Copy();
-			fFunctionalTemplate = functional_template;
+            Power = power.Copy();
+            _fFunctionalTemplate = functionalTemplate;
 
-			NameBox.Text = fPower.Name;
-			KeywordBox.Text = fPower.Keywords;
-			ConditionBox.Text = fPower.Condition;
-			update_action();
-			update_attack();
-			RangeBox.Text = fPower.Range;
-			DetailsBox.Text = fPower.Details;
-			DescBox.Text = fPower.Description;
-		}
+            NameBox.Text = Power.Name;
+            KeywordBox.Text = Power.Keywords;
+            ConditionBox.Text = Power.Condition;
+            update_action();
+            update_attack();
+            RangeBox.Text = Power.Range;
+            DetailsBox.Text = Power.Details;
+            DescBox.Text = Power.Description;
+        }
 
-		public CreaturePower Power
-		{
-			get { return fPower; }
-		}
-		CreaturePower fPower = null;
+        public void ShowAdvicePage(int level, IRole role)
+        {
+            _fLevel = level;
+            _fRole = role;
 
-		int fLevel = 0;
-		IRole fRole = null;
+            Pages.TabPages.Add(AdvicePage);
+            update_advice();
+        }
 
-		bool fFunctionalTemplate = false;
+        private void OKBtn_Click(object sender, EventArgs e)
+        {
+            Power.Name = NameBox.Text;
+            Power.Keywords = KeywordBox.Text;
+            Power.Condition = ConditionBox.Text;
+            Power.Range = RangeBox.Text;
+            Power.Details = DetailsBox.Text;
+            Power.Description = DescBox.Text;
+        }
 
-		public void ShowAdvicePage(int level, IRole role)
-		{
-			fLevel = level;
-			fRole = role;
+        private void ActionBtn_Click(object sender, EventArgs e)
+        {
+            var pa = Power.Action;
+            if (pa == null)
+                pa = new PowerAction();
 
-			Pages.TabPages.Add(AdvicePage);
-			update_advice();
-		}
+            var dlg = new PowerActionForm(pa);
+            if (dlg.ShowDialog() == DialogResult.OK)
+            {
+                Power.Action = dlg.Action;
+                update_action();
+                update_advice();
+            }
+        }
 
-		private void OKBtn_Click(object sender, EventArgs e)
-		{
-			fPower.Name = NameBox.Text;
-			fPower.Keywords = KeywordBox.Text;
-			fPower.Condition = ConditionBox.Text;
-			fPower.Range = RangeBox.Text;
-			fPower.Details = DetailsBox.Text;
-			fPower.Description = DescBox.Text;
-		}
+        private void AttackBtn_Click(object sender, EventArgs e)
+        {
+            var pa = Power.Attack;
+            if (pa == null)
+                pa = new PowerAttack();
 
-		private void ActionBtn_Click(object sender, EventArgs e)
-		{
-			PowerAction pa = fPower.Action;
-			if (pa == null)
-				pa = new PowerAction();
+            var dlg = new PowerAttackForm(pa, _fFunctionalTemplate, 0, null);
+            if (dlg.ShowDialog() == DialogResult.OK)
+            {
+                Power.Attack = dlg.Attack;
+                update_attack();
+                update_advice();
+            }
+        }
 
-			PowerActionForm dlg = new PowerActionForm(pa);
-			if (dlg.ShowDialog() == DialogResult.OK)
-			{
-				fPower.Action = dlg.Action;
-				update_action();
-				update_advice();
-			}
-		}
+        private void ActionClearLbl_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            Power.Action = null;
 
-		private void AttackBtn_Click(object sender, EventArgs e)
-		{
-			PowerAttack pa = fPower.Attack;
-			if (pa == null)
-				pa = new PowerAttack();
+            update_action();
+            update_advice();
+        }
 
-			PowerAttackForm dlg = new PowerAttackForm(pa, fFunctionalTemplate, 0, null);
-			if (dlg.ShowDialog() == DialogResult.OK)
-			{
-				fPower.Attack = dlg.Attack;
-				update_attack();
-				update_advice();
-			}
-		}
+        private void AttackClearLbl_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            Power.Attack = null;
 
-		private void ActionClearLbl_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-		{
-			fPower.Action = null;
+            update_attack();
+            update_advice();
+        }
 
-			update_action();
-			update_advice();
-		}
+        private void update_action()
+        {
+            ActionBtn.Text = Power.Action != null ? Power.Action.ToString() : "(not defined)";
+            ActionClearLbl.Enabled = Power.Action != null;
+        }
 
-		private void AttackClearLbl_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-		{
-			fPower.Attack = null;
+        private void update_attack()
+        {
+            AttackBtn.Text = Power.Attack != null ? Power.Attack.ToString() : "(not defined)";
+            AttackClearLbl.Enabled = Power.Attack != null;
+        }
 
-			update_attack();
-			update_advice();
-		}
+        private void update_advice()
+        {
+            if (!Pages.TabPages.Contains(AdvicePage))
+                return;
 
-		void update_action()
-		{
-			ActionBtn.Text = (fPower.Action != null) ? fPower.Action.ToString() : "(not defined)";
-			ActionClearLbl.Enabled = (fPower.Action != null);
-		}
+            AdviceList.Items.Clear();
 
-		void update_attack()
-		{
-			AttackBtn.Text = (fPower.Attack != null) ? fPower.Attack.ToString() : "(not defined)";
-			AttackClearLbl.Enabled = (fPower.Attack != null);
-		}
+            if (Power.Attack != null && Power.Action != null)
+            {
+                AdviceList.ShowGroups = true;
 
-		void update_advice()
-		{
-			if (!Pages.TabPages.Contains(AdvicePage))
-				return;
+                // Attack advice
 
-			AdviceList.Items.Clear();
+                var defence = Power.Attack.Defence == DefenceType.Ac ? "AC" : "non-AC defence";
+                var lviAttack = new ListViewItem("Attack vs " + defence + ": ");
+                lviAttack.SubItems.Add("+" + Statistics.AttackBonus(Power.Attack.Defence, _fLevel, _fRole));
+                lviAttack.Group = AdviceList.Groups[0];
+                AdviceList.Items.Add(lviAttack);
 
-			if ((fPower.Attack != null) && (fPower.Action != null))
-			{
-				AdviceList.ShowGroups = true;
+                // Damage advice
 
-				// Attack advice
+                if (_fRole is ComplexRole)
+                {
+                    var lviDmg = new ListViewItem("Damage:");
+                    lviDmg.SubItems.Add(Statistics.NormalDamage(_fLevel));
+                    lviDmg.Group = AdviceList.Groups[1];
+                    AdviceList.Items.Add(lviDmg);
+                }
+                else if (_fRole is Minion)
+                {
+                    var lviMinion = new ListViewItem("Minion damage:");
+                    lviMinion.SubItems.Add(Statistics.MinionDamage(_fLevel).ToString());
+                    lviMinion.Group = AdviceList.Groups[1];
+                    AdviceList.Items.Add(lviMinion);
+                }
+            }
 
-				string defence = (fPower.Attack.Defence == DefenceType.AC) ? "AC" : "non-AC defence";
-				ListViewItem lvi_attack = new ListViewItem("Attack vs " + defence + ": ");
-				lvi_attack.SubItems.Add("+" + Statistics.AttackBonus(fPower.Attack.Defence, fLevel, fRole));
-				lvi_attack.Group = AdviceList.Groups[0];
-				AdviceList.Items.Add(lvi_attack);
+            if (AdviceList.Items.Count == 0)
+            {
+                AdviceList.ShowGroups = false;
 
-				// Damage advice
-
-				if (fRole is ComplexRole)
-				{
-					ListViewItem lvi_dmg = new ListViewItem("Damage:");
-					lvi_dmg.SubItems.Add(Statistics.NormalDamage(fLevel));
-					lvi_dmg.Group = AdviceList.Groups[1];
-					AdviceList.Items.Add(lvi_dmg);
-				}
-				else if (fRole is Minion)
-				{
-					ListViewItem lvi_minion = new ListViewItem("Minion damage:");
-					lvi_minion.SubItems.Add(Statistics.MinionDamage(fLevel).ToString());
-					lvi_minion.Group = AdviceList.Groups[1];
-					AdviceList.Items.Add(lvi_minion);
-				}
-			}
-
-			if (AdviceList.Items.Count == 0)
-			{
-				AdviceList.ShowGroups = false;
-
-				ListViewItem lvi = new ListViewItem("(no advice)");
-				lvi.ForeColor = SystemColors.GrayText;
-				AdviceList.Items.Add(lvi);
-			}
-		}
-	}
+                var lvi = new ListViewItem("(no advice)");
+                lvi.ForeColor = SystemColors.GrayText;
+                AdviceList.Items.Add(lvi);
+            }
+        }
+    }
 }

@@ -4,423 +4,447 @@ using System.Drawing;
 
 namespace Masterplan.Data
 {
-	/// <summary>
-	/// The various hero roles.
-	/// </summary>
-	public enum HeroRoleType
-	{
-		/// <summary>
-		/// Controller role.
-		/// </summary>
-		Controller,
-		
-		/// <summary>
-		/// Defender role.
-		/// </summary>
-		Defender,
-		
-		/// <summary>
-		/// Leader role.
-		/// </summary>
-		Leader,
-		
-		/// <summary>
-		/// Striker role.
-		/// </summary>
-		Striker,
+    /// <summary>
+    ///     The various hero roles.
+    /// </summary>
+    public enum HeroRoleType
+    {
+        /// <summary>
+        ///     Controller role.
+        /// </summary>
+        Controller,
 
-		/// <summary>
-		/// Hybrid role.
-		/// </summary>
-		Hybrid
-	}
+        /// <summary>
+        ///     Defender role.
+        /// </summary>
+        Defender,
 
-	/// <summary>
-	/// Class representing a PC.
-	/// </summary>
-	[Serializable]
-	public class Hero : IToken, IComparable<Hero>
-	{
-		/// <summary>
-		/// Gets or sets the unique ID of the hero.
-		/// </summary>
-		public Guid ID
-		{
-			get { return fID; }
-			set
-			{
-				fID = value;
+        /// <summary>
+        ///     Leader role.
+        /// </summary>
+        Leader,
 
-				if (fCombatData != null)
-					fCombatData.ID = value;
-			}
-		}
-		Guid fID = Guid.NewGuid();
+        /// <summary>
+        ///     Striker role.
+        /// </summary>
+        Striker,
 
-		/// <summary>
-		/// Gets or sets the name of the hero.
-		/// </summary>
-		public string Name
-		{
-			get { return fName; }
-			set
-			{
-				fName = value;
+        /// <summary>
+        ///     Hybrid role.
+        /// </summary>
+        Hybrid
+    }
 
-				if (fCombatData != null)
-					fCombatData.DisplayName = value;
-			}
-		}
-		string fName = "";
+    /// <summary>
+    ///     Class representing a PC.
+    /// </summary>
+    [Serializable]
+    public class Hero : IToken, IComparable<Hero>
+    {
+        private int _fAc = 10;
 
-		/// <summary>
-		/// Gets or sets the player name.
-		/// </summary>
-		public string Player
-		{
-			get { return fPlayer; }
-			set { fPlayer = value; }
-		}
-		string fPlayer = "";
+        private string _fClass = "";
 
-		/// <summary>
-		/// Gets or sets the size of the PC.
-		/// </summary>
-		public CreatureSize Size
-		{
-			get { return fSize; }
-			set { fSize = value; }
-		}
-		CreatureSize fSize = CreatureSize.Medium;
+        private CombatData _fCombatData = new CombatData();
 
-		/// <summary>
-		/// Gets or sets the name of the PC's race.
-		/// </summary>
-		public string Race
-		{
-			get { return fRace; }
-			set { fRace = value; }
-		}
-		string fRace = "";
+        private List<OngoingCondition> _fEffects = new List<OngoingCondition>();
 
-		/// <summary>
-		/// Gets or sets the PC's level.
-		/// </summary>
-		public int Level
-		{
-			get { return fLevel; }
-			set { fLevel = value; }
-		}
-		int fLevel = Session.Project.Party.Level;
+        private string _fEpicDestiny = "";
 
-		/// <summary>
-		/// Gets or sets the name of the PC's class.
-		/// </summary>
-		public string Class
-		{
-			get { return fClass; }
-			set { fClass = value; }
-		}
-		string fClass = "";
+        private int _fFortitude = 10;
 
-		/// <summary>
-		/// Gets or sets the name of the PC's paragon path.
-		/// </summary>
-		public string ParagonPath
-		{
-			get { return fParagonPath; }
-			set { fParagonPath = value; }
-		}
-		string fParagonPath = "";
+        private int _fHp;
 
-		/// <summary>
-		/// Gets or sets the name of the PC's epic destiny.
-		/// </summary>
-		public string EpicDestiny
-		{
-			get { return fEpicDestiny; }
-			set { fEpicDestiny = value; }
-		}
-		string fEpicDestiny = "";
+        private Guid _fId = Guid.NewGuid();
 
-		/// <summary>
-		/// Gets or sets the power source of the PC's class.
-		/// </summary>
-		public string PowerSource
-		{
-			get { return fPowerSource; }
-			set { fPowerSource = value; }
-		}
-		string fPowerSource = "";
+        private int _fInitBonus;
 
-		/// <summary>
-		/// Gets or sets the PC's role.
-		/// </summary>
-		public HeroRoleType Role
-		{
-			get { return fRole; }
-			set { fRole = value; }
-		}
-		HeroRoleType fRole = HeroRoleType.Controller;
+        private string _fLanguages = "";
 
-		/// <summary>
-		/// Gets or sets the hero's combat data.
-		/// </summary>
-		public CombatData CombatData
-		{
-			get { return fCombatData; }
-			set
-			{
-				fCombatData = value;
-				fCombatData.ID = fID;
-				fCombatData.DisplayName = fName;
-			}
-		}
-		CombatData fCombatData = new CombatData();
+        private int _fLevel = Session.Project.Party.Level;
 
-		/// <summary>
-		/// Gets or sets the hero's hit points.
-		/// </summary>
-		public int HP
-		{
-			get { return fHP; }
-			set { fHP = value; }
-		}
-		int fHP = 0;
+        private string _fName = "";
 
-		/// <summary>
-		/// Gets or sets the AC defence.
-		/// </summary>
-		public int AC
-		{
-			get { return fAC; }
-			set { fAC = value; }
-		}
-		int fAC = 10;
+        private string _fParagonPath = "";
 
-		/// <summary>
-		/// Gets or sets the Fortitude defence.
-		/// </summary>
-		public int Fortitude
-		{
-			get { return fFortitude; }
-			set { fFortitude = value; }
-		}
-		int fFortitude = 10;
+        private int _fPassiveInsight = 10;
 
-		/// <summary>
-		/// Gets or sets the Reflex defence.
-		/// </summary>
-		public int Reflex
-		{
-			get { return fReflex; }
-			set { fReflex = value; }
-		}
-		int fReflex = 10;
+        private int _fPassivePerception = 10;
 
-		/// <summary>
-		/// Gets or sets the Will defence.
-		/// </summary>
-		public int Will
-		{
-			get { return fWill; }
-			set { fWill = value; }
-		}
-		int fWill = 10;
+        private string _fPlayer = "";
 
-		/// <summary>
-		/// Gets or sets the hero's initiative bonus
-		/// </summary>
-		public int InitBonus
-		{
-			get { return fInitBonus; }
-			set { fInitBonus = value; }
-		}
-		int fInitBonus = 0;
+        private Image _fPortrait;
 
-		/// <summary>
-		/// Gets or sets the PC's passive perception.
-		/// </summary>
-		public int PassivePerception
-		{
-			get { return fPassivePerception; }
-			set { fPassivePerception = value; }
-		}
-		int fPassivePerception = 10;
+        private string _fPowerSource = "";
 
-		/// <summary>
-		/// Gets or sets the PC's passive insight.
-		/// </summary>
-		public int PassiveInsight
-		{
-			get { return fPassiveInsight; }
-			set { fPassiveInsight = value; }
-		}
-		int fPassiveInsight = 10;
+        private string _fRace = "";
 
-		/// <summary>
-		/// Gets or sets the languages spoken by the hero.
-		/// </summary>
-		public string Languages
-		{
-			get { return fLanguages; }
-			set { fLanguages = value; }
-		}
-		string fLanguages = "";
+        private int _fReflex = 10;
 
-		/// <summary>
-		/// Gets or sets the set of ongoing effects this character can impose in combat.
-		/// </summary>
-		public List<OngoingCondition> Effects
-		{
-			get { return fEffects; }
-			set { fEffects = value; }
-		}
-		List<OngoingCondition> fEffects = new List<OngoingCondition>();
+        private HeroRoleType _fRole = HeroRoleType.Controller;
 
-		/// <summary>
-		/// Gets or sets the set of map tokens and overlays the character can use in combat.
-		/// </summary>
-		public List<CustomToken> Tokens
-		{
-			get { return fTokens; }
-			set { fTokens = value; }
-		}
-		List<CustomToken> fTokens = new List<CustomToken>();
+        private CreatureSize _fSize = CreatureSize.Medium;
 
-		/// <summary>
-		/// Level [N] [race] [class] / [paragon path] / [epic destiny]
-		/// </summary>
-		public string Info
-		{
-			get
-			{
-				string str = "Level " + fLevel;
+        private List<CustomToken> _fTokens = new List<CustomToken>();
 
-				if (fRace != "")
-				{
-					if (str != "")
-						str += " ";
+        private int _fWill = 10;
 
-					str += fRace;
-				}
+        /// <summary>
+        ///     Gets or sets the unique ID of the hero.
+        /// </summary>
+        public Guid Id
+        {
+            get => _fId;
+            set
+            {
+                _fId = value;
 
-				if (fClass != "")
-				{
-					if (str != "")
-						str += " ";
+                if (_fCombatData != null)
+                    _fCombatData.Id = value;
+            }
+        }
 
-					str += fClass;
-				}
+        /// <summary>
+        ///     Gets or sets the name of the hero.
+        /// </summary>
+        public string Name
+        {
+            get => _fName;
+            set
+            {
+                _fName = value;
 
-				if (fParagonPath != "")
-				{
-					if (str != "")
-						str += " / ";
+                if (_fCombatData != null)
+                    _fCombatData.DisplayName = value;
+            }
+        }
 
-					str += fParagonPath;
-				}
+        /// <summary>
+        ///     Gets or sets the player name.
+        /// </summary>
+        public string Player
+        {
+            get => _fPlayer;
+            set => _fPlayer = value;
+        }
 
-				if (fEpicDestiny != "")
-				{
-					if (str != "")
-						str += " / ";
+        /// <summary>
+        ///     Gets or sets the size of the PC.
+        /// </summary>
+        public CreatureSize Size
+        {
+            get => _fSize;
+            set => _fSize = value;
+        }
 
-					str += fEpicDestiny;
-				}
+        /// <summary>
+        ///     Gets or sets the name of the PC's race.
+        /// </summary>
+        public string Race
+        {
+            get => _fRace;
+            set => _fRace = value;
+        }
 
-				return str;
-			}
-		}
+        /// <summary>
+        ///     Gets or sets the PC's level.
+        /// </summary>
+        public int Level
+        {
+            get => _fLevel;
+            set => _fLevel = value;
+        }
 
-		/// <summary>
-		/// Gets or sets the PC's portrait image.
-		/// </summary>
-		public Image Portrait
-		{
-			get { return fPortrait; }
-			set { fPortrait = value; }
-		}
-		Image fPortrait = null;
+        /// <summary>
+        ///     Gets or sets the name of the PC's class.
+        /// </summary>
+        public string Class
+        {
+            get => _fClass;
+            set => _fClass = value;
+        }
 
-		/// <summary>
-		/// Calculates the hero's current state.
-		/// </summary>
-		/// <param name="damage">The hero's current damage.</param>
-		/// <returns>Returns the hero's state.</returns>
-		public CreatureState GetState(int damage)
-		{
-			if (fHP != 0)
-			{
-				int hp_current = fHP - damage;
-				int hp_bloodied = fHP / 2;
+        /// <summary>
+        ///     Gets or sets the name of the PC's paragon path.
+        /// </summary>
+        public string ParagonPath
+        {
+            get => _fParagonPath;
+            set => _fParagonPath = value;
+        }
 
-				if (hp_current <= 0)
-					return CreatureState.Defeated;
-				else if (hp_current <= hp_bloodied)
-					return CreatureState.Bloodied;
-			}
+        /// <summary>
+        ///     Gets or sets the name of the PC's epic destiny.
+        /// </summary>
+        public string EpicDestiny
+        {
+            get => _fEpicDestiny;
+            set => _fEpicDestiny = value;
+        }
 
-			return CreatureState.Active;
-		}
+        /// <summary>
+        ///     Gets or sets the power source of the PC's class.
+        /// </summary>
+        public string PowerSource
+        {
+            get => _fPowerSource;
+            set => _fPowerSource = value;
+        }
 
-		/// <summary>
-		/// Creates a copy of the Hero.
-		/// </summary>
-		/// <returns>Returns the copy.</returns>
-		public Hero Copy()
-		{
-			Hero h = new Hero();
+        /// <summary>
+        ///     Gets or sets the PC's role.
+        /// </summary>
+        public HeroRoleType Role
+        {
+            get => _fRole;
+            set => _fRole = value;
+        }
 
-			h.ID = fID;
-			h.Name = fName;
-			h.Player = fPlayer;
-			h.Size = fSize;
-			h.Race = fRace;
-			h.Level = fLevel;
-			h.Class = fClass;
-			h.ParagonPath = fParagonPath;
-			h.EpicDestiny = fEpicDestiny;
-			h.PowerSource = fPowerSource;
-			h.Role = fRole;
-			h.CombatData = fCombatData.Copy();
-			h.HP = fHP;
-			h.AC = fAC;
-			h.Fortitude = fFortitude;
-			h.Reflex = fReflex;
-			h.Will = fWill;
-			h.InitBonus = fInitBonus;
-			h.PassivePerception = fPassivePerception;
-			h.PassiveInsight = fPassiveInsight;
-			h.Languages = fLanguages;
-			h.Portrait = fPortrait;
+        /// <summary>
+        ///     Gets or sets the hero's combat data.
+        /// </summary>
+        public CombatData CombatData
+        {
+            get => _fCombatData;
+            set
+            {
+                _fCombatData = value;
+                _fCombatData.Id = _fId;
+                _fCombatData.DisplayName = _fName;
+            }
+        }
 
-			foreach (OngoingCondition oc in fEffects)
-				h.Effects.Add(oc.Copy());
+        /// <summary>
+        ///     Gets or sets the hero's hit points.
+        /// </summary>
+        public int Hp
+        {
+            get => _fHp;
+            set => _fHp = value;
+        }
 
-			foreach (CustomToken ct in fTokens)
-				h.Tokens.Add(ct.Copy());
+        /// <summary>
+        ///     Gets or sets the AC defence.
+        /// </summary>
+        public int Ac
+        {
+            get => _fAc;
+            set => _fAc = value;
+        }
 
-			return h;
-		}
+        /// <summary>
+        ///     Gets or sets the Fortitude defence.
+        /// </summary>
+        public int Fortitude
+        {
+            get => _fFortitude;
+            set => _fFortitude = value;
+        }
 
-		/// <summary>
-		/// Compares this Hero to another.
-		/// </summary>
-		/// <param name="rhs">The other Hero object.</param>
-		/// <returns>Returns -1 if this Hero should be sorted before rhs, +1 if rhs should be sorted before this, 0 otherwise.</returns>
-		public int CompareTo(Hero rhs)
-		{
-			return fName.CompareTo(rhs.Name);
-		}
+        /// <summary>
+        ///     Gets or sets the Reflex defence.
+        /// </summary>
+        public int Reflex
+        {
+            get => _fReflex;
+            set => _fReflex = value;
+        }
 
-		/// <summary>
-		/// Returns the hero's name.
-		/// </summary>
-		/// <returns></returns>
-		public override string ToString()
-		{
-			return fName;
-		}
-	}
+        /// <summary>
+        ///     Gets or sets the Will defence.
+        /// </summary>
+        public int Will
+        {
+            get => _fWill;
+            set => _fWill = value;
+        }
+
+        /// <summary>
+        ///     Gets or sets the hero's initiative bonus
+        /// </summary>
+        public int InitBonus
+        {
+            get => _fInitBonus;
+            set => _fInitBonus = value;
+        }
+
+        /// <summary>
+        ///     Gets or sets the PC's passive perception.
+        /// </summary>
+        public int PassivePerception
+        {
+            get => _fPassivePerception;
+            set => _fPassivePerception = value;
+        }
+
+        /// <summary>
+        ///     Gets or sets the PC's passive insight.
+        /// </summary>
+        public int PassiveInsight
+        {
+            get => _fPassiveInsight;
+            set => _fPassiveInsight = value;
+        }
+
+        /// <summary>
+        ///     Gets or sets the languages spoken by the hero.
+        /// </summary>
+        public string Languages
+        {
+            get => _fLanguages;
+            set => _fLanguages = value;
+        }
+
+        /// <summary>
+        ///     Gets or sets the set of ongoing effects this character can impose in combat.
+        /// </summary>
+        public List<OngoingCondition> Effects
+        {
+            get => _fEffects;
+            set => _fEffects = value;
+        }
+
+        /// <summary>
+        ///     Gets or sets the set of map tokens and overlays the character can use in combat.
+        /// </summary>
+        public List<CustomToken> Tokens
+        {
+            get => _fTokens;
+            set => _fTokens = value;
+        }
+
+        /// <summary>
+        ///     Level [N] [race] [class] / [paragon path] / [epic destiny]
+        /// </summary>
+        public string Info
+        {
+            get
+            {
+                var str = "Level " + _fLevel;
+
+                if (_fRace != "")
+                {
+                    if (str != "")
+                        str += " ";
+
+                    str += _fRace;
+                }
+
+                if (_fClass != "")
+                {
+                    if (str != "")
+                        str += " ";
+
+                    str += _fClass;
+                }
+
+                if (_fParagonPath != "")
+                {
+                    if (str != "")
+                        str += " / ";
+
+                    str += _fParagonPath;
+                }
+
+                if (_fEpicDestiny != "")
+                {
+                    if (str != "")
+                        str += " / ";
+
+                    str += _fEpicDestiny;
+                }
+
+                return str;
+            }
+        }
+
+        /// <summary>
+        ///     Gets or sets the PC's portrait image.
+        /// </summary>
+        public Image Portrait
+        {
+            get => _fPortrait;
+            set => _fPortrait = value;
+        }
+
+        /// <summary>
+        ///     Calculates the hero's current state.
+        /// </summary>
+        /// <param name="damage">The hero's current damage.</param>
+        /// <returns>Returns the hero's state.</returns>
+        public CreatureState GetState(int damage)
+        {
+            if (_fHp != 0)
+            {
+                var hpCurrent = _fHp - damage;
+                var hpBloodied = _fHp / 2;
+
+                if (hpCurrent <= 0)
+                    return CreatureState.Defeated;
+                if (hpCurrent <= hpBloodied)
+                    return CreatureState.Bloodied;
+            }
+
+            return CreatureState.Active;
+        }
+
+        /// <summary>
+        ///     Creates a copy of the Hero.
+        /// </summary>
+        /// <returns>Returns the copy.</returns>
+        public Hero Copy()
+        {
+            var h = new Hero();
+
+            h.Id = _fId;
+            h.Name = _fName;
+            h.Player = _fPlayer;
+            h.Size = _fSize;
+            h.Race = _fRace;
+            h.Level = _fLevel;
+            h.Class = _fClass;
+            h.ParagonPath = _fParagonPath;
+            h.EpicDestiny = _fEpicDestiny;
+            h.PowerSource = _fPowerSource;
+            h.Role = _fRole;
+            h.CombatData = _fCombatData.Copy();
+            h.Hp = _fHp;
+            h.Ac = _fAc;
+            h.Fortitude = _fFortitude;
+            h.Reflex = _fReflex;
+            h.Will = _fWill;
+            h.InitBonus = _fInitBonus;
+            h.PassivePerception = _fPassivePerception;
+            h.PassiveInsight = _fPassiveInsight;
+            h.Languages = _fLanguages;
+            h.Portrait = _fPortrait;
+
+            foreach (var oc in _fEffects)
+                h.Effects.Add(oc.Copy());
+
+            foreach (var ct in _fTokens)
+                h.Tokens.Add(ct.Copy());
+
+            return h;
+        }
+
+        /// <summary>
+        ///     Returns the hero's name.
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            return _fName;
+        }
+
+        /// <summary>
+        ///     Compares this Hero to another.
+        /// </summary>
+        /// <param name="rhs">The other Hero object.</param>
+        /// <returns>Returns -1 if this Hero should be sorted before rhs, +1 if rhs should be sorted before this, 0 otherwise.</returns>
+        public int CompareTo(Hero rhs)
+        {
+            return _fName.CompareTo(rhs.Name);
+        }
+    }
 }

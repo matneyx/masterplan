@@ -1,4 +1,6 @@
-﻿namespace Masterplan.UI
+﻿using Masterplan.Controls.Elements;
+
+namespace Masterplan.UI
 {
     partial class MapLocationSelectForm
     {
@@ -34,7 +36,7 @@
 			this.LocationBox = new System.Windows.Forms.ComboBox();
 			this.OKBtn = new System.Windows.Forms.Button();
 			this.CancelBtn = new System.Windows.Forms.Button();
-			this.MapPanel = new Masterplan.Controls.RegionalMapPanel();
+			this.MapPanel = new RegionalMapPanel();
 			this.SuspendLayout();
 			// 
 			// MapLbl
@@ -154,6 +156,6 @@
         private System.Windows.Forms.ComboBox LocationBox;
         private System.Windows.Forms.Button OKBtn;
 		private System.Windows.Forms.Button CancelBtn;
-		private Masterplan.Controls.RegionalMapPanel MapPanel;
+		private RegionalMapPanel MapPanel;
     }
 }

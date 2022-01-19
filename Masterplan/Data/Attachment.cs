@@ -1,168 +1,161 @@
 ﻿using System;
-
 using Masterplan.Tools;
 
 namespace Masterplan.Data
 {
-	/// <summary>
-	/// Enumeration containing the known types of attachment.
-	/// </summary>
-	public enum AttachmentType
-	{
-		/// <summary>
-		/// Miscellaneous file.
-		/// </summary>
-		Miscellaneous,
+    /// <summary>
+    ///     Enumeration containing the known types of attachment.
+    /// </summary>
+    public enum AttachmentType
+    {
+        /// <summary>
+        ///     Miscellaneous file.
+        /// </summary>
+        Miscellaneous,
 
-		/// <summary>
-		/// Plan text file.
-		/// </summary>
-		PlainText,
+        /// <summary>
+        ///     Plan text file.
+        /// </summary>
+        PlainText,
 
-		/// <summary>
-		/// Rich text file.
-		/// </summary>
-		RichText,
+        /// <summary>
+        ///     Rich text file.
+        /// </summary>
+        RichText,
 
-		/// <summary>
-		/// Image file.
-		/// </summary>
-		Image,
+        /// <summary>
+        ///     Image file.
+        /// </summary>
+        Image,
 
-		/// <summary>
-		/// URL link.
-		/// </summary>
-		URL,
+        /// <summary>
+        ///     URL link.
+        /// </summary>
+        Url,
 
-		/// <summary>
-		/// HTML file.
-		/// </summary>
-		HTML
-	}
+        /// <summary>
+        ///     HTML file.
+        /// </summary>
+        Html
+    }
 
-	/// <summary>
-	/// Class representing a handout file.
-	/// </summary>
-	[Serializable]
-	public class Attachment : IComparable<Attachment>
-	{
-		/// <summary>
-		/// Gets or sets the unique ID.
-		/// </summary>
-		public Guid ID
-		{
-			get { return fID; }
-			set { fID = value; }
-		}
-		Guid fID = Guid.NewGuid();
+    /// <summary>
+    ///     Class representing a handout file.
+    /// </summary>
+    [Serializable]
+    public class Attachment : IComparable<Attachment>
+    {
+        private byte[] _fContents;
 
-		/// <summary>
-		/// Gets or sets the name of the handout.
-		/// </summary>
-		public string Name
-		{
-			get { return fName; }
-			set { fName = value; }
-		}
-		string fName;
+        private Guid _fId = Guid.NewGuid();
 
-		/// <summary>
-		/// Gets or sets the handout file contents.
-		/// </summary>
-		public byte[] Contents
-		{
-			get { return fContents; }
-			set { fContents = value; }
-		}
-		byte[] fContents;
+        private string _fName;
 
-		/// <summary>
-		/// Gets the type of file.
-		/// </summary>
-		public AttachmentType Type
-		{
-			get
-			{
-				string ext = FileName.Extension(fName).ToLower();
+        /// <summary>
+        ///     Gets or sets the unique ID.
+        /// </summary>
+        public Guid Id
+        {
+            get => _fId;
+            set => _fId = value;
+        }
 
-				#region Text
+        /// <summary>
+        ///     Gets or sets the name of the handout.
+        /// </summary>
+        public string Name
+        {
+            get => _fName;
+            set => _fName = value;
+        }
 
-				if (ext == "txt")
-					return AttachmentType.PlainText;
+        /// <summary>
+        ///     Gets or sets the handout file contents.
+        /// </summary>
+        public byte[] Contents
+        {
+            get => _fContents;
+            set => _fContents = value;
+        }
 
-				if (ext == "rtf")
-					return AttachmentType.RichText;
+        /// <summary>
+        ///     Gets the type of file.
+        /// </summary>
+        public AttachmentType Type
+        {
+            get
+            {
+                var ext = FileName.Extension(_fName).ToLower();
 
-				#endregion
+                if (ext == "txt")
+                    return AttachmentType.PlainText;
 
-				#region Images
+                if (ext == "rtf")
+                    return AttachmentType.RichText;
 
-				if (ext == "bmp")
-					return AttachmentType.Image;
+                if (ext == "bmp")
+                    return AttachmentType.Image;
 
-				if (ext == "jpg")
-					return AttachmentType.Image;
+                if (ext == "jpg")
+                    return AttachmentType.Image;
 
-				if (ext == "jpeg")
-					return AttachmentType.Image;
+                if (ext == "jpeg")
+                    return AttachmentType.Image;
 
-				if (ext == "gif")
-					return AttachmentType.Image;
+                if (ext == "gif")
+                    return AttachmentType.Image;
 
-				if (ext == "tga")
-					return AttachmentType.Image;
+                if (ext == "tga")
+                    return AttachmentType.Image;
 
-				if (ext == "png")
-					return AttachmentType.Image;
+                if (ext == "png")
+                    return AttachmentType.Image;
 
-				#endregion
+                if (ext == "url")
+                    return AttachmentType.Url;
 
-				#region Web
+                if (ext == "htm")
+                    return AttachmentType.Html;
 
-				if (ext == "url")
-					return AttachmentType.URL;
+                if (ext == "html")
+                    return AttachmentType.Html;
 
-				if (ext == "htm")
-					return AttachmentType.HTML;
+                return AttachmentType.Miscellaneous;
+            }
+        }
 
-				if (ext == "html")
-					return AttachmentType.HTML;
+        /// <summary>
+        ///     Creates a copy of the handout.
+        /// </summary>
+        /// <returns>Returns the copy.</returns>
+        public Attachment Copy()
+        {
+            var h = new Attachment();
 
-				#endregion
+            h.Id = _fId;
+            h.Name = _fName;
 
-				return AttachmentType.Miscellaneous;
-			}
-		}
+            h.Contents = new byte[_fContents.Length];
+            for (var index = 0; index != _fContents.Length; ++index)
+                h.Contents[index] = _fContents[index];
 
-		/// <summary>
-		/// Creates a copy of the handout.
-		/// </summary>
-		/// <returns>Returns the copy.</returns>
-		public Attachment Copy()
-		{
-			Attachment h = new Attachment();
+            return h;
+        }
 
-			h.ID = fID;
-			h.Name = fName;
+        /// <summary>
+        ///     Compares this attachment to another.
+        /// </summary>
+        /// <param name="rhs">The other attachment.</param>
+        /// <returns>
+        ///     Returns -1 if this attachment should be sorted before the other, +1 if the other should be sorted before this;
+        ///     0 otherwise.
+        /// </returns>
+        public int CompareTo(Attachment rhs)
+        {
+            var lhsName = FileName.Name(_fName);
+            var rhsName = FileName.Name(rhs.Name);
 
-			h.Contents = new byte[fContents.Length];
-			for (int index = 0; index != fContents.Length; ++index)
-				h.Contents[index] = fContents[index];
-
-			return h;
-		}
-
-		/// <summary>
-		/// Compares this attachment to another.
-		/// </summary>
-		/// <param name="rhs">The other attachment.</param>
-		/// <returns>Returns -1 if this attachment should be sorted before the other, +1 if the other should be sorted before this; 0 otherwise.</returns>
-		public int CompareTo(Attachment rhs)
-		{
-			string lhs_name = FileName.Name(fName);
-			string rhs_name = FileName.Name(rhs.Name);
-
-			return lhs_name.CompareTo(rhs_name);
-		}
-	}
+            return lhsName.CompareTo(rhsName);
+        }
+    }
 }

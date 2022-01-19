@@ -1,4 +1,6 @@
-﻿namespace Masterplan.UI
+﻿using Masterplan.Controls.Elements;
+
+namespace Masterplan.UI
 {
 	partial class RegionalMapForm
 	{
@@ -33,7 +35,7 @@
 			this.NameLbl = new System.Windows.Forms.Label();
 			this.NameBox = new System.Windows.Forms.TextBox();
 			this.Panel = new System.Windows.Forms.Panel();
-			this.MapPanel = new Masterplan.Controls.RegionalMapPanel();
+			this.MapPanel = new RegionalMapPanel();
 			this.MapContext = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.MapContextAddLocation = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
@@ -272,7 +274,7 @@
 		private System.Windows.Forms.Label NameLbl;
 		private System.Windows.Forms.TextBox NameBox;
 		private System.Windows.Forms.Panel Panel;
-		private Masterplan.Controls.RegionalMapPanel MapPanel;
+		private RegionalMapPanel MapPanel;
 		private System.Windows.Forms.ToolStrip Toolbar;
 		private System.Windows.Forms.ToolStripButton BrowseBtn;
 		private System.Windows.Forms.Button OKBtn;

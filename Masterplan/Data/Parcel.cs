@@ -1,193 +1,196 @@
 ﻿using System;
-
 using Masterplan.Tools.Generators;
 
 namespace Masterplan.Data
 {
-	/// <summary>
-	/// Class representing a treasure parcel.
-	/// </summary>
-	[Serializable]
-	public class Parcel
-	{
-		/// <summary>
-		/// Default constructor.
-		/// </summary>
-		public Parcel()
-		{
-		}
+    /// <summary>
+    ///     Class representing a treasure parcel.
+    /// </summary>
+    [Serializable]
+    public class Parcel
+    {
+        private Guid _fArtifactId = Guid.Empty;
 
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		/// <param name="item">The magic item to create the parcel with.</param>
-		public Parcel(MagicItem item)
-		{
-			SetAsMagicItem(item);
-		}
+        private string _fDetails = "";
 
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		/// <param name="artifact">The artifact to create the parcel with.</param>
-		public Parcel(Artifact artifact)
-		{
-			SetAsArtifact(artifact);
-		}
+        private Guid _fHeroId = Guid.Empty;
 
-		/// <summary>
-		/// Gets or sets the name of the parcel.
-		/// </summary>
-		public string Name
-		{
-			get { return fName; }
-			set { fName = value; }
-		}
-		string fName = "";
+        private Guid _fMagicItemId = Guid.Empty;
 
-		/// <summary>
-		/// Gets or sets the parcel details.
-		/// </summary>
-		public string Details
-		{
-			get { return fDetails; }
-			set { fDetails = value; }
-		}
-		string fDetails = "";
+        private string _fName = "";
 
-		/// <summary>
-		/// Gets or sets the value of the parcel in GP.
-		/// </summary>
-		public int Value
-		{
-			get { return fValue; }
-			set { fValue = value; }
-		}
-		int fValue = 0;
+        private int _fValue;
 
-		/// <summary>
-		/// Gets or sets the ID of the magic item.
-		/// </summary>
-		public Guid MagicItemID
-		{
-			get { return fMagicItemID; }
-			set { fMagicItemID = value; }
-		}
-		Guid fMagicItemID = Guid.Empty;
+        /// <summary>
+        ///     Gets or sets the name of the parcel.
+        /// </summary>
+        public string Name
+        {
+            get => _fName;
+            set => _fName = value;
+        }
 
-		/// <summary>
-		/// Gets or sets the ID of the artifact.
-		/// </summary>
-		public Guid ArtifactID
-		{
-			get { return fArtifactID; }
-			set { fArtifactID = value; }
-		}
-		Guid fArtifactID = Guid.Empty;
+        /// <summary>
+        ///     Gets or sets the parcel details.
+        /// </summary>
+        public string Details
+        {
+            get => _fDetails;
+            set => _fDetails = value;
+        }
 
-		/// <summary>
-		/// Gets or sets the ID of the PC to whom the item has been given.
-		/// </summary>
-		public Guid HeroID
-		{
-			get { return fHeroID; }
-			set { fHeroID = value; }
-		}
-		Guid fHeroID = Guid.Empty;
+        /// <summary>
+        ///     Gets or sets the value of the parcel in GP.
+        /// </summary>
+        public int Value
+        {
+            get => _fValue;
+            set => _fValue = value;
+        }
 
-		/// <summary>
-		/// Sets the parcel to contain the given magic item.
-		/// </summary>
-		/// <param name="item">The magic item.</param>
-		public void SetAsMagicItem(MagicItem item)
-		{
-			fName = item.Name;
-			fDetails = item.Description;
-			fMagicItemID = item.ID;
-			fArtifactID = Guid.Empty;
-			fValue = Treasure.GetItemValue(item.Level);
-		}
+        /// <summary>
+        ///     Gets or sets the ID of the magic item.
+        /// </summary>
+        public Guid MagicItemId
+        {
+            get => _fMagicItemId;
+            set => _fMagicItemId = value;
+        }
 
-		/// <summary>
-		/// Sets the parcel to contain the given magic item.
-		/// </summary>
-		/// <param name="artifact">The magic item.</param>
-		public void SetAsArtifact(Artifact artifact)
-		{
-			fName = artifact.Name;
-			fDetails = artifact.Description;
-			fMagicItemID = Guid.Empty;
-			fArtifactID = artifact.ID;
-			fValue = 0;
-		}
+        /// <summary>
+        ///     Gets or sets the ID of the artifact.
+        /// </summary>
+        public Guid ArtifactId
+        {
+            get => _fArtifactId;
+            set => _fArtifactId = value;
+        }
 
-		/// <summary>
-		/// Calculates the level of the contained magic item.
-		/// </summary>
-		/// <returns>Returns the level.</returns>
-		public int FindItemLevel()
-		{
-			MagicItem item = Session.FindMagicItem(fMagicItemID, SearchType.Global);
-			if (item != null)
-				return item.Level;
+        /// <summary>
+        ///     Gets or sets the ID of the PC to whom the item has been given.
+        /// </summary>
+        public Guid HeroId
+        {
+            get => _fHeroId;
+            set => _fHeroId = value;
+        }
 
-			int index = Treasure.PlaceholderIDs.IndexOf(fMagicItemID);
-			if (index != -1)
-				return index + 1;
+        /// <summary>
+        ///     Default constructor.
+        /// </summary>
+        public Parcel()
+        {
+        }
 
-			if (fValue > 0)
-			{
-				for (int level = 30; level >= 1; --level)
-				{
-					int value = Treasure.GetItemValue(level);
-					if (value < fValue)
-						return level;
-				}
-			}
+        /// <summary>
+        ///     Constructor.
+        /// </summary>
+        /// <param name="item">The magic item to create the parcel with.</param>
+        public Parcel(MagicItem item)
+        {
+            SetAsMagicItem(item);
+        }
 
-			return -1;
-		}
+        /// <summary>
+        ///     Constructor.
+        /// </summary>
+        /// <param name="artifact">The artifact to create the parcel with.</param>
+        public Parcel(Artifact artifact)
+        {
+            SetAsArtifact(artifact);
+        }
 
-		/// <summary>
-		/// Calculates the tier of the contained artifact.
-		/// </summary>
-		/// <returns>Returns the tier.</returns>
-		public Tier FindItemTier()
-		{
-			Artifact artifact = Session.FindArtifact(fArtifactID, SearchType.Global);
-			if (artifact != null)
-				return artifact.Tier;
+        /// <summary>
+        ///     Sets the parcel to contain the given magic item.
+        /// </summary>
+        /// <param name="item">The magic item.</param>
+        public void SetAsMagicItem(MagicItem item)
+        {
+            _fName = item.Name;
+            _fDetails = item.Description;
+            _fMagicItemId = item.Id;
+            _fArtifactId = Guid.Empty;
+            _fValue = Treasure.GetItemValue(item.Level);
+        }
 
-			int index = Treasure.PlaceholderIDs.IndexOf(fMagicItemID);
-			switch (index)
-			{
-				case 0:
-					return Tier.Heroic;
-				case 1:
-					return Tier.Paragon;
-				case 2:
-					return Tier.Epic;
-			}
+        /// <summary>
+        ///     Sets the parcel to contain the given magic item.
+        /// </summary>
+        /// <param name="artifact">The magic item.</param>
+        public void SetAsArtifact(Artifact artifact)
+        {
+            _fName = artifact.Name;
+            _fDetails = artifact.Description;
+            _fMagicItemId = Guid.Empty;
+            _fArtifactId = artifact.Id;
+            _fValue = 0;
+        }
 
-			return Tier.Heroic;
-		}
+        /// <summary>
+        ///     Calculates the level of the contained magic item.
+        /// </summary>
+        /// <returns>Returns the level.</returns>
+        public int FindItemLevel()
+        {
+            var item = Session.FindMagicItem(_fMagicItemId, SearchType.Global);
+            if (item != null)
+                return item.Level;
 
-		/// <summary>
-		/// Creates a copy of the parcel.
-		/// </summary>
-		/// <returns>Returns the copy.</returns>
-		public Parcel Copy()
-		{
-			Parcel p = new Parcel();
+            var index = Treasure.PlaceholderIDs.IndexOf(_fMagicItemId);
+            if (index != -1)
+                return index + 1;
 
-			p.Name = fName;
-			p.Details = fDetails;
-			p.Value = fValue;
-			p.MagicItemID = fMagicItemID;
-			p.ArtifactID = fArtifactID;
-			p.HeroID = fHeroID;
+            if (_fValue > 0)
+                for (var level = 30; level >= 1; --level)
+                {
+                    var value = Treasure.GetItemValue(level);
+                    if (value < _fValue)
+                        return level;
+                }
 
-			return p;
-		}
-	}
+            return -1;
+        }
+
+        /// <summary>
+        ///     Calculates the tier of the contained artifact.
+        /// </summary>
+        /// <returns>Returns the tier.</returns>
+        public Tier FindItemTier()
+        {
+            var artifact = Session.FindArtifact(_fArtifactId, SearchType.Global);
+            if (artifact != null)
+                return artifact.Tier;
+
+            var index = Treasure.PlaceholderIDs.IndexOf(_fMagicItemId);
+            switch (index)
+            {
+                case 0:
+                    return Tier.Heroic;
+                case 1:
+                    return Tier.Paragon;
+                case 2:
+                    return Tier.Epic;
+            }
+
+            return Tier.Heroic;
+        }
+
+        /// <summary>
+        ///     Creates a copy of the parcel.
+        /// </summary>
+        /// <returns>Returns the copy.</returns>
+        public Parcel Copy()
+        {
+            var p = new Parcel();
+
+            p.Name = _fName;
+            p.Details = _fDetails;
+            p.Value = _fValue;
+            p.MagicItemId = _fMagicItemId;
+            p.ArtifactId = _fArtifactId;
+            p.HeroId = _fHeroId;
+
+            return p;
+        }
+    }
 }

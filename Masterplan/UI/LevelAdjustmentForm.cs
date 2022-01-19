@@ -3,36 +3,36 @@ using System.Windows.Forms;
 
 namespace Masterplan.UI
 {
-	partial class LevelAdjustmentForm : Form
-	{
-		const string LEVEL_UP = "More difficult";
-		const string LEVEL_DOWN = "Less difficult";
+    internal partial class LevelAdjustmentForm : Form
+    {
+        private const string LevelUp = "More difficult";
+        private const string LevelDown = "Less difficult";
 
-		public LevelAdjustmentForm()
-		{
-			InitializeComponent();
+        public int LevelAdjustment
+        {
+            get
+            {
+                var levels = (int)LevelBox.Value;
 
-			DirectionBox.Items.Add(LEVEL_UP);
-			DirectionBox.Items.Add(LEVEL_DOWN);
+                if (DirectionBox.SelectedItem.ToString() == LevelDown)
+                    levels *= -1;
 
-			DirectionBox.SelectedIndex = 0;
-		}
+                return levels;
+            }
+        }
 
-		public int LevelAdjustment
-		{
-			get
-			{
-				int levels = (int)LevelBox.Value;
+        public LevelAdjustmentForm()
+        {
+            InitializeComponent();
 
-				if (DirectionBox.SelectedItem.ToString() == LEVEL_DOWN)
-					levels *= -1;
+            DirectionBox.Items.Add(LevelUp);
+            DirectionBox.Items.Add(LevelDown);
 
-				return levels;
-			}
-		}
+            DirectionBox.SelectedIndex = 0;
+        }
 
-		private void OKBtn_Click(object sender, EventArgs e)
-		{
-		}
-	}
+        private void OKBtn_Click(object sender, EventArgs e)
+        {
+        }
+    }
 }

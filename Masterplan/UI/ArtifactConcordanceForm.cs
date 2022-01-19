@@ -1,32 +1,27 @@
 ﻿using System;
 using System.Windows.Forms;
-
 using Masterplan.Tools;
 
 namespace Masterplan.UI
 {
-	partial class ArtifactConcordanceForm : Form
-	{
-		public ArtifactConcordanceForm(Pair<string, string> concordance)
-		{
-			InitializeComponent();
+    internal partial class ArtifactConcordanceForm : Form
+    {
+        public Pair<string, string> Concordance { get; }
 
-			fConcordance = concordance;
+        public ArtifactConcordanceForm(Pair<string, string> concordance)
+        {
+            InitializeComponent();
 
-			RuleBox.Text = fConcordance.First;
-			ValueBox.Text = fConcordance.Second;
-		}
+            Concordance = concordance;
 
-		public Pair<string, string> Concordance
-		{
-			get { return fConcordance; }
-		}
-		Pair<string, string> fConcordance = null;
+            RuleBox.Text = Concordance.First;
+            ValueBox.Text = Concordance.Second;
+        }
 
-		private void OKBtn_Click(object sender, EventArgs e)
-		{
-			fConcordance.First = RuleBox.Text;
-			fConcordance.Second = ValueBox.Text;
-		}
-	}
+        private void OKBtn_Click(object sender, EventArgs e)
+        {
+            Concordance.First = RuleBox.Text;
+            Concordance.Second = ValueBox.Text;
+        }
+    }
 }

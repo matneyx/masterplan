@@ -1,122 +1,124 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
-
 using Masterplan.Data;
 using Masterplan.UI;
 
 namespace Masterplan.Controls
 {
-	partial class TokenPanel : UserControl
-	{
-		public TokenPanel()
-		{
-			InitializeComponent();
+    internal partial class TokenPanel : UserControl
+    {
+        private Color _fColour = Color.Blue;
 
-			Application.Idle += new EventHandler(Application_Idle);
-		}
+        private Image _fImage;
 
-		~TokenPanel()
-		{
-			Application.Idle -= Application_Idle;
-		}
+        private Size _fTileSize = new Size(2, 2);
 
-		void Application_Idle(object sender, EventArgs e)
-		{
-			ImageClear.Enabled = (fImage != null);
-		}
+        public Size TileSize
+        {
+            get => _fTileSize;
+            set => _fTileSize = value;
+        }
 
-		public Size TileSize
-		{
-			get { return fTileSize; }
-			set { fTileSize = value; }
-		}
-		Size fTileSize = new Size(2, 2);
+        public Image Image
+        {
+            get => _fImage;
+            set
+            {
+                _fImage = value;
+                update_picture();
+            }
+        }
 
-		public Image Image
-		{
-			get { return fImage; }
-			set
-			{
-				fImage = value;
-				update_picture();
-			}
-		}
-		Image fImage = null;
+        public Color Colour
+        {
+            get => _fColour;
+            set
+            {
+                _fColour = value;
+                update_picture();
+            }
+        }
 
-		public Color Colour
-		{
-			get { return fColour; }
-			set
-			{
-				fColour = value;
-				update_picture();
-			}
-		}
-		Color fColour = Color.Blue;
+        public TokenPanel()
+        {
+            InitializeComponent();
 
-		private void ImageSelectFile_Click(object sender, EventArgs e)
-		{
-			OpenFileDialog dlg = new OpenFileDialog();
-			dlg.Filter = Program.ImageFilter;
+            Application.Idle += Application_Idle;
+        }
 
-			if (dlg.ShowDialog() == DialogResult.OK)
-			{
-				fImage = Image.FromFile(dlg.FileName);
-				update_picture();
-			}
-		}
+        ~TokenPanel()
+        {
+            Application.Idle -= Application_Idle;
+        }
 
-		private void ImageSelectTile_Click(object sender, EventArgs e)
-		{
-			TileSelectForm dlg = new TileSelectForm(fTileSize, TileCategory.Feature);
-			if (dlg.ShowDialog() == DialogResult.OK)
-			{
-				fImage = dlg.Tile.Image;
+        private void Application_Idle(object sender, EventArgs e)
+        {
+            ImageClear.Enabled = _fImage != null;
+        }
 
-				if ((dlg.Tile.Size.Width != fTileSize.Width) || (dlg.Tile.Size.Height != fTileSize.Height))
-				{
-					// Rotate once
-					fImage = new Bitmap(fImage);
-					fImage.RotateFlip(RotateFlipType.Rotate90FlipNone);
-				}
+        private void ImageSelectFile_Click(object sender, EventArgs e)
+        {
+            var dlg = new OpenFileDialog();
+            dlg.Filter = Program.ImageFilter;
 
-				update_picture();
-			}
-		}
+            if (dlg.ShowDialog() == DialogResult.OK)
+            {
+                _fImage = Image.FromFile(dlg.FileName);
+                update_picture();
+            }
+        }
 
-		private void ImageSelectColour_Click(object sender, EventArgs e)
-		{
-			ColorDialog dlg = new ColorDialog();
-			dlg.AllowFullOpen = true;
-			dlg.Color = ImageBox.BackColor;
+        private void ImageSelectTile_Click(object sender, EventArgs e)
+        {
+            var dlg = new TileSelectForm(_fTileSize, TileCategory.Feature);
+            if (dlg.ShowDialog() == DialogResult.OK)
+            {
+                _fImage = dlg.Tile.Image;
 
-			if (dlg.ShowDialog() == DialogResult.OK)
-			{
-				fImage = null;
-				fColour = dlg.Color;
-				update_picture();
-			}
-		}
+                if (dlg.Tile.Size.Width != _fTileSize.Width || dlg.Tile.Size.Height != _fTileSize.Height)
+                {
+                    // Rotate once
+                    _fImage = new Bitmap(_fImage);
+                    _fImage.RotateFlip(RotateFlipType.Rotate90FlipNone);
+                }
 
-		private void ImageClear_Click(object sender, EventArgs e)
-		{
-			fImage = null;
-			update_picture();
-		}
+                update_picture();
+            }
+        }
 
-		void update_picture()
-		{
-			if (fImage != null)
-			{
-				ImageBox.BackColor = Color.Transparent;
-				ImageBox.Image = fImage;
-			}
-			else
-			{
-				ImageBox.BackColor = fColour;
-				ImageBox.Image = null;
-			}
-		}
-	}
+        private void ImageSelectColour_Click(object sender, EventArgs e)
+        {
+            var dlg = new ColorDialog();
+            dlg.AllowFullOpen = true;
+            dlg.Color = ImageBox.BackColor;
+
+            if (dlg.ShowDialog() == DialogResult.OK)
+            {
+                _fImage = null;
+                _fColour = dlg.Color;
+                update_picture();
+            }
+        }
+
+        private void ImageClear_Click(object sender, EventArgs e)
+        {
+            _fImage = null;
+            update_picture();
+        }
+
+        private void update_picture()
+        {
+            if (_fImage != null)
+            {
+                ImageBox.BackColor = Color.Transparent;
+                ImageBox.Image = _fImage;
+            }
+            else
+            {
+                ImageBox.BackColor = _fColour;
+                ImageBox.Image = null;
+            }
+        }
+    }
 }

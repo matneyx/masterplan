@@ -2,89 +2,89 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
-
 using Masterplan.Data;
 
 namespace Masterplan.UI
 {
-	partial class TileBreakdownForm : Form
-	{
-		public TileBreakdownForm(Map map)
-		{
-			InitializeComponent();
+    internal partial class TileBreakdownForm : Form
+    {
+        public TileBreakdownForm(Map map)
+        {
+            InitializeComponent();
 
-			Dictionary<Guid, int> tiles = new Dictionary<Guid, int>();
+            var tiles = new Dictionary<Guid, int>();
 
-			// Get the tile breakdown for this map
-			Dictionary<Guid, int> map_tiles = new Dictionary<Guid, int>();
-			foreach (TileData td in map.Tiles)
-			{
-				if (!map_tiles.ContainsKey(td.TileID))
-					map_tiles[td.TileID] = 0;
+            // Get the tile breakdown for this map
+            var mapTiles = new Dictionary<Guid, int>();
+            foreach (var td in map.Tiles)
+            {
+                if (!mapTiles.ContainsKey(td.TileId))
+                    mapTiles[td.TileId] = 0;
 
-				map_tiles[td.TileID] += 1;
-			}
+                mapTiles[td.TileId] += 1;
+            }
 
-			// Update the running total
-			foreach (Guid tile_id in map_tiles.Keys)
-			{
-				if (!tiles.ContainsKey(tile_id))
-					tiles[tile_id] = 0;
+            // Update the running total
+            foreach (var tileId in mapTiles.Keys)
+            {
+                if (!tiles.ContainsKey(tileId))
+                    tiles[tileId] = 0;
 
-				if (map_tiles[tile_id] > tiles[tile_id])
-					tiles[tile_id] = map_tiles[tile_id];
-			}
+                if (mapTiles[tileId] > tiles[tileId])
+                    tiles[tileId] = mapTiles[tileId];
+            }
 
-			List<string> libs = new List<string>();
-			foreach (Guid tile_id in tiles.Keys)
-			{
-				Tile tile = Session.FindTile(tile_id, SearchType.Global);
-				Library lib = Session.FindLibrary(tile);
+            var libs = new List<string>();
+            foreach (var tileId in tiles.Keys)
+            {
+                var tile = Session.FindTile(tileId, SearchType.Global);
+                var lib = Session.FindLibrary(tile);
 
-				if (!libs.Contains(lib.Name))
-					libs.Add(lib.Name);
-			}
-			libs.Sort();
+                if (!libs.Contains(lib.Name))
+                    libs.Add(lib.Name);
+            }
 
-			foreach (string lib_name in libs)
-				TileList.Groups.Add(lib_name, lib_name);
+            libs.Sort();
 
-			TileList.LargeImageList = new ImageList();
-			TileList.LargeImageList.ImageSize = new Size(64, 64);
+            foreach (var libName in libs)
+                TileList.Groups.Add(libName, libName);
 
-			foreach (Guid tile_id in tiles.Keys)
-			{
-				Tile t = Session.FindTile(tile_id, SearchType.Global);
-				Library lib = Session.FindLibrary(t);
+            TileList.LargeImageList = new ImageList();
+            TileList.LargeImageList.ImageSize = new Size(64, 64);
 
-				ListViewItem lvi = TileList.Items.Add("x " + tiles[tile_id]);
-				lvi.Tag = t;
-				lvi.Group = TileList.Groups[lib.Name];
+            foreach (var tileId in tiles.Keys)
+            {
+                var t = Session.FindTile(tileId, SearchType.Global);
+                var lib = Session.FindLibrary(t);
 
-				// Get tile image
-				Image img = t.Image != null ? t.Image : t.BlankImage;
+                var lvi = TileList.Items.Add("x " + tiles[tileId]);
+                lvi.Tag = t;
+                lvi.Group = TileList.Groups[lib.Name];
 
-				Bitmap bmp = new Bitmap(64, 64);
-				if (t.Size.Width > t.Size.Height)
-				{
-					int height = (t.Size.Height * 64) / t.Size.Width;
-					Rectangle rect = new Rectangle(0, (64 - height) / 2, 64, height);
+                // Get tile image
+                var img = t.Image ?? t.BlankImage;
 
-					Graphics g = Graphics.FromImage(bmp);
-					g.DrawImage(img, rect);
-				}
-				else
-				{
-					int width = (t.Size.Width * 64) / t.Size.Height;
-					Rectangle rect = new Rectangle((64 - width) / 2, 0, width, 64);
+                var bmp = new Bitmap(64, 64);
+                if (t.Size.Width > t.Size.Height)
+                {
+                    var height = t.Size.Height * 64 / t.Size.Width;
+                    var rect = new Rectangle(0, (64 - height) / 2, 64, height);
 
-					Graphics g = Graphics.FromImage(bmp);
-					g.DrawImage(img, rect);
-				}
+                    var g = Graphics.FromImage(bmp);
+                    g.DrawImage(img, rect);
+                }
+                else
+                {
+                    var width = t.Size.Width * 64 / t.Size.Height;
+                    var rect = new Rectangle((64 - width) / 2, 0, width, 64);
 
-				TileList.LargeImageList.Images.Add(bmp);
-				lvi.ImageIndex = TileList.LargeImageList.Images.Count - 1;
-			}
-		}
-	}
+                    var g = Graphics.FromImage(bmp);
+                    g.DrawImage(img, rect);
+                }
+
+                TileList.LargeImageList.Images.Add(bmp);
+                lvi.ImageIndex = TileList.LargeImageList.Images.Count - 1;
+            }
+        }
+    }
 }

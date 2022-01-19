@@ -1,45 +1,37 @@
 ﻿using System;
 using System.Windows.Forms;
-
 using Masterplan.Data;
 
 namespace Masterplan.UI
 {
-	partial class RandomCreatureForm : Form
-	{
-		public RandomCreatureForm(int level, IRole role)
-		{
-			InitializeComponent();
+    internal partial class RandomCreatureForm : Form
+    {
+        public int Level => (int)LevelBox.Value;
 
-			fRole = role;
+        public IRole Role { get; private set; }
 
-			LevelBox.Value = level;
-			RoleBtn.Text = fRole.ToString();
-		}
+        public RandomCreatureForm(int level, IRole role)
+        {
+            InitializeComponent();
 
-		public int Level
-		{
-			get { return (int)LevelBox.Value; }
-		}
+            Role = role;
 
-		public IRole Role
-		{
-			get { return fRole; }
-		}
-		IRole fRole = null;
+            LevelBox.Value = level;
+            RoleBtn.Text = Role.ToString();
+        }
 
-		private void RoleBtn_Click(object sender, EventArgs e)
-		{
-			RoleForm dlg = new RoleForm(fRole, ThreatType.Creature);
-			if (dlg.ShowDialog() == DialogResult.OK)
-			{
-				fRole = dlg.Role;
-				RoleBtn.Text = fRole.ToString();
-			}
-		}
+        private void RoleBtn_Click(object sender, EventArgs e)
+        {
+            var dlg = new RoleForm(Role, ThreatType.Creature);
+            if (dlg.ShowDialog() == DialogResult.OK)
+            {
+                Role = dlg.Role;
+                RoleBtn.Text = Role.ToString();
+            }
+        }
 
-		private void OKBtn_Click(object sender, EventArgs e)
-		{
-		}
-	}
+        private void OKBtn_Click(object sender, EventArgs e)
+        {
+        }
+    }
 }

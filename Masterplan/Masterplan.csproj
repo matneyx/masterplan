@@ -19,7 +19,7 @@
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
     <OldToolsVersion>3.5</OldToolsVersion>
-    <TargetFrameworkProfile />
+    <TargetFrameworkProfile/>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -33,13 +33,13 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Drawing" />
+    <Reference Include="System"/>
+    <Reference Include="System.Drawing"/>
     <Reference Include="System.Runtime.Serialization">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml" />
+    <Reference Include="System.Windows.Forms"/>
+    <Reference Include="System.Xml"/>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Controls\BreakdownPanel.cs">
@@ -210,111 +210,115 @@
     <Compile Include="Controls\WelcomePanel.Designer.cs">
       <DependentUpon>WelcomePanel.cs</DependentUpon>
     </Compile>
-    <Compile Include="Data\Ability.cs" />
-    <Compile Include="Data\Artifact.cs" />
-    <Compile Include="Data\Aura.cs" />
-    <Compile Include="Data\AutoBuildData.cs" />
-    <Compile Include="Data\Background.cs" />
-    <Compile Include="Data\Calendar.cs" />
-    <Compile Include="Data\CampaignSettings.cs" />
-    <Compile Include="Data\CombatData.cs" />
-    <Compile Include="Data\Condition.cs" />
-    <Compile Include="Data\Attachment.cs" />
-    <Compile Include="Data\Creature.cs" />
-    <Compile Include="Data\CreaturePower.cs" />
-    <Compile Include="Data\CreatureTemplate.cs" />
-    <Compile Include="Data\CustomCreature.cs" />
-    <Compile Include="Data\Damage.cs" />
-    <Compile Include="Data\Difficulty.cs" />
-    <Compile Include="Data\Encounter.cs" />
-    <Compile Include="Data\EncounterCard.cs" />
-    <Compile Include="Data\EncounterDeck.cs" />
-    <Compile Include="Data\EncounterLog.cs" />
-    <Compile Include="Data\EncounterSlot.cs" />
-    <Compile Include="Data\EncounterTemplate.cs" />
-    <Compile Include="Data\Encyclopedia.cs" />
-    <Compile Include="Data\Hero.cs" />
-    <Compile Include="Data\ICreature.cs" />
-    <Compile Include="Data\Issue.cs" />
-    <Compile Include="Data\Library.cs" />
-    <Compile Include="Data\MagicItem.cs" />
-    <Compile Include="Data\Map.cs" />
-    <Compile Include="Data\MapSketch.cs" />
-    <Compile Include="Data\MonsterTheme.cs" />
-    <Compile Include="Data\Note.cs" />
-    <Compile Include="Data\NPC.cs" />
-    <Compile Include="Data\PlayerOption.cs" />
-    <Compile Include="Data\Parcel.cs" />
-    <Compile Include="Data\Party.cs" />
-    <Compile Include="Data\Plot.cs" />
-    <Compile Include="Data\PlotPoint.cs" />
-    <Compile Include="Data\Project.cs" />
-    <Compile Include="Data\Quest.cs" />
-    <Compile Include="Data\RegionalMap.cs" />
-    <Compile Include="Data\Role.cs" />
-    <Compile Include="Data\CombatState.cs" />
-    <Compile Include="Data\SkillChallenge.cs" />
-    <Compile Include="Data\Tile.cs" />
-    <Compile Include="Data\Token.cs" />
-    <Compile Include="Data\TokenLink.cs" />
-    <Compile Include="Data\Trap.cs" />
-    <Compile Include="Events\CardEventHandler.cs" />
-    <Compile Include="Events\MovementEventHandler.cs" />
-    <Compile Include="Events\MapSketchEventHandler.cs" />
-    <Compile Include="Events\MapAreaEventHandler.cs" />
-    <Compile Include="Events\CreatureEventHandler.cs" />
-    <Compile Include="Events\HeroEventHandler.cs" />
-    <Compile Include="Events\TileEventHandler.cs" />
-    <Compile Include="Events\TokenEventHandler.cs" />
-    <Compile Include="Extensibility\ExtensibilityManager.cs" />
-    <Compile Include="Extensibility\IAddIn.cs" />
-    <Compile Include="Extensibility\IApplication.cs" />
-    <Compile Include="Extensibility\ICommand.cs" />
-    <Compile Include="Extensibility\IPage.cs" />
-    <Compile Include="Preferences.cs" />
+    <Compile Include="Data\Ability.cs"/>
+    <Compile Include="Data\Artifact.cs"/>
+    <Compile Include="Data\Aura.cs"/>
+    <Compile Include="Data\AutoBuildData.cs"/>
+    <Compile Include="Data\Background.cs"/>
+    <Compile Include="Data\Calendar.cs"/>
+    <Compile Include="Data\CampaignSettings.cs"/>
+    <Compile Include="Data\CombatData.cs"/>
+    <Compile Include="Data\Condition.cs"/>
+    <Compile Include="Data\Attachment.cs"/>
+    <Compile Include="Data\Creature.cs"/>
+    <Compile Include="Data\CreaturePower.cs"/>
+    <Compile Include="Data\CreatureTemplate.cs"/>
+    <Compile Include="Data\CustomCreature.cs"/>
+    <Compile Include="Data\Damage.cs"/>
+    <Compile Include="Data\Difficulty.cs"/>
+    <Compile Include="Data\Encounter.cs"/>
+    <Compile Include="Data\EncounterCard.cs"/>
+    <Compile Include="Data\EncounterDeck.cs"/>
+    <Compile Include="Data\EncounterLog.cs"/>
+    <Compile Include="Data\EncounterSlot.cs"/>
+    <Compile Include="Data\EncounterTemplate.cs"/>
+    <Compile Include="Data\Encyclopedia.cs"/>
+    <Compile Include="Data\Hero.cs"/>
+    <Compile Include="Data\ICreature.cs"/>
+    <Compile Include="Data\Issue.cs"/>
+    <Compile Include="Data\Library.cs"/>
+    <Compile Include="Data\MagicItem.cs"/>
+    <Compile Include="Data\Map.cs"/>
+    <Compile Include="Data\MapSketch.cs"/>
+    <Compile Include="Data\MonsterTheme.cs"/>
+    <Compile Include="Data\Note.cs"/>
+    <Compile Include="Data\NPC.cs"/>
+    <Compile Include="Data\PlayerOption.cs"/>
+    <Compile Include="Data\Parcel.cs"/>
+    <Compile Include="Data\Party.cs"/>
+    <Compile Include="Data\Plot.cs"/>
+    <Compile Include="Data\PlotPoint.cs"/>
+    <Compile Include="Data\Project.cs"/>
+    <Compile Include="Data\Quest.cs"/>
+    <Compile Include="Data\RegionalMap.cs"/>
+    <Compile Include="Data\Role.cs"/>
+    <Compile Include="Data\CombatState.cs"/>
+    <Compile Include="Data\SkillChallenge.cs"/>
+    <Compile Include="Data\Tile.cs"/>
+    <Compile Include="Data\Token.cs"/>
+    <Compile Include="Data\TokenLink.cs"/>
+    <Compile Include="Data\Trap.cs"/>
+    <Compile Include="Events\CardEventHandler.cs"/>
+    <Compile Include="Events\MovementEventHandler.cs"/>
+    <Compile Include="Events\MapSketchEventHandler.cs"/>
+    <Compile Include="Events\MapAreaEventHandler.cs"/>
+    <Compile Include="Events\CreatureEventHandler.cs"/>
+    <Compile Include="Events\HeroEventHandler.cs"/>
+    <Compile Include="Events\TileEventHandler.cs"/>
+    <Compile Include="Events\TokenEventHandler.cs"/>
+    <Compile Include="Extensibility\ExtensibilityManager.cs"/>
+    <Compile Include="Extensibility\IAddIn.cs"/>
+    <Compile Include="Extensibility\IApplication.cs"/>
+    <Compile Include="Extensibility\ICommand.cs"/>
+    <Compile Include="Extensibility\IPage.cs"/>
+    <Compile Include="Preferences.cs"/>
+    <Compile Include="Preferences\CombatPreferences.cs"/>
+    <Compile Include="Preferences\MapBuilderPreferences.cs"/>
+    <Compile Include="Preferences\WindowPreferences.cs"/>
+    <Compile Include="Preferences\WorkspacePreferences.cs"/>
     <Compile Include="Properties\Resources1.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Session.cs" />
-    <Compile Include="Tools\AI.cs" />
-    <Compile Include="Tools\BinarySearchTree.cs" />
-    <Compile Include="Tools\FileName.cs" />
-    <Compile Include="Tools\Generators\ElfName.cs" />
-    <Compile Include="Tools\Generators\HalflingName.cs" />
-    <Compile Include="Tools\Generators\DwarfName.cs" />
-    <Compile Include="Tools\Generators\ExoticName.cs" />
-    <Compile Include="Tools\Generators\Potion.cs" />
-    <Compile Include="Tools\Generators\Book.cs" />
-    <Compile Include="Tools\HeroGroup.cs" />
-    <Compile Include="Tools\Conditions.cs" />
-    <Compile Include="Tools\CreatureHelper.cs" />
-    <Compile Include="Tools\Generators\DelveBuilder.cs" />
-    <Compile Include="Tools\Dice.cs" />
-    <Compile Include="Tools\Generators\EncounterBuilder.cs" />
-    <Compile Include="Tools\IO\AppImport.cs" />
-    <Compile Include="Tools\IO\EncounterExporter.cs" />
-    <Compile Include="Tools\Experience.cs" />
-    <Compile Include="Tools\HTML.cs" />
-    <Compile Include="Tools\Generators\MapBuilder.cs" />
-    <Compile Include="Tools\ListState.cs" />
-    <Compile Include="Tools\ListViewSorter.cs" />
-    <Compile Include="Tools\LogSystem.cs" />
-    <Compile Include="Tools\MapPrinting.cs" />
-    <Compile Include="Tools\Generators\NPCBuilder.cs" />
-    <Compile Include="Tools\Pair.cs" />
-    <Compile Include="Tools\RoundedRectangle.cs" />
-    <Compile Include="Tools\Serialisation.cs" />
-    <Compile Include="Tools\Statistics.cs" />
-    <Compile Include="Tools\Generators\RoomBuilder.cs" />
-    <Compile Include="Tools\Screenshot.cs" />
-    <Compile Include="Tools\Skills.cs" />
-    <Compile Include="Tools\Generators\Treasure.cs" />
-    <Compile Include="Tools\StringHelper.cs" />
-    <Compile Include="Tools\TextHelper.cs" />
-    <Compile Include="Tools\Workspace.cs" />
-    <Compile Include="Tools\XMLHelper.cs" />
+    <Compile Include="Session.cs"/>
+    <Compile Include="Tools\AI.cs"/>
+    <Compile Include="Tools\BinarySearchTree.cs"/>
+    <Compile Include="Tools\FileName.cs"/>
+    <Compile Include="Tools\Generators\ElfName.cs"/>
+    <Compile Include="Tools\Generators\HalflingName.cs"/>
+    <Compile Include="Tools\Generators\DwarfName.cs"/>
+    <Compile Include="Tools\Generators\ExoticName.cs"/>
+    <Compile Include="Tools\Generators\Potion.cs"/>
+    <Compile Include="Tools\Generators\Book.cs"/>
+    <Compile Include="Tools\HeroGroup.cs"/>
+    <Compile Include="Tools\Conditions.cs"/>
+    <Compile Include="Tools\CreatureHelper.cs"/>
+    <Compile Include="Tools\Generators\DelveBuilder.cs"/>
+    <Compile Include="Tools\Dice.cs"/>
+    <Compile Include="Tools\Generators\EncounterBuilder.cs"/>
+    <Compile Include="Tools\IO\AppImport.cs"/>
+    <Compile Include="Tools\IO\EncounterExporter.cs"/>
+    <Compile Include="Tools\Experience.cs"/>
+    <Compile Include="Tools\HTML.cs"/>
+    <Compile Include="Tools\Generators\MapBuilder.cs"/>
+    <Compile Include="Tools\ListState.cs"/>
+    <Compile Include="Tools\ListViewSorter.cs"/>
+    <Compile Include="Tools\LogSystem.cs"/>
+    <Compile Include="Tools\MapPrinting.cs"/>
+    <Compile Include="Tools\Generators\NPCBuilder.cs"/>
+    <Compile Include="Tools\Pair.cs"/>
+    <Compile Include="Tools\RoundedRectangle.cs"/>
+    <Compile Include="Tools\Serialisation.cs"/>
+    <Compile Include="Tools\Statistics.cs"/>
+    <Compile Include="Tools\Generators\RoomBuilder.cs"/>
+    <Compile Include="Tools\Screenshot.cs"/>
+    <Compile Include="Tools\Skills.cs"/>
+    <Compile Include="Tools\Generators\Treasure.cs"/>
+    <Compile Include="Tools\StringHelper.cs"/>
+    <Compile Include="Tools\TextHelper.cs"/>
+    <Compile Include="Tools\Workspace.cs"/>
+    <Compile Include="Tools\XMLHelper.cs"/>
     <Compile Include="UI\AboutBox.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -1341,9 +1345,9 @@
     <Compile Include="UI\PlotPointForm.Designer.cs">
       <DependentUpon>PlotPointForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Program.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Wizards\Wizard.cs" />
+    <Compile Include="Program.cs"/>
+    <Compile Include="Properties\AssemblyInfo.cs"/>
+    <Compile Include="Wizards\Wizard.cs"/>
     <Compile Include="Wizards\WizardForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -1684,7 +1688,7 @@
       <DependentUpon>WizardForm.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <None Include="app.config" />
+    <None Include="app.config"/>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -1724,7 +1728,7 @@
     <Compile Include="UI\ParcelListForm.Designer.cs">
       <DependentUpon>ParcelListForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Wizards\IWizardPage.cs" />
+    <Compile Include="Wizards\IWizardPage.cs"/>
     <Compile Include="Wizards\MapSizePage.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -1749,7 +1753,7 @@
     <Compile Include="Wizards\EncounterTemplatePage.Designer.cs">
       <DependentUpon>EncounterTemplatePage.cs</DependentUpon>
     </Compile>
-    <Compile Include="Wizards\EncounterTemplateWizard.cs" />
+    <Compile Include="Wizards\EncounterTemplateWizard.cs"/>
     <Compile Include="Wizards\MapAreasPage.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -1762,7 +1766,7 @@
     <Compile Include="Wizards\MapLibrariesPage.Designer.cs">
       <DependentUpon>MapLibrariesPage.cs</DependentUpon>
     </Compile>
-    <Compile Include="Wizards\MapWizard.cs" />
+    <Compile Include="Wizards\MapWizard.cs"/>
     <Compile Include="Wizards\VariantFinishPage.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -1787,7 +1791,7 @@
     <Compile Include="Wizards\VariantTemplatesPage.Designer.cs">
       <DependentUpon>VariantTemplatesPage.cs</DependentUpon>
     </Compile>
-    <Compile Include="Wizards\VariantWizard.cs" />
+    <Compile Include="Wizards\VariantWizard.cs"/>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Controls\DicePanel.resx">
@@ -1811,7 +1815,7 @@
     <EmbeddedResource Include="Controls\TokenPanel.resx">
       <DependentUpon>TokenPanel.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Scroll.ico" />
+    <EmbeddedResource Include="Scroll.ico"/>
     <EmbeddedResource Include="UI\CampaignSettingsForm.resx">
       <DependentUpon>CampaignSettingsForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -2084,23 +2088,24 @@
     <EmbeddedResource Include="Wizards\MapTypePage.resx">
       <DependentUpon>MapTypePage.cs</DependentUpon>
     </EmbeddedResource>
-    <None Include="Resources\masterplan.png" />
-    <None Include="Resources\Purpled20.png" />
-    <None Include="Resources\aura.png" />
-    <None Include="Resources\S2.gif" />
-    <None Include="Resources\S3.gif" />
-    <None Include="Resources\Z1a.gif" />
-    <None Include="Resources\Z2a.gif" />
-    <None Include="Resources\Z3a.gif" />
-    <None Include="Resources\Z4a.gif" />
+    <None Include="Resources\masterplan.png"/>
+    <None Include="Resources\Purpled20.png"/>
+    <None Include="Resources\aura.png"/>
+    <None Include="Resources\S2.gif"/>
+    <None Include="Resources\S3.gif"/>
+    <None Include="Resources\Z1a.gif"/>
+    <None Include="Resources\Z2a.gif"/>
+    <None Include="Resources\Z3a.gif"/>
+    <None Include="Resources\Z4a.gif"/>
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets"/>
   <PropertyGroup>
     <PostBuildEvent>xcopy /y $(ProjectDir)..\Manual.pdf $(TargetDir)
 
-md $(TargetDir)\Libraries
+      md $(TargetDir)\Libraries
 
-xcopy /y $(ProjectDir)..\Libraries\*.library $(TargetDir)\Libraries\</PostBuildEvent>
+      xcopy /y $(ProjectDir)..\Libraries\*.library $(TargetDir)\Libraries\
+    </PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
     <PreBuildEvent>

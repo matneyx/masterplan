@@ -1,238 +1,212 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
-
 using Masterplan.Data;
 
 namespace Masterplan.UI
 {
-	partial class CombatDataForm : Form
-	{
-		public CombatDataForm(CombatData data, EncounterCard card, Encounter enc, CombatData current_actor, int current_round, bool allow_name_edit)
-		{
-			InitializeComponent();
+    internal partial class CombatDataForm : Form
+    {
+        private readonly EncounterCard _fCard;
 
-			Application.Idle += new EventHandler(Application_Idle);
-			EffectList_SizeChanged(null, null);
+        private readonly CombatData _fCurrentActor;
+        private readonly int _fCurrentRound = int.MinValue;
+        private readonly Encounter _fEncounter;
 
-			fData = data.Copy();
-			fCard = card;
-			fEncounter = enc;
+        public CombatData Data { get; }
 
-			fCurrentActor = current_actor;
-			fCurrentRound = current_round;
+        public OngoingCondition SelectedCondition
+        {
+            get
+            {
+                if (EffectList.SelectedItems.Count != 0)
+                    return EffectList.SelectedItems[0].Tag as OngoingCondition;
 
-			if (fData.Initiative == int.MinValue)
-				fData.Initiative = 0;
+                return null;
+            }
+        }
 
-			Text = fData.DisplayName;
-			LabelBox.Text = fData.DisplayName;
+        public CombatDataForm(CombatData data, EncounterCard card, Encounter enc, CombatData currentActor,
+            int currentRound, bool allowNameEdit)
+        {
+            InitializeComponent();
 
-			if (!allow_name_edit)
-				LabelBox.Enabled = false;
+            Application.Idle += Application_Idle;
+            EffectList_SizeChanged(null, null);
 
-			update_hp();
-			InitBox.Value = fData.Initiative;
-			AltitudeBox.Value = fData.Altitude;
-			update_effects();
-		}
+            Data = data.Copy();
+            _fCard = card;
+            _fEncounter = enc;
 
-		~CombatDataForm()
-		{
-			Application.Idle -= Application_Idle;
-		}
+            _fCurrentActor = currentActor;
+            _fCurrentRound = currentRound;
 
-		void Application_Idle(object sender, EventArgs e)
-		{
-			bool damage = false;
-			foreach (OngoingCondition oc in fData.Conditions)
-			{
-				if ((oc.Type == OngoingType.Damage) && (oc.Value > 0))
-				{
-					damage = true;
-					break;
-				}
-			}
+            if (Data.Initiative == int.MinValue)
+                Data.Initiative = 0;
 
-			RemoveBtn.Enabled = (SelectedCondition != null);
-			EditBtn.Enabled = (SelectedCondition != null);
-			SavesBtn.Enabled = (fData.Conditions.Count > 0);
-			DmgBtn.Enabled = damage;
-		}
+            Text = Data.DisplayName;
+            LabelBox.Text = Data.DisplayName;
 
-		public CombatData Data
-		{
-			get { return fData; }
-		}
-		CombatData fData = null;
+            if (!allowNameEdit)
+                LabelBox.Enabled = false;
 
-		EncounterCard fCard = null;
-		Encounter fEncounter = null;
+            update_hp();
+            InitBox.Value = Data.Initiative;
+            AltitudeBox.Value = Data.Altitude;
+            update_effects();
+        }
 
-		CombatData fCurrentActor = null;
-		int fCurrentRound = int.MinValue;
+        ~CombatDataForm()
+        {
+            Application.Idle -= Application_Idle;
+        }
 
-		private void OKBtn_Click(object sender, EventArgs e)
-		{
-			fData.DisplayName = LabelBox.Text;
-			fData.Initiative = (int)InitBox.Value;
-			fData.Altitude = (int)AltitudeBox.Value;
-		}
+        private void Application_Idle(object sender, EventArgs e)
+        {
+            var damage = false;
+            foreach (var oc in Data.Conditions)
+                if (oc.Type == OngoingType.Damage && oc.Value > 0)
+                {
+                    damage = true;
+                    break;
+                }
 
-		private void DamageBox_ValueChanged(object sender, EventArgs e)
-		{
-			fData.Damage = (int)DamageBox.Value;
+            RemoveBtn.Enabled = SelectedCondition != null;
+            EditBtn.Enabled = SelectedCondition != null;
+            SavesBtn.Enabled = Data.Conditions.Count > 0;
+            DmgBtn.Enabled = damage;
+        }
 
-			update_hp();
-		}
+        private void OKBtn_Click(object sender, EventArgs e)
+        {
+            Data.DisplayName = LabelBox.Text;
+            Data.Initiative = (int)InitBox.Value;
+            Data.Altitude = (int)AltitudeBox.Value;
+        }
 
-		private void TempHPBox_ValueChanged(object sender, EventArgs e)
-		{
-			fData.TempHP = (int)TempHPBox.Value;
+        private void DamageBox_ValueChanged(object sender, EventArgs e)
+        {
+            Data.Damage = (int)DamageBox.Value;
 
-			update_hp();
-		}
+            update_hp();
+        }
 
-		public OngoingCondition SelectedCondition
-		{
-			get
-			{
-				if (EffectList.SelectedItems.Count != 0)
-					return EffectList.SelectedItems[0].Tag as OngoingCondition;
+        private void TempHPBox_ValueChanged(object sender, EventArgs e)
+        {
+            Data.TempHp = (int)TempHPBox.Value;
 
-				return null;
-			}
-		}
+            update_hp();
+        }
 
-		#region Toolbar
+        private void AddBtn_Click(object sender, EventArgs e)
+        {
+            var oc = new OngoingCondition();
 
-		private void AddBtn_Click(object sender, EventArgs e)
-		{
-			OngoingCondition oc = new OngoingCondition();
+            var dlg = new EffectForm(oc, _fEncounter, _fCurrentActor, _fCurrentRound);
+            if (dlg.ShowDialog() == DialogResult.OK)
+            {
+                Data.Conditions.Add(dlg.Effect);
+                update_effects();
+            }
+        }
 
-			EffectForm dlg = new EffectForm(oc, fEncounter, fCurrentActor, fCurrentRound);
-			if (dlg.ShowDialog() == DialogResult.OK)
-			{
-				fData.Conditions.Add(dlg.Effect);
-				update_effects();
-			}
-		}
+        private void RemoveBtn_Click(object sender, EventArgs e)
+        {
+            if (SelectedCondition != null)
+            {
+                Data.Conditions.Remove(SelectedCondition);
+                update_effects();
+            }
+        }
 
-		private void RemoveBtn_Click(object sender, EventArgs e)
-		{
-			if (SelectedCondition != null)
-			{
-				fData.Conditions.Remove(SelectedCondition);
-				update_effects();
-			}
-		}
+        private void EditBtn_Click(object sender, EventArgs e)
+        {
+            if (SelectedCondition != null)
+            {
+                var index = Data.Conditions.IndexOf(SelectedCondition);
 
-		private void EditBtn_Click(object sender, EventArgs e)
-		{
-			if (SelectedCondition != null)
-			{
-				int index = fData.Conditions.IndexOf(SelectedCondition);
+                var dlg = new EffectForm(SelectedCondition, _fEncounter, _fCurrentActor, _fCurrentRound);
+                if (dlg.ShowDialog() == DialogResult.OK)
+                {
+                    Data.Conditions[index] = dlg.Effect;
+                    update_effects();
+                }
+            }
+        }
 
-				EffectForm dlg = new EffectForm(SelectedCondition, fEncounter, fCurrentActor, fCurrentRound);
-				if (dlg.ShowDialog() == DialogResult.OK)
-				{
-					fData.Conditions[index] = dlg.Effect;
-					update_effects();
-				}
-			}
-		}
+        private void DmgBtn_Click(object sender, EventArgs e)
+        {
+            var dlg = new OngoingDamageForm(Data, _fCard, _fEncounter);
+            if (dlg.ShowDialog() == DialogResult.OK) update_hp();
+        }
 
-		private void DmgBtn_Click(object sender, EventArgs e)
-		{
-			OngoingDamageForm dlg = new OngoingDamageForm(fData, fCard, fEncounter);
-			if (dlg.ShowDialog() == DialogResult.OK)
-			{
-				update_hp();
-			}
-		}
+        private void SavesBtn_Click(object sender, EventArgs e)
+        {
+            var dlg = new SavingThrowForm(Data, _fCard, _fEncounter);
+            if (dlg.ShowDialog() == DialogResult.OK) update_effects();
+        }
 
-		private void SavesBtn_Click(object sender, EventArgs e)
-		{
-			SavingThrowForm dlg = new SavingThrowForm(fData, fCard, fEncounter);
-			if (dlg.ShowDialog() == DialogResult.OK)
-			{
-				update_effects();
-			}
-		}
+        private void update_hp()
+        {
+            DamageBox.Value = Data.Damage;
+            TempHPBox.Value = Data.TempHp;
 
-		#endregion
+            var maxHp = 0;
+            if (_fCard != null)
+                maxHp = _fCard.Hp;
+            else
+                // Must be a hero
+                foreach (var h in Session.Project.Heroes)
+                    if (Data.DisplayName == h.Name)
+                        maxHp = h.Hp;
+            var currentHp = maxHp - Data.Damage;
 
-		#region Updating
+            HPBox.Text = currentHp + " HP";
+            if (Data.TempHp > 0)
+                HPBox.Text += "; " + Data.TempHp + " temp HP";
 
-		void update_hp()
-		{
-			DamageBox.Value = fData.Damage;
-			TempHPBox.Value = fData.TempHP;
+            if (currentHp + Data.TempHp <= 0)
+                HPBox.Text += " (dead)";
+            else if (currentHp <= maxHp / 2)
+                HPBox.Text += " (bloodied)";
 
-			int max_hp = 0;
-			if (fCard != null)
-			{
-				max_hp = fCard.HP;
-			}
-			else
-			{
-				// Must be a hero
-				foreach (Hero h in Session.Project.Heroes)
-				{
-					if (fData.DisplayName == h.Name)
-						max_hp = h.HP;
-				}
-			}
-			int current_hp = max_hp - fData.Damage;
+            HPGauge.FullHp = maxHp;
+            HPGauge.Damage = Data.Damage;
+            HPGauge.TempHp = Data.TempHp;
+        }
 
-			HPBox.Text = current_hp + " HP";
-			if (fData.TempHP > 0)
-				HPBox.Text += "; " + fData.TempHP + " temp HP";
+        private void update_effects()
+        {
+            EffectList.Items.Clear();
+            EffectList.ShowGroups = true;
 
-			if (current_hp + fData.TempHP <= 0)
-				HPBox.Text += " (dead)";
-			else if (current_hp <= max_hp / 2)
-				HPBox.Text += " (bloodied)";
+            foreach (var oc in Data.Conditions)
+            {
+                var effect = oc.ToString();
+                var duration = oc.GetDuration(_fEncounter);
+                if (duration == "")
+                    duration = "until the end of the encounter";
 
-			HPGauge.FullHP = max_hp;
-			HPGauge.Damage = fData.Damage;
-			HPGauge.TempHP = fData.TempHP;
-		}
+                var lvi = EffectList.Items.Add(effect);
+                lvi.SubItems.Add(duration);
 
-		void update_effects()
-		{
-			EffectList.Items.Clear();
-			EffectList.ShowGroups = true;
+                lvi.Tag = oc;
+                lvi.Group = EffectList.Groups[oc.Type == OngoingType.Condition ? 0 : 1];
+            }
 
-			foreach (OngoingCondition oc in fData.Conditions)
-			{
-				string effect = oc.ToString();
-				string duration = oc.GetDuration(fEncounter);
-				if (duration == "")
-					duration = "until the end of the encounter";
+            if (Data.Conditions.Count == 0)
+            {
+                EffectList.ShowGroups = false;
 
-				ListViewItem lvi = EffectList.Items.Add(effect);
-				lvi.SubItems.Add(duration);
+                var lvi = EffectList.Items.Add("(no ongoing effects)");
+                lvi.ForeColor = SystemColors.GrayText;
+            }
+        }
 
-				lvi.Tag = oc;
-				lvi.Group = EffectList.Groups[(oc.Type == OngoingType.Condition) ? 0 : 1];
-			}
-
-			if (fData.Conditions.Count == 0)
-			{
-				EffectList.ShowGroups = false;
-
-				ListViewItem lvi = EffectList.Items.Add("(no ongoing effects)");
-				lvi.ForeColor = SystemColors.GrayText;
-			}
-		}
-
-		#endregion
-
-		private void EffectList_SizeChanged(object sender, EventArgs e)
-		{
-			int width = EffectList.Width - (SystemInformation.VerticalScrollBarWidth + 6);
-			EffectList.TileSize = new Size(width, EffectList.TileSize.Height);
-		}
-	}
+        private void EffectList_SizeChanged(object sender, EventArgs e)
+        {
+            var width = EffectList.Width - (SystemInformation.VerticalScrollBarWidth + 6);
+            EffectList.TileSize = new Size(width, EffectList.TileSize.Height);
+        }
+    }
 }

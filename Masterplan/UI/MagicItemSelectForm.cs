@@ -1,135 +1,129 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-
 using Masterplan.Data;
 using Masterplan.Tools;
 
 namespace Masterplan.UI
 {
-	partial class MagicItemSelectForm : Form
-	{
-		public MagicItemSelectForm(int level)
-		{
-			InitializeComponent();
+    internal partial class MagicItemSelectForm : Form
+    {
+        public MagicItem MagicItem
+        {
+            get
+            {
+                if (ItemList.SelectedItems.Count != 0)
+                    return ItemList.SelectedItems[0].Tag as MagicItem;
 
-			Application.Idle += new EventHandler(Application_Idle);
+                return null;
+            }
+        }
 
-			if (level > 0)
-				LevelRangePanel.SetLevelRange(level, level);
+        public MagicItemSelectForm(int level)
+        {
+            InitializeComponent();
 
-			Browser.DocumentText = "";
-			ItemList_SelectedIndexChanged(null, null);
-	
-			update_list();
-		}
+            Application.Idle += Application_Idle;
 
-		~MagicItemSelectForm()
-		{
-			Application.Idle -= Application_Idle;
-		}
+            if (level > 0)
+                LevelRangePanel.SetLevelRange(level, level);
 
-		void Application_Idle(object sender, EventArgs e)
-		{
-			OKBtn.Enabled = (MagicItem != null);
-		}
+            Browser.DocumentText = "";
+            ItemList_SelectedIndexChanged(null, null);
 
-		public MagicItem MagicItem
-		{
-			get
-			{
-				if (ItemList.SelectedItems.Count != 0)
-					return ItemList.SelectedItems[0].Tag as MagicItem;
+            update_list();
+        }
 
-				return null;
-			}
-		}
+        ~MagicItemSelectForm()
+        {
+            Application.Idle -= Application_Idle;
+        }
 
-		private void ItemList_SelectedIndexChanged(object sender, EventArgs e)
-		{
-			string html = HTML.MagicItem(MagicItem, Session.Preferences.TextSize, false, true);
+        private void Application_Idle(object sender, EventArgs e)
+        {
+            OKBtn.Enabled = MagicItem != null;
+        }
 
-			Browser.Document.OpenNew(true);
-			Browser.Document.Write(html);
-		}
+        private void ItemList_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            var html = Html.MagicItem(MagicItem, Session.Preferences.TextSize, false, true);
 
-		private void ItemList_DoubleClick(object sender, EventArgs e)
-		{
-			if (MagicItem != null)
-			{
-				DialogResult = DialogResult.OK;
-				Close();
-			}
-		}
+            Browser.Document.OpenNew(true);
+            Browser.Document.Write(html);
+        }
 
-		private void LevelRangePanel_RangeChanged(object sender, EventArgs e)
-		{
-			update_list();
-		}
+        private void ItemList_DoubleClick(object sender, EventArgs e)
+        {
+            if (MagicItem != null)
+            {
+                DialogResult = DialogResult.OK;
+                Close();
+            }
+        }
 
-		void update_list()
-		{
-			List<MagicItem> selection = new List<MagicItem>();
+        private void LevelRangePanel_RangeChanged(object sender, EventArgs e)
+        {
+            update_list();
+        }
 
-			List<MagicItem> items = Session.MagicItems;
-			foreach (MagicItem item in items)
-			{
-				if ((item.Level >= LevelRangePanel.MinimumLevel) && (item.Level <= LevelRangePanel.MaximumLevel) && match(item, LevelRangePanel.NameQuery))
-					selection.Add(item);
-			}
+        private void update_list()
+        {
+            var selection = new List<MagicItem>();
 
-			BinarySearchTree<string> bst = new BinarySearchTree<string>();
-			foreach (MagicItem item in selection)
-			{
-				if (item.Type != "")
-					bst.Add(item.Type);
-			}
+            var items = Session.MagicItems;
+            foreach (var item in items)
+                if (item.Level >= LevelRangePanel.MinimumLevel && item.Level <= LevelRangePanel.MaximumLevel &&
+                    Match(item, LevelRangePanel.NameQuery))
+                    selection.Add(item);
 
-			List<string> cats = bst.SortedList;
-			cats.Add("Miscellaneous Items");
-			foreach (string cat in cats)
-				ItemList.Groups.Add(cat, cat);
+            var bst = new BinarySearchTree<string>();
+            foreach (var item in selection)
+                if (item.Type != "")
+                    bst.Add(item.Type);
 
-			List<ListViewItem> list_items = new List<ListViewItem>();
-			foreach (MagicItem item in selection)
-			{
-				ListViewItem lvi = new ListViewItem(item.Name);
-				lvi.SubItems.Add(item.Info);
-				lvi.Tag = item;
+            var cats = bst.SortedList;
+            cats.Add("Miscellaneous Items");
+            foreach (var cat in cats)
+                ItemList.Groups.Add(cat, cat);
 
-				if (item.Type != "")
-					lvi.Group = ItemList.Groups[item.Type];
-				else
-					lvi.Group = ItemList.Groups["Miscellaneous Items"];
+            var listItems = new List<ListViewItem>();
+            foreach (var item in selection)
+            {
+                var lvi = new ListViewItem(item.Name);
+                lvi.SubItems.Add(item.Info);
+                lvi.Tag = item;
 
-				list_items.Add(lvi);
-			}
+                if (item.Type != "")
+                    lvi.Group = ItemList.Groups[item.Type];
+                else
+                    lvi.Group = ItemList.Groups["Miscellaneous Items"];
 
-			ItemList.BeginUpdate();
-			ItemList.Items.Clear();
-			ItemList.Items.AddRange(list_items.ToArray());
-			ItemList.EndUpdate();
-		}
+                listItems.Add(lvi);
+            }
 
-		bool match(MagicItem item, string query)
-		{
-			string[] tokens = query.ToLower().Split();
+            ItemList.BeginUpdate();
+            ItemList.Items.Clear();
+            ItemList.Items.AddRange(listItems.ToArray());
+            ItemList.EndUpdate();
+        }
 
-			foreach (string token in tokens)
-			{
-				if (!match_token(item, token))
-					return false;
-			}
+        private bool Match(MagicItem item, string query)
+        {
+            var tokens = query.ToLower().Split();
 
-			return true;
-		}
+            foreach (var token in tokens)
+                if (!match_token(item, token))
+                    return false;
 
-		bool match_token(MagicItem item, string token)
-		{
-			if (item.Name.ToLower().Contains(token))
-				return true;
+            return true;
+        }
 
-			return false;
-		}
-	}
+        private bool match_token(MagicItem item, string token)
+        {
+            if (item.Name.ToLower().Contains(token))
+                return true;
+
+            return false;
+        }
+    }
 }

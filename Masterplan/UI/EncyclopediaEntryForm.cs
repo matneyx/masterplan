@@ -2,202 +2,193 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
-
 using Masterplan.Data;
 using Masterplan.Tools;
 
 namespace Masterplan.UI
 {
-	partial class EncyclopediaEntryForm : Form
-	{
-		public EncyclopediaEntryForm(EncyclopediaEntry entry)
-		{
-			InitializeComponent();
+    internal partial class EncyclopediaEntryForm : Form
+    {
+        public EncyclopediaEntry Entry { get; }
 
-			Application.Idle += new EventHandler(Application_Idle);
+        public EncyclopediaImage SelectedImage
+        {
+            get
+            {
+                if (PictureList.SelectedItems.Count != 0)
+                    return PictureList.SelectedItems[0].Tag as EncyclopediaImage;
 
-			BinarySearchTree<string> bst = new BinarySearchTree<string>();
-			bst.Add("People");
-			bst.Add("Places");
-			bst.Add("Things");
-			bst.Add("History");
-			bst.Add("Culture");
-			bst.Add("Geography");
-			bst.Add("Organisations");
+                return null;
+            }
+        }
 
-			foreach (EncyclopediaEntry ee in Session.Project.Encyclopedia.Entries)
-			{
-				if ((ee.Category != null) && (ee.Category != ""))
-					bst.Add(ee.Category);
-			}
-			CatBox.Items.AddRange(bst.SortedList.ToArray());
+        public EncyclopediaEntryForm(EncyclopediaEntry entry)
+        {
+            InitializeComponent();
 
-			fEntry = entry.Copy();
+            Application.Idle += Application_Idle;
 
-			TitleBox.Text = fEntry.Name;
-			CatBox.Text = fEntry.Category;
-			DetailsBox.Text = fEntry.Details;
-			DMBox.Text = fEntry.DMInfo;
+            var bst = new BinarySearchTree<string>();
+            bst.Add("People");
+            bst.Add("Places");
+            bst.Add("Things");
+            bst.Add("History");
+            bst.Add("Culture");
+            bst.Add("Geography");
+            bst.Add("Organisations");
 
-			foreach (EncyclopediaEntry ee in Session.Project.Encyclopedia.Entries)
-			{
-				if (ee.ID == fEntry.ID)
-					continue;
+            foreach (var ee in Session.Project.Encyclopedia.Entries)
+                if (ee.Category != null && ee.Category != "")
+                    bst.Add(ee.Category);
+            CatBox.Items.AddRange(bst.SortedList.ToArray());
 
-				ListViewItem lvi = EntryList.Items.Add(ee.Name);
-				lvi.Tag = ee;
-				lvi.Checked = (Session.Project.Encyclopedia.FindLink(fEntry.ID, ee.ID) != null);
-			}
+            Entry = entry.Copy();
 
-			if (EntryList.Items.Count == 0)
-			{
-				ListViewItem lvi = EntryList.Items.Add("(no entries)");
-				lvi.ForeColor = SystemColors.GrayText;
+            TitleBox.Text = Entry.Name;
+            CatBox.Text = Entry.Category;
+            DetailsBox.Text = Entry.Details;
+            DMBox.Text = Entry.DmInfo;
+
+            foreach (var ee in Session.Project.Encyclopedia.Entries)
+            {
+                if (ee.Id == Entry.Id)
+                    continue;
+
+                var lvi = EntryList.Items.Add(ee.Name);
+                lvi.Tag = ee;
+                lvi.Checked = Session.Project.Encyclopedia.FindLink(Entry.Id, ee.Id) != null;
+            }
+
+            if (EntryList.Items.Count == 0)
+            {
+                var lvi = EntryList.Items.Add("(no entries)");
+                lvi.ForeColor = SystemColors.GrayText;
 
                 EntryList.CheckBoxes = false;
-			}
+            }
 
-			update_pictures();
-		}
+            update_pictures();
+        }
 
-		~EncyclopediaEntryForm()
-		{
-			Application.Idle -= Application_Idle;
-		}
+        ~EncyclopediaEntryForm()
+        {
+            Application.Idle -= Application_Idle;
+        }
 
-		void Application_Idle(object sender, EventArgs e)
-		{
-			RemoveBtn.Enabled = (SelectedImage != null);
-			EditBtn.Enabled = (SelectedImage != null);
-		}
+        private void Application_Idle(object sender, EventArgs e)
+        {
+            RemoveBtn.Enabled = SelectedImage != null;
+            EditBtn.Enabled = SelectedImage != null;
+        }
 
-		public EncyclopediaEntry Entry
-		{
-			get {return fEntry;}
-		}
-		EncyclopediaEntry fEntry = null;
+        private void OKBtn_Click(object sender, EventArgs e)
+        {
+            Entry.Name = TitleBox.Text;
+            Entry.Category = CatBox.Text;
+            Entry.Details = DetailsBox.Text != DetailsBox.DefaultText ? DetailsBox.Text : "";
+            Entry.DmInfo = DMBox.Text != DMBox.DefaultText ? DMBox.Text : "";
 
-		public EncyclopediaImage SelectedImage
-		{
-			get
-			{
-				if (PictureList.SelectedItems.Count != 0)
-					return PictureList.SelectedItems[0].Tag as EncyclopediaImage;
+            // Remove all links containing this entry
+            var obsolete = new List<EncyclopediaLink>();
+            foreach (var link in Session.Project.Encyclopedia.Links)
+                if (link.EntryIDs.Contains(Entry.Id))
+                    obsolete.Add(link);
+            foreach (var link in obsolete)
+                Session.Project.Encyclopedia.Links.Remove(link);
 
-				return null;
-			}
-		}
+            // Add the required links
+            foreach (ListViewItem lvi in EntryList.CheckedItems)
+            {
+                var ee = lvi.Tag as EncyclopediaEntry;
 
-		private void OKBtn_Click(object sender, EventArgs e)
-		{
-			fEntry.Name = TitleBox.Text;
-			fEntry.Category = CatBox.Text;
-			fEntry.Details = (DetailsBox.Text != DetailsBox.DefaultText) ? DetailsBox.Text : "";
-			fEntry.DMInfo = (DMBox.Text != DMBox.DefaultText) ? DMBox.Text : "";
+                var link = new EncyclopediaLink();
+                link.EntryIDs.Add(Entry.Id);
+                link.EntryIDs.Add(ee.Id);
 
-			// Remove all links containing this entry
-			List<EncyclopediaLink> obsolete = new List<EncyclopediaLink>();
-			foreach (EncyclopediaLink link in Session.Project.Encyclopedia.Links)
-			{
-				if (link.EntryIDs.Contains(fEntry.ID))
-					obsolete.Add(link);
-			}
-			foreach (EncyclopediaLink link in obsolete)
-				Session.Project.Encyclopedia.Links.Remove(link);
+                Session.Project.Encyclopedia.Links.Add(link);
+            }
+        }
 
-			// Add the required links
-			foreach (ListViewItem lvi in EntryList.CheckedItems)
-			{
-				EncyclopediaEntry ee = lvi.Tag as EncyclopediaEntry;
+        private void AddBtn_Click(object sender, EventArgs e)
+        {
+            var img = new EncyclopediaImage();
+            img.Name = "(name)";
 
-				EncyclopediaLink link = new EncyclopediaLink();
-				link.EntryIDs.Add(fEntry.ID);
-				link.EntryIDs.Add(ee.ID);
+            var dlg = new EncyclopediaImageForm(img);
+            if (dlg.ShowDialog() == DialogResult.OK)
+            {
+                Entry.Images.Add(dlg.Image);
+                update_pictures();
+            }
+        }
 
-				Session.Project.Encyclopedia.Links.Add(link);
-			}
-		}
+        private void RemoveBtn_Click(object sender, EventArgs e)
+        {
+            if (SelectedImage != null)
+            {
+                Entry.Images.Remove(SelectedImage);
+                update_pictures();
+            }
+        }
 
-		private void AddBtn_Click(object sender, EventArgs e)
-		{
-			EncyclopediaImage img = new EncyclopediaImage();
-			img.Name = "(name)";
+        private void EditBtn_Click(object sender, EventArgs e)
+        {
+            if (SelectedImage != null)
+            {
+                var index = Entry.Images.IndexOf(SelectedImage);
 
-			EncyclopediaImageForm dlg = new EncyclopediaImageForm(img);
-			if (dlg.ShowDialog() == DialogResult.OK)
-			{
-				fEntry.Images.Add(dlg.Image);
-				update_pictures();
-			}
-		}
+                var dlg = new EncyclopediaImageForm(SelectedImage);
+                if (dlg.ShowDialog() == DialogResult.OK)
+                {
+                    Entry.Images[index] = dlg.Image;
+                    update_pictures();
+                }
+            }
+        }
 
-		private void RemoveBtn_Click(object sender, EventArgs e)
-		{
-			if (SelectedImage != null)
-			{
-				fEntry.Images.Remove(SelectedImage);
-				update_pictures();
-			}
-		}
+        private void update_pictures()
+        {
+            PictureList.Items.Clear();
+            PictureList.LargeImageList = null;
 
-		private void EditBtn_Click(object sender, EventArgs e)
-		{
-			if (SelectedImage != null)
-			{
-				int index = fEntry.Images.IndexOf(SelectedImage);
+            const int pictureSize = 64;
 
-				EncyclopediaImageForm dlg = new EncyclopediaImageForm(SelectedImage);
-				if (dlg.ShowDialog() == DialogResult.OK)
-				{
-					fEntry.Images[index] = dlg.Image;
-					update_pictures();
-				}
-			}
-		}
+            var images = new ImageList();
+            images.ImageSize = new Size(pictureSize, pictureSize);
+            images.ColorDepth = ColorDepth.Depth32Bit;
+            PictureList.LargeImageList = images;
 
-		void update_pictures()
-		{
-			PictureList.Items.Clear();
-			PictureList.LargeImageList = null;
+            foreach (var img in Entry.Images)
+            {
+                var lvi = PictureList.Items.Add(img.Name);
+                lvi.Tag = img;
 
-			const int PICTURE_SIZE = 64;
+                Image bmp = new Bitmap(pictureSize, pictureSize);
+                var g = Graphics.FromImage(bmp);
+                if (img.Image.Size.Width > img.Image.Size.Height)
+                {
+                    var height = img.Image.Size.Height * pictureSize / img.Image.Size.Width;
+                    var rect = new Rectangle(0, (pictureSize - height) / 2, pictureSize, height);
 
-			ImageList images = new ImageList();
-			images.ImageSize = new Size(PICTURE_SIZE, PICTURE_SIZE);
-			images.ColorDepth = ColorDepth.Depth32Bit;
-			PictureList.LargeImageList = images;
+                    g.DrawImage(img.Image, rect);
+                }
+                else
+                {
+                    var width = img.Image.Size.Width * pictureSize / img.Image.Size.Height;
+                    var rect = new Rectangle((pictureSize - width) / 2, 0, width, pictureSize);
 
-			foreach (EncyclopediaImage img in fEntry.Images)
-			{
-				ListViewItem lvi = PictureList.Items.Add(img.Name);
-				lvi.Tag = img;
+                    g.DrawImage(img.Image, rect);
+                }
 
-				Image bmp = new Bitmap(PICTURE_SIZE, PICTURE_SIZE);
-				Graphics g = Graphics.FromImage(bmp);
-				if (img.Image.Size.Width > img.Image.Size.Height)
-				{
-					int height = (img.Image.Size.Height * PICTURE_SIZE) / img.Image.Size.Width;
-					Rectangle rect = new Rectangle(0, (PICTURE_SIZE - height) / 2, PICTURE_SIZE, height);
+                images.Images.Add(bmp);
+                lvi.ImageIndex = images.Images.Count - 1;
+            }
 
-					g.DrawImage(img.Image, rect);
-				}
-				else
-				{
-					int width = (img.Image.Size.Width * PICTURE_SIZE) / img.Image.Size.Height;
-					Rectangle rect = new Rectangle((PICTURE_SIZE - width) / 2, 0, width, PICTURE_SIZE);
-
-					g.DrawImage(img.Image, rect);
-				}
-
-				images.Images.Add(bmp);
-				lvi.ImageIndex = images.Images.Count - 1;
-			}
-
-			if (PictureList.Items.Count == 0)
-			{
-				ListViewItem lvi = PictureList.Items.Add("(no images)");
-				lvi.ForeColor = SystemColors.GrayText;
-			}
-		}
-	}
+            if (PictureList.Items.Count == 0)
+            {
+                var lvi = PictureList.Items.Add("(no images)");
+                lvi.ForeColor = SystemColors.GrayText;
+            }
+        }
+    }
 }

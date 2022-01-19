@@ -1,62 +1,58 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-
 using Masterplan.Data;
 
 namespace Masterplan.UI
 {
-	partial class MergeLibrariesForm : Form
-	{
-		public MergeLibrariesForm()
-		{
-			InitializeComponent();
-
-            foreach (Library lib in Session.Libraries)
-			{
-				ListViewItem lvi = ThemeList.Items.Add(lib.Name);
-				lvi.Tag = lib;
-			}
-
-			NameBox.Text = "Merged Library";
-
-			Application.Idle += new EventHandler(Application_Idle);
-		}
-
-		~MergeLibrariesForm()
-		{
-			Application.Idle -= Application_Idle;
-		}
-
-		void Application_Idle(object sender, EventArgs e)
-		{
-			OKBtn.Enabled = (SelectedLibraries.Count >= 2);
-		}
-
+    internal partial class MergeLibrariesForm : Form
+    {
         public List<Library> SelectedLibraries
-		{
-			get
-			{
-				List<Library> list = new List<Library>();
+        {
+            get
+            {
+                var list = new List<Library>();
 
-				foreach (ListViewItem lvi in ThemeList.CheckedItems)
-				{
-					Library lib = lvi.Tag as Library;
-					if (lib != null)
-						list.Add(lib);
-				}
+                foreach (ListViewItem lvi in ThemeList.CheckedItems)
+                {
+                    var lib = lvi.Tag as Library;
+                    if (lib != null)
+                        list.Add(lib);
+                }
 
-				return list;
-			}
-		}
+                return list;
+            }
+        }
 
-		public string LibraryName
-		{
-			get { return NameBox.Text; }
-		}
+        public string LibraryName => NameBox.Text;
 
-		private void TileList_DoubleClick(object sender, EventArgs e)
-		{
-		}
-	}
+        public MergeLibrariesForm()
+        {
+            InitializeComponent();
+
+            foreach (var lib in Session.Libraries)
+            {
+                var lvi = ThemeList.Items.Add(lib.Name);
+                lvi.Tag = lib;
+            }
+
+            NameBox.Text = "Merged Library";
+
+            Application.Idle += Application_Idle;
+        }
+
+        ~MergeLibrariesForm()
+        {
+            Application.Idle -= Application_Idle;
+        }
+
+        private void Application_Idle(object sender, EventArgs e)
+        {
+            OKBtn.Enabled = SelectedLibraries.Count >= 2;
+        }
+
+        private void TileList_DoubleClick(object sender, EventArgs e)
+        {
+        }
+    }
 }

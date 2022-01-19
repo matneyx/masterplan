@@ -63,9 +63,9 @@
 			((System.ComponentModel.ISupportInitialize)(this.TempHPBox)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.AltitudeBox)).BeginInit();
 			this.SuspendLayout();
-			// 
+			//
 			// OKBtn
-			// 
+			//
 			this.OKBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.OKBtn.DialogResult = System.Windows.Forms.DialogResult.OK;
 			this.OKBtn.Location = new System.Drawing.Point(231, 351);
@@ -75,9 +75,9 @@
 			this.OKBtn.Text = "OK";
 			this.OKBtn.UseVisualStyleBackColor = true;
 			this.OKBtn.Click += new System.EventHandler(this.OKBtn_Click);
-			// 
+			//
 			// CancelBtn
-			// 
+			//
 			this.CancelBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.CancelBtn.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this.CancelBtn.Location = new System.Drawing.Point(312, 351);
@@ -86,18 +86,18 @@
 			this.CancelBtn.TabIndex = 14;
 			this.CancelBtn.Text = "Cancel";
 			this.CancelBtn.UseVisualStyleBackColor = true;
-			// 
+			//
 			// InitLbl
-			// 
+			//
 			this.InitLbl.AutoSize = true;
 			this.InitLbl.Location = new System.Drawing.Point(12, 143);
 			this.InitLbl.Name = "InitLbl";
 			this.InitLbl.Size = new System.Drawing.Size(49, 13);
 			this.InitLbl.TabIndex = 7;
 			this.InitLbl.Text = "Initiative:";
-			// 
+			//
 			// InitBox
-			// 
+			//
 			this.InitBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
 						| System.Windows.Forms.AnchorStyles.Right)));
 			this.InitBox.Location = new System.Drawing.Point(73, 141);
@@ -109,18 +109,18 @@
 			this.InitBox.Name = "InitBox";
 			this.InitBox.Size = new System.Drawing.Size(276, 20);
 			this.InitBox.TabIndex = 8;
-			// 
+			//
 			// DamageLbl
-			// 
+			//
 			this.DamageLbl.AutoSize = true;
 			this.DamageLbl.Location = new System.Drawing.Point(12, 53);
 			this.DamageLbl.Name = "DamageLbl";
 			this.DamageLbl.Size = new System.Drawing.Size(50, 13);
 			this.DamageLbl.TabIndex = 2;
 			this.DamageLbl.Text = "Damage:";
-			// 
+			//
 			// DamageBox
-			// 
+			//
 			this.DamageBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
 						| System.Windows.Forms.AnchorStyles.Right)));
 			this.DamageBox.Location = new System.Drawing.Point(73, 51);
@@ -133,9 +133,9 @@
 			this.DamageBox.Size = new System.Drawing.Size(276, 20);
 			this.DamageBox.TabIndex = 3;
 			this.DamageBox.ValueChanged += new System.EventHandler(this.DamageBox_ValueChanged);
-			// 
+			//
 			// HPBox
-			// 
+			//
 			this.HPBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
 						| System.Windows.Forms.AnchorStyles.Right)));
 			this.HPBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -146,9 +146,9 @@
 			this.HPBox.TabIndex = 6;
 			this.HPBox.TabStop = false;
 			this.HPBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-			// 
+			//
 			// ConditionPanel
-			// 
+			//
 			this.ConditionPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
 						| System.Windows.Forms.AnchorStyles.Left)
 						| System.Windows.Forms.AnchorStyles.Right)));
@@ -159,9 +159,9 @@
 			this.ConditionPanel.Name = "ConditionPanel";
 			this.ConditionPanel.Size = new System.Drawing.Size(337, 152);
 			this.ConditionPanel.TabIndex = 11;
-			// 
+			//
 			// EffectList
-			// 
+			//
 			this.EffectList.BorderStyle = System.Windows.Forms.BorderStyle.None;
 			this.EffectList.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.EffectHdr,
@@ -187,19 +187,19 @@
 			this.EffectList.View = System.Windows.Forms.View.Tile;
 			this.EffectList.SizeChanged += new System.EventHandler(this.EffectList_SizeChanged);
 			this.EffectList.DoubleClick += new System.EventHandler(this.EditBtn_Click);
-			// 
+			//
 			// EffectHdr
-			// 
+			//
 			this.EffectHdr.Text = "Effect";
 			this.EffectHdr.Width = 120;
-			// 
+			//
 			// EffectDurationHdr
-			// 
+			//
 			this.EffectDurationHdr.Text = "Duration";
 			this.EffectDurationHdr.Width = 141;
-			// 
+			//
 			// Toolbar
-			// 
+			//
 			this.Toolbar.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.AddBtn,
             this.RemoveBtn,
@@ -212,9 +212,9 @@
 			this.Toolbar.Size = new System.Drawing.Size(335, 25);
 			this.Toolbar.TabIndex = 0;
 			this.Toolbar.Text = "toolStrip1";
-			// 
+			//
 			// AddBtn
-			// 
+			//
 			this.AddBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
 			this.AddBtn.Image = ((System.Drawing.Image)(resources.GetObject("AddBtn.Image")));
 			this.AddBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -222,9 +222,9 @@
 			this.AddBtn.Size = new System.Drawing.Size(33, 22);
 			this.AddBtn.Text = "Add";
 			this.AddBtn.Click += new System.EventHandler(this.AddBtn_Click);
-			// 
+			//
 			// RemoveBtn
-			// 
+			//
 			this.RemoveBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
 			this.RemoveBtn.Image = ((System.Drawing.Image)(resources.GetObject("RemoveBtn.Image")));
 			this.RemoveBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -232,9 +232,9 @@
 			this.RemoveBtn.Size = new System.Drawing.Size(54, 22);
 			this.RemoveBtn.Text = "Remove";
 			this.RemoveBtn.Click += new System.EventHandler(this.RemoveBtn_Click);
-			// 
+			//
 			// EditBtn
-			// 
+			//
 			this.EditBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
 			this.EditBtn.Image = ((System.Drawing.Image)(resources.GetObject("EditBtn.Image")));
 			this.EditBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -242,14 +242,14 @@
 			this.EditBtn.Size = new System.Drawing.Size(31, 22);
 			this.EditBtn.Text = "Edit";
 			this.EditBtn.Click += new System.EventHandler(this.EditBtn_Click);
-			// 
+			//
 			// toolStripSeparator1
-			// 
+			//
 			this.toolStripSeparator1.Name = "toolStripSeparator1";
 			this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
-			// 
+			//
 			// DmgBtn
-			// 
+			//
 			this.DmgBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
 			this.DmgBtn.Image = ((System.Drawing.Image)(resources.GetObject("DmgBtn.Image")));
 			this.DmgBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -257,9 +257,9 @@
 			this.DmgBtn.Size = new System.Drawing.Size(105, 22);
 			this.DmgBtn.Text = "Ongoing Damage";
 			this.DmgBtn.Click += new System.EventHandler(this.DmgBtn_Click);
-			// 
+			//
 			// SavesBtn
-			// 
+			//
 			this.SavesBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
 			this.SavesBtn.Image = ((System.Drawing.Image)(resources.GetObject("SavesBtn.Image")));
 			this.SavesBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -267,9 +267,9 @@
 			this.SavesBtn.Size = new System.Drawing.Size(40, 22);
 			this.SavesBtn.Text = "Saves";
 			this.SavesBtn.Click += new System.EventHandler(this.SavesBtn_Click);
-			// 
+			//
 			// TempHPBox
-			// 
+			//
 			this.TempHPBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
 						| System.Windows.Forms.AnchorStyles.Right)));
 			this.TempHPBox.Location = new System.Drawing.Point(73, 77);
@@ -282,48 +282,48 @@
 			this.TempHPBox.Size = new System.Drawing.Size(276, 20);
 			this.TempHPBox.TabIndex = 5;
 			this.TempHPBox.ValueChanged += new System.EventHandler(this.TempHPBox_ValueChanged);
-			// 
+			//
 			// TempHPLbl
-			// 
+			//
 			this.TempHPLbl.AutoSize = true;
 			this.TempHPLbl.Location = new System.Drawing.Point(12, 79);
 			this.TempHPLbl.Name = "TempHPLbl";
 			this.TempHPLbl.Size = new System.Drawing.Size(55, 13);
 			this.TempHPLbl.TabIndex = 4;
 			this.TempHPLbl.Text = "Temp HP:";
-			// 
+			//
 			// LabelLbl
-			// 
+			//
 			this.LabelLbl.AutoSize = true;
 			this.LabelLbl.Location = new System.Drawing.Point(12, 15);
 			this.LabelLbl.Name = "LabelLbl";
 			this.LabelLbl.Size = new System.Drawing.Size(36, 13);
 			this.LabelLbl.TabIndex = 0;
 			this.LabelLbl.Text = "Label:";
-			// 
+			//
 			// LabelBox
-			// 
+			//
 			this.LabelBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
 						| System.Windows.Forms.AnchorStyles.Right)));
 			this.LabelBox.Location = new System.Drawing.Point(73, 12);
 			this.LabelBox.Name = "LabelBox";
 			this.LabelBox.Size = new System.Drawing.Size(314, 20);
 			this.LabelBox.TabIndex = 1;
-			// 
+			//
 			// HPGauge
-			// 
+			//
 			this.HPGauge.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
 						| System.Windows.Forms.AnchorStyles.Right)));
 			this.HPGauge.Damage = 0;
-			this.HPGauge.FullHP = 0;
+			this.HPGauge.FullHp = 0;
 			this.HPGauge.Location = new System.Drawing.Point(355, 51);
 			this.HPGauge.Name = "HPGauge";
 			this.HPGauge.Size = new System.Drawing.Size(32, 294);
 			this.HPGauge.TabIndex = 12;
-			this.HPGauge.TempHP = 0;
-			// 
+			this.HPGauge.TempHp = 0;
+			//
 			// AltitudeBox
-			// 
+			//
 			this.AltitudeBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
 						| System.Windows.Forms.AnchorStyles.Right)));
 			this.AltitudeBox.Location = new System.Drawing.Point(73, 167);
@@ -335,18 +335,18 @@
 			this.AltitudeBox.Name = "AltitudeBox";
 			this.AltitudeBox.Size = new System.Drawing.Size(276, 20);
 			this.AltitudeBox.TabIndex = 10;
-			// 
+			//
 			// AltitudeLbl
-			// 
+			//
 			this.AltitudeLbl.AutoSize = true;
 			this.AltitudeLbl.Location = new System.Drawing.Point(12, 169);
 			this.AltitudeLbl.Name = "AltitudeLbl";
 			this.AltitudeLbl.Size = new System.Drawing.Size(45, 13);
 			this.AltitudeLbl.TabIndex = 9;
 			this.AltitudeLbl.Text = "Altitude:";
-			// 
+			//
 			// CombatDataForm
-			// 
+			//
 			this.AcceptButton = this.OKBtn;
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;

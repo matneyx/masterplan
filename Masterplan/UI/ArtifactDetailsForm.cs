@@ -1,41 +1,40 @@
 ﻿using System;
 using System.IO;
 using System.Windows.Forms;
-
 using Masterplan.Data;
 using Masterplan.Tools;
 
 namespace Masterplan.UI
 {
-	partial class ArtifactDetailsForm : Form
-	{
-		public ArtifactDetailsForm(Artifact artifact)
-		{
-			InitializeComponent();
+    internal partial class ArtifactDetailsForm : Form
+    {
+        private readonly Artifact _fArtifact;
 
-			fArtifact = artifact.Copy();
+        public ArtifactDetailsForm(Artifact artifact)
+        {
+            InitializeComponent();
 
-			Browser.DocumentText = HTML.Artifact(fArtifact, Session.Preferences.TextSize, false, true);
-		}
+            _fArtifact = artifact.Copy();
 
-		Artifact fArtifact = null;
+            Browser.DocumentText = Html.Artifact(_fArtifact, Session.Preferences.TextSize, false, true);
+        }
 
-		private void PlayerViewBtn_Click(object sender, EventArgs e)
-		{
-			if (Session.PlayerView == null)
-				Session.PlayerView = new PlayerViewForm(this);
+        private void PlayerViewBtn_Click(object sender, EventArgs e)
+        {
+            if (Session.PlayerView == null)
+                Session.PlayerView = new PlayerViewForm(this);
 
-			Session.PlayerView.ShowArtifact(fArtifact);
-		}
+            Session.PlayerView.ShowArtifact(_fArtifact);
+        }
 
-		private void ExportHTML_Click(object sender, EventArgs e)
-		{
-			SaveFileDialog dlg = new SaveFileDialog();
-			dlg.FileName = fArtifact.Name;
-			dlg.Filter = Program.HTMLFilter;
+        private void ExportHTML_Click(object sender, EventArgs e)
+        {
+            var dlg = new SaveFileDialog();
+            dlg.FileName = _fArtifact.Name;
+            dlg.Filter = Program.HtmlFilter;
 
-			if (dlg.ShowDialog() == DialogResult.OK)
-				File.WriteAllText(dlg.FileName, Browser.DocumentText);
-		}
-	}
+            if (dlg.ShowDialog() == DialogResult.OK)
+                File.WriteAllText(dlg.FileName, Browser.DocumentText);
+        }
+    }
 }

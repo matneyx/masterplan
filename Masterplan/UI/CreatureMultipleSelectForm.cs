@@ -2,271 +2,259 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
-
 using Masterplan.Data;
 using Masterplan.Tools;
 
 namespace Masterplan.UI
 {
-	partial class CreatureMultipleSelectForm : Form
-	{
-		public CreatureMultipleSelectForm()
-		{
-			InitializeComponent();
+    internal partial class CreatureMultipleSelectForm : Form
+    {
+        public List<ICreature> SelectedCreatures { get; } = new List<ICreature>();
 
-			Application.Idle += new EventHandler(Application_Idle);
+        public ICreature SelectedCreature
+        {
+            get
+            {
+                if (CreatureList.SelectedItems.Count != 0)
+                    return CreatureList.SelectedItems[0].Tag as ICreature;
 
-			update_list();
+                return null;
+            }
+        }
 
-			Browser.DocumentText = "";
+        public CreatureMultipleSelectForm()
+        {
+            InitializeComponent();
 
-			update_stats();
-		}
+            Application.Idle += Application_Idle;
 
-		~CreatureMultipleSelectForm()
-		{
-			Application.Idle -= Application_Idle;
-		}
+            update_list();
 
-		void Application_Idle(object sender, EventArgs e)
-		{
-			OKBtn.Enabled = (SelectedCreatures.Count >= 2);
-		}
+            Browser.DocumentText = "";
 
-		public List<ICreature> SelectedCreatures
-		{
-			get { return fCreatures; }
-		}
-		List<ICreature> fCreatures = new List<ICreature>();
+            update_stats();
+        }
 
-		public ICreature SelectedCreature
-		{
-			get
-			{
-				if (CreatureList.SelectedItems.Count != 0)
-					return CreatureList.SelectedItems[0].Tag as ICreature;
+        ~CreatureMultipleSelectForm()
+        {
+            Application.Idle -= Application_Idle;
+        }
 
-				return null;
-			}
-		}
+        private void Application_Idle(object sender, EventArgs e)
+        {
+            OKBtn.Enabled = SelectedCreatures.Count >= 2;
+        }
 
-		private void TileList_DoubleClick(object sender, EventArgs e)
-		{
-			if (SelectedCreature != null)
-			{
-				fCreatures.Add(SelectedCreature);
+        private void TileList_DoubleClick(object sender, EventArgs e)
+        {
+            if (SelectedCreature != null)
+            {
+                SelectedCreatures.Add(SelectedCreature);
 
-				update_list();
-				update_stats();
-			}
-		}
+                update_list();
+                update_stats();
+            }
+        }
 
-		private void CreatureList_SelectedIndexChanged(object sender, EventArgs e)
-		{
-		}
+        private void CreatureList_SelectedIndexChanged(object sender, EventArgs e)
+        {
+        }
 
-		void update_list()
-		{
-			CreatureList.BeginUpdate();
+        private void update_list()
+        {
+            CreatureList.BeginUpdate();
 
-			CreatureList.Groups.Clear();
-			CreatureList.Items.Clear();
+            CreatureList.Groups.Clear();
+            CreatureList.Items.Clear();
 
-			List<Creature> creatures = Session.Creatures;
+            var creatures = Session.Creatures;
 
-			BinarySearchTree<string> bst = new BinarySearchTree<string>();
-			foreach (Creature c in creatures)
-				bst.Add(c.Category);
+            var bst = new BinarySearchTree<string>();
+            foreach (var c in creatures)
+                bst.Add(c.Category);
 
-			List<string> cats = bst.SortedList;
-			cats.Add("Miscellaneous Creatures");
-			foreach (string cat in cats)
-				CreatureList.Groups.Add(cat, cat);
+            var cats = bst.SortedList;
+            cats.Add("Miscellaneous Creatures");
+            foreach (var cat in cats)
+                CreatureList.Groups.Add(cat, cat);
 
-			List<ListViewItem> items = new List<ListViewItem>();
-			foreach (Creature c in creatures)
-			{
-				if (!match(c, NameBox.Text))
-					continue;
+            var items = new List<ListViewItem>();
+            foreach (var c in creatures)
+            {
+                if (!Match(c, NameBox.Text))
+                    continue;
 
-				if (fCreatures.Contains(c))
-					continue;
+                if (SelectedCreatures.Contains(c))
+                    continue;
 
-				ListViewItem lvi = new ListViewItem(c.Name);
-				lvi.SubItems.Add(c.Info);
-				lvi.Tag = c;
+                var lvi = new ListViewItem(c.Name);
+                lvi.SubItems.Add(c.Info);
+                lvi.Tag = c;
 
-				if ((c.Category != null) && (c.Category != ""))
-					lvi.Group = CreatureList.Groups[c.Category];
-				else
-					lvi.Group = CreatureList.Groups["Miscellaneous Creatures"];
+                if (c.Category != null && c.Category != "")
+                    lvi.Group = CreatureList.Groups[c.Category];
+                else
+                    lvi.Group = CreatureList.Groups["Miscellaneous Creatures"];
 
-				items.Add(lvi);
-			}
+                items.Add(lvi);
+            }
 
-			CreatureList.Items.AddRange(items.ToArray());
-			CreatureList.EndUpdate();
-		}
+            CreatureList.Items.AddRange(items.ToArray());
+            CreatureList.EndUpdate();
+        }
 
-		void update_stats()
-		{
-			List<string> lines = HTML.GetHead("", "", Session.Preferences.TextSize);
+        private void update_stats()
+        {
+            var lines = Html.GetHead("", "", Session.Preferences.TextSize);
 
-			lines.Add("<BODY>");
+            lines.Add("<BODY>");
 
-			if (fCreatures.Count != 0)
-			{
-				lines.Add("<P class=table>");
-				lines.Add("<TABLE>");
-				lines.Add("<TR class=heading>");
-				lines.Add("<TD colspan=3><B>Selected Creatures</B></TD>");
-				lines.Add("</TR>");
+            if (SelectedCreatures.Count != 0)
+            {
+                lines.Add("<P class=table>");
+                lines.Add("<TABLE>");
+                lines.Add("<TR class=heading>");
+                lines.Add("<TD colspan=3><B>Selected Creatures</B></TD>");
+                lines.Add("</TR>");
 
-				foreach (ICreature c in fCreatures)
-				{
-					lines.Add("<TR class=header>");
-					lines.Add("<TD colspan=2>" + c.Name + "</TD>");
-					lines.Add("<TD align=center><A href=remove:" + c.ID + ">remove</A></TD>");
-					lines.Add("</TR>");
-				}
+                foreach (var c in SelectedCreatures)
+                {
+                    lines.Add("<TR class=header>");
+                    lines.Add("<TD colspan=2>" + c.Name + "</TD>");
+                    lines.Add("<TD align=center><A href=remove:" + c.Id + ">remove</A></TD>");
+                    lines.Add("</TR>");
+                }
 
-				lines.Add("</TABLE>");
-				lines.Add("</P>");
-			}
-			else
-			{
-				lines.Add("<P class=instruction>");
-				lines.Add("You have not yet selected any creatures; to select a creature, drag it from the list at the left onto the box above");
-				lines.Add("</P>");
-			}
+                lines.Add("</TABLE>");
+                lines.Add("</P>");
+            }
+            else
+            {
+                lines.Add("<P class=instruction>");
+                lines.Add(
+                    "You have not yet selected any creatures; to select a creature, drag it from the list at the left onto the box above");
+                lines.Add("</P>");
+            }
 
-			foreach (ICreature creature in fCreatures)
-			{
-				EncounterCard card = new EncounterCard(creature);
+            foreach (var creature in SelectedCreatures)
+            {
+                var card = new EncounterCard(creature);
 
-				lines.Add("<P class=table>");
-				lines.AddRange(card.AsText(null, CardMode.View, false));
-				lines.Add("</P>");
-			}
+                lines.Add("<P class=table>");
+                lines.AddRange(card.AsText(null, CardMode.View, false));
+                lines.Add("</P>");
+            }
 
-			lines.Add("</BODY>");
-			lines.Add("</HTML>");
+            lines.Add("</BODY>");
+            lines.Add("</HTML>");
 
-			string html = HTML.Concatenate(lines);
+            var html = Html.Concatenate(lines);
 
-			Browser.Document.OpenNew(true);
-			Browser.Document.Write(html);
-		}
+            Browser.Document.OpenNew(true);
+            Browser.Document.Write(html);
+        }
 
-		#region Filtering
+        private void NameBox_TextChanged(object sender, EventArgs e)
+        {
+            update_list();
+        }
 
-		private void NameBox_TextChanged(object sender, EventArgs e)
-		{
-			update_list();
-		}
+        private bool Match(ICreature creature, string query)
+        {
+            var tokens = query.ToLower().Split();
 
-		bool match(ICreature creature, string query)
-		{
-			string[] tokens = query.ToLower().Split();
+            foreach (var token in tokens)
+                if (!match_token(creature, token))
+                    return false;
 
-			foreach (string token in tokens)
-			{
-				if (!match_token(creature, token))
-					return false;
-			}
+            return true;
+        }
 
-			return true;
-		}
+        private bool match_token(ICreature creature, string token)
+        {
+            if (creature.Name.ToLower().Contains(token))
+                return true;
 
-		bool match_token(ICreature creature, string token)
-		{
-			if (creature.Name.ToLower().Contains(token))
-				return true;
+            if (creature.Info.ToLower().Contains(token))
+                return true;
 
-			if (creature.Info.ToLower().Contains(token))
-				return true;
+            return false;
+        }
 
-			return false;
-		}
+        private void CreatureList_ItemDrag(object sender, ItemDragEventArgs e)
+        {
+            if (SelectedCreature != null)
+            {
+                DragLbl.BackColor = SystemColors.Highlight;
+                DragLbl.ForeColor = SystemColors.HighlightText;
 
-		#endregion
+                if (DoDragDrop(SelectedCreature, DragDropEffects.Move) == DragDropEffects.Move)
+                {
+                    SelectedCreatures.Add(SelectedCreature);
 
-		private void CreatureList_ItemDrag(object sender, ItemDragEventArgs e)
-		{
-			if (SelectedCreature != null)
-			{
-				DragLbl.BackColor = SystemColors.Highlight;
-				DragLbl.ForeColor = SystemColors.HighlightText;
+                    update_list();
+                    update_stats();
+                }
 
-				if (DoDragDrop(SelectedCreature, DragDropEffects.Move) == DragDropEffects.Move)
-				{
-					fCreatures.Add(SelectedCreature);
+                DragLbl.BackColor = SystemColors.Control;
+                DragLbl.ForeColor = SystemColors.ControlText;
+            }
+        }
 
-					update_list();
-					update_stats();
-				}
+        private void DragLbl_DragOver(object sender, DragEventArgs e)
+        {
+            if (has_creature(e.Data))
+                e.Effect = DragDropEffects.Move;
+        }
 
-				DragLbl.BackColor = SystemColors.Control;
-				DragLbl.ForeColor = SystemColors.ControlText;
-			}
-		}
+        private void DragLbl_DragDrop(object sender, DragEventArgs e)
+        {
+            if (has_creature(e.Data))
+                e.Effect = DragDropEffects.Move;
+        }
 
-		private void DragLbl_DragOver(object sender, DragEventArgs e)
-		{
-			if (has_creature(e.Data))
-				e.Effect = DragDropEffects.Move;
-		}
+        private bool has_creature(IDataObject data)
+        {
+            var c = data.GetData(typeof(Creature)) as Creature;
+            if (c != null)
+                return true;
 
-		private void DragLbl_DragDrop(object sender, DragEventArgs e)
-		{
-			if (has_creature(e.Data))
-				e.Effect = DragDropEffects.Move;
-		}
+            var cc = data.GetData(typeof(CustomCreature)) as CustomCreature;
+            if (cc != null)
+                return true;
 
-		bool has_creature(IDataObject data)
-		{
-			Creature c = data.GetData(typeof(Creature)) as Creature;
-			if (c != null)
-				return true;
+            var npc = data.GetData(typeof(Npc)) as Npc;
+            if (npc != null)
+                return true;
 
-			CustomCreature cc = data.GetData(typeof(CustomCreature)) as CustomCreature;
-			if (cc != null)
-				return true;
+            return false;
+        }
 
-			NPC npc = data.GetData(typeof(NPC)) as NPC;
-			if (npc != null)
-				return true;
+        private void Browser_Navigating(object sender, WebBrowserNavigatingEventArgs e)
+        {
+            if (e.Url.Scheme == "remove")
+            {
+                var id = new Guid(e.Url.LocalPath);
+                var creature = find_creature(id);
+                if (creature != null)
+                {
+                    e.Cancel = true;
 
-			return false;
-		}
+                    SelectedCreatures.Remove(creature);
 
-		private void Browser_Navigating(object sender, WebBrowserNavigatingEventArgs e)
-		{
-			if (e.Url.Scheme == "remove")
-			{
-				Guid id = new Guid(e.Url.LocalPath);
-				ICreature creature = find_creature(id);
-				if (creature != null)
-				{
-					e.Cancel = true;
+                    update_list();
+                    update_stats();
+                }
+            }
+        }
 
-					fCreatures.Remove(creature);
+        private ICreature find_creature(Guid id)
+        {
+            foreach (var creature in SelectedCreatures)
+                if (creature.Id == id)
+                    return creature;
 
-					update_list();
-					update_stats();
-				}
-			}
-		}
-
-		ICreature find_creature(Guid id)
-		{
-			foreach (ICreature creature in fCreatures)
-			{
-				if (creature.ID == id)
-					return creature;
-			}
-
-			return null;
-		}
-	}
+            return null;
+        }
+    }
 }

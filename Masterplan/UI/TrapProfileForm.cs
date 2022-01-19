@@ -1,73 +1,68 @@
 ﻿using System;
 using System.Windows.Forms;
-
 using Masterplan.Data;
 
 namespace Masterplan.UI
 {
-	partial class TrapProfileForm : Form
-	{
-		public TrapProfileForm(Trap trap)
-		{
-			InitializeComponent();
+    internal partial class TrapProfileForm : Form
+    {
+        public Trap Trap { get; }
 
-			Array types = Enum.GetValues(typeof(TrapType));
-			foreach (TrapType type in types)
-				TypeBox.Items.Add(type);
+        public TrapProfileForm(Trap trap)
+        {
+            InitializeComponent();
 
-			Application.Idle += new EventHandler(Application_Idle);
+            var types = Enum.GetValues(typeof(TrapType));
+            foreach (TrapType type in types)
+                TypeBox.Items.Add(type);
 
-			fTrap = trap.Copy();
+            Application.Idle += Application_Idle;
 
-			NameBox.Text = fTrap.Name;
-			TypeBox.SelectedItem = fTrap.Type;
-			LevelBox.Value = fTrap.Level;
-			RoleBtn.Text = fTrap.Role.ToString();
+            Trap = trap.Copy();
 
-			if (fTrap.Initiative == int.MinValue)
-			{
-				HasInitBox.Checked = false;
-				InitBox.Value = 0;
-			}
-			else
-			{
-				HasInitBox.Checked = true;
-				InitBox.Value = fTrap.Initiative;
-			}
-		}
+            NameBox.Text = Trap.Name;
+            TypeBox.SelectedItem = Trap.Type;
+            LevelBox.Value = Trap.Level;
+            RoleBtn.Text = Trap.Role.ToString();
 
-		~TrapProfileForm()
-		{
-			Application.Idle -= Application_Idle;
-		}
+            if (Trap.Initiative == int.MinValue)
+            {
+                HasInitBox.Checked = false;
+                InitBox.Value = 0;
+            }
+            else
+            {
+                HasInitBox.Checked = true;
+                InitBox.Value = Trap.Initiative;
+            }
+        }
 
-		void Application_Idle(object sender, EventArgs e)
-		{
-			InitBox.Enabled = HasInitBox.Checked;
-		}
+        ~TrapProfileForm()
+        {
+            Application.Idle -= Application_Idle;
+        }
 
-		public Trap Trap
-		{
-			get { return fTrap; }
-		}
-		Trap fTrap = null;
+        private void Application_Idle(object sender, EventArgs e)
+        {
+            InitBox.Enabled = HasInitBox.Checked;
+        }
 
-		private void OKBtn_Click(object sender, EventArgs e)
-		{
-			fTrap.Name = NameBox.Text;
-			fTrap.Type = (TrapType)TypeBox.SelectedItem;
-			fTrap.Level = (int)LevelBox.Value;
-			fTrap.Initiative = HasInitBox.Checked ? (int)InitBox.Value : int.MinValue;
-		}
+        private void OKBtn_Click(object sender, EventArgs e)
+        {
+            Trap.Name = NameBox.Text;
+            Trap.Type = (TrapType)TypeBox.SelectedItem;
+            Trap.Level = (int)LevelBox.Value;
+            Trap.Initiative = HasInitBox.Checked ? (int)InitBox.Value : int.MinValue;
+        }
 
-		private void RoleBtn_Click(object sender, EventArgs e)
-		{
-			RoleForm dlg = new RoleForm(fTrap.Role, ThreatType.Trap);
-			if (dlg.ShowDialog() == DialogResult.OK)
-			{
-				fTrap.Role = dlg.Role;
-				RoleBtn.Text = fTrap.Role.ToString();
-			}
-		}
-	}
+        private void RoleBtn_Click(object sender, EventArgs e)
+        {
+            var dlg = new RoleForm(Trap.Role, ThreatType.Trap);
+            if (dlg.ShowDialog() == DialogResult.OK)
+            {
+                Trap.Role = dlg.Role;
+                RoleBtn.Text = Trap.Role.ToString();
+            }
+        }
+    }
 }

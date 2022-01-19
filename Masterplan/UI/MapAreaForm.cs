@@ -1,149 +1,136 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
-
 using Masterplan.Data;
 using Masterplan.Tools.Generators;
 
 namespace Masterplan.UI
 {
-	partial class MapAreaForm : Form
-	{
-		public MapAreaForm(MapArea area, Map m)
-		{
-			InitializeComponent();
+    internal partial class MapAreaForm : Form
+    {
+        public MapArea Area { get; }
 
-			Application.Idle += new EventHandler(Application_Idle);
+        public MapAreaForm(MapArea area, Map m)
+        {
+            InitializeComponent();
 
-			fArea = area.Copy();
-			MapView.Map = m;
-			MapView.Viewpoint = fArea.Region;
+            Application.Idle += Application_Idle;
 
-			NameBox.Text = fArea.Name;
-			DetailsBox.Text = fArea.Details;
-		}
+            Area = area.Copy();
+            MapView.Map = m;
+            MapView.Viewpoint = Area.Region;
 
-		~MapAreaForm()
-		{
-			Application.Idle -= Application_Idle;
-		}
+            NameBox.Text = Area.Name;
+            DetailsBox.Text = Area.Details;
+        }
 
-		void Application_Idle(object sender, EventArgs e)
-		{
-			LeftLessBtn.Enabled = (MapView.Viewpoint.Width != 1);
-			RightLessBtn.Enabled = (MapView.Viewpoint.Width != 1);
+        ~MapAreaForm()
+        {
+            Application.Idle -= Application_Idle;
+        }
 
-			TopLessBtn.Enabled = (MapView.Viewpoint.Height != 1);
-			BottomLessBtn.Enabled = (MapView.Viewpoint.Height != 1);
-		}
+        private void Application_Idle(object sender, EventArgs e)
+        {
+            LeftLessBtn.Enabled = MapView.Viewpoint.Width != 1;
+            RightLessBtn.Enabled = MapView.Viewpoint.Width != 1;
 
-		public MapArea Area
-		{
-			get { return fArea; }
-		}
-		MapArea fArea = null;
+            TopLessBtn.Enabled = MapView.Viewpoint.Height != 1;
+            BottomLessBtn.Enabled = MapView.Viewpoint.Height != 1;
+        }
 
-		private void OKBtn_Click(object sender, EventArgs e)
-		{
-			fArea.Name = NameBox.Text;
-			fArea.Details = DetailsBox.Text;
-			fArea.Region = MapView.Viewpoint;
-		}
+        private void OKBtn_Click(object sender, EventArgs e)
+        {
+            Area.Name = NameBox.Text;
+            Area.Details = DetailsBox.Text;
+            Area.Region = MapView.Viewpoint;
+        }
 
-		#region Move
+        private void MoveUpBtn_Click(object sender, EventArgs e)
+        {
+            Change(0, -1, 0, 0);
+        }
 
-		private void MoveUpBtn_Click(object sender, EventArgs e)
-		{
-			change(0, -1, 0, 0);
-		}
+        private void MoveLeftBtn_Click(object sender, EventArgs e)
+        {
+            Change(-1, 0, 0, 0);
+        }
 
-		private void MoveLeftBtn_Click(object sender, EventArgs e)
-		{
-			change(-1, 0, 0, 0);
-		}
+        private void MoveRightBtn_Click(object sender, EventArgs e)
+        {
+            Change(1, 0, 0, 0);
+        }
 
-		private void MoveRightBtn_Click(object sender, EventArgs e)
-		{
-			change(1, 0, 0, 0);
-		}
+        private void MoveDownBtn_Click(object sender, EventArgs e)
+        {
+            Change(0, 1, 0, 0);
+        }
 
-		private void MoveDownBtn_Click(object sender, EventArgs e)
-		{
-			change(0, 1, 0, 0);
-		}
+        private void TopMoreBtn_Click(object sender, EventArgs e)
+        {
+            Change(0, -1, 0, 1);
+        }
 
-		#endregion
+        private void TopLessBtn_Click(object sender, EventArgs e)
+        {
+            Change(0, 1, 0, -1);
+        }
 
-		#region Edit
+        private void LeftMoreBtn_Click(object sender, EventArgs e)
+        {
+            Change(-1, 0, 1, 0);
+        }
 
-		private void TopMoreBtn_Click(object sender, EventArgs e)
-		{
-			change(0, -1, 0, 1);
-		}
+        private void LeftLessBtn_Click(object sender, EventArgs e)
+        {
+            Change(1, 0, -1, 0);
+        }
 
-		private void TopLessBtn_Click(object sender, EventArgs e)
-		{
-			change(0, 1, 0, -1);
-		}
+        private void RightMoreBtn_Click(object sender, EventArgs e)
+        {
+            Change(0, 0, 1, 0);
+        }
 
-		private void LeftMoreBtn_Click(object sender, EventArgs e)
-		{
-			change(-1, 0, 1, 0);
-		}
+        private void RightLessBtn_Click(object sender, EventArgs e)
+        {
+            Change(0, 0, -1, 0);
+        }
 
-		private void LeftLessBtn_Click(object sender, EventArgs e)
-		{
-			change(1, 0, -1, 0);
-		}
+        private void BottomMoreBtn_Click(object sender, EventArgs e)
+        {
+            Change(0, 0, 0, 1);
+        }
 
-		private void RightMoreBtn_Click(object sender, EventArgs e)
-		{
-			change(0, 0, 1, 0);
-		}
+        private void BottomLessBtn_Click(object sender, EventArgs e)
+        {
+            Change(0, 0, 0, -1);
+        }
 
-		private void RightLessBtn_Click(object sender, EventArgs e)
-		{
-			change(0, 0, -1, 0);
-		}
+        private void Change(int x, int y, int width, int height)
+        {
+            x += MapView.Viewpoint.X;
+            y += MapView.Viewpoint.Y;
+            width += MapView.Viewpoint.Width;
+            height += MapView.Viewpoint.Height;
 
-		private void BottomMoreBtn_Click(object sender, EventArgs e)
-		{
-			change(0, 0, 0, 1);
-		}
+            MapView.Viewpoint = new Rectangle(x, y, width, height);
+        }
 
-		private void BottomLessBtn_Click(object sender, EventArgs e)
-		{
-			change(0, 0, 0, -1);
-		}
+        private void RandomNameBtn_Click(object sender, EventArgs e)
+        {
+            var name = "";
+            while (name == "")
+                name = RoomBuilder.Name();
 
-		#endregion
+            NameBox.Text = name;
+        }
 
-		void change(int x, int y, int width, int height)
-		{
-			x += MapView.Viewpoint.X;
-			y += MapView.Viewpoint.Y;
-			width += MapView.Viewpoint.Width;
-			height += MapView.Viewpoint.Height;
+        private void RandomDescBtn_Click(object sender, EventArgs e)
+        {
+            var details = "";
+            while (details == "")
+                details = RoomBuilder.Details();
 
-			MapView.Viewpoint = new Rectangle(x, y, width, height);
-		}
-
-		private void RandomNameBtn_Click(object sender, EventArgs e)
-		{
-			string name = "";
-			while (name == "")
-				name = RoomBuilder.Name();
-
-			NameBox.Text = name;
-		}
-
-		private void RandomDescBtn_Click(object sender, EventArgs e)
-		{
-			string details = "";
-			while (details == "")
-				details = RoomBuilder.Details();
-
-			DetailsBox.Text = details;
-		}
-	}
+            DetailsBox.Text = details;
+        }
+    }
 }

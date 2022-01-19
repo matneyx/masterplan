@@ -1,69 +1,67 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Windows.Forms;
-
 using Masterplan.Data;
 using Masterplan.Tools;
 
 namespace Masterplan.UI
 {
-	partial class SkillChallengeSelectForm : Form
-	{
-		public SkillChallengeSelectForm()
-		{
-			InitializeComponent();
+    internal partial class SkillChallengeSelectForm : Form
+    {
+        public SkillChallenge SkillChallenge
+        {
+            get
+            {
+                if (ChallengeList.SelectedItems.Count != 0)
+                    return ChallengeList.SelectedItems[0].Tag as SkillChallenge;
 
-			List<SkillChallenge> challenges = Session.SkillChallenges;
+                return null;
+            }
+        }
 
-			foreach (SkillChallenge sc in challenges)
-			{
-				ListViewItem lvi = ChallengeList.Items.Add(sc.Name);
-				lvi.SubItems.Add(sc.Info);
-				lvi.Tag = sc;
-			}
+        public SkillChallengeSelectForm()
+        {
+            InitializeComponent();
 
-			Application.Idle += new EventHandler(Application_Idle);
+            var challenges = Session.SkillChallenges;
 
-			Browser.DocumentText = "";
-			ChallengeList_SelectedIndexChanged(null, null);
-		}
+            foreach (var sc in challenges)
+            {
+                var lvi = ChallengeList.Items.Add(sc.Name);
+                lvi.SubItems.Add(sc.Info);
+                lvi.Tag = sc;
+            }
 
-		~SkillChallengeSelectForm()
-		{
-			Application.Idle -= Application_Idle;
-		}
+            Application.Idle += Application_Idle;
 
-		void Application_Idle(object sender, EventArgs e)
-		{
-			OKBtn.Enabled = (SkillChallenge != null);
-		}
+            Browser.DocumentText = "";
+            ChallengeList_SelectedIndexChanged(null, null);
+        }
 
-		public SkillChallenge SkillChallenge
-		{
-			get
-			{
-				if (ChallengeList.SelectedItems.Count != 0)
-					return ChallengeList.SelectedItems[0].Tag as SkillChallenge;
+        ~SkillChallengeSelectForm()
+        {
+            Application.Idle -= Application_Idle;
+        }
 
-				return null;
-			}
-		}
+        private void Application_Idle(object sender, EventArgs e)
+        {
+            OKBtn.Enabled = SkillChallenge != null;
+        }
 
-		private void TileList_DoubleClick(object sender, EventArgs e)
-		{
-			if (SkillChallenge != null)
-			{
-				DialogResult = DialogResult.OK;
-				Close();
-			}
-		}
+        private void TileList_DoubleClick(object sender, EventArgs e)
+        {
+            if (SkillChallenge != null)
+            {
+                DialogResult = DialogResult.OK;
+                Close();
+            }
+        }
 
-		private void ChallengeList_SelectedIndexChanged(object sender, EventArgs e)
-		{
-			string html = HTML.SkillChallenge(SkillChallenge, false, true, Session.Preferences.TextSize);
+        private void ChallengeList_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            var html = Html.SkillChallenge(SkillChallenge, false, true, Session.Preferences.TextSize);
 
-			Browser.Document.OpenNew(true);
-			Browser.Document.Write(html);
-		}
-	}
+            Browser.Document.OpenNew(true);
+            Browser.Document.Write(html);
+        }
+    }
 }

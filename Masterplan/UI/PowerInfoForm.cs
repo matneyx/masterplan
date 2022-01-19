@@ -1,32 +1,25 @@
 ﻿using System;
 using System.Windows.Forms;
-
 using Masterplan.Data;
 
 namespace Masterplan.UI
 {
-	partial class PowerInfoForm : Form
-	{
-		public PowerInfoForm(CreaturePower power)
-		{
-			InitializeComponent();
+    internal partial class PowerInfoForm : Form
+    {
+        public string PowerName => NameBox.Text;
 
-			NameBox.Text = power.Name;
-			KeywordBox.Text = power.Keywords;
-		}
+        public string PowerKeywords => KeywordBox.Text;
 
-		public string PowerName
-		{
-			get { return NameBox.Text; }
-		}
+        public PowerInfoForm(CreaturePower power)
+        {
+            InitializeComponent();
 
-		public string PowerKeywords
-		{
-			get { return KeywordBox.Text; }
-		}
+            NameBox.Text = power.Name;
+            KeywordBox.Text = power.Keywords;
+        }
 
-		private void OKBtn_Click(object sender, EventArgs e)
-		{
-		}
-	}
+        private void OKBtn_Click(object sender, EventArgs e)
+        {
+        }
+    }
 }

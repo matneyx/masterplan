@@ -3,133 +3,133 @@ using System.Collections.Generic;
 
 namespace Masterplan.Tools
 {
-	class TextHelper
-	{
-		static int LINE_LENGTH = 50;
+    internal class TextHelper
+    {
+        private static readonly int LineLength = 50;
 
-		public static string Wrap(string str)
-		{
-			List<string> lines = new List<string>();
+        private static List<char> _fVowels;
 
-			while (str != "")
-			{
-				string line = get_first_line(ref str);
-				lines.Add(line);
-			}
+        public static string Wrap(string str)
+        {
+            var lines = new List<string>();
 
-			string wrapped = "";
-			foreach (string line in lines)
-			{
-				if (wrapped != "")
-					wrapped += Environment.NewLine;
+            while (str != "")
+            {
+                var line = get_first_line(ref str);
+                lines.Add(line);
+            }
 
-				wrapped += line;
-			}
+            var wrapped = "";
+            foreach (var line in lines)
+            {
+                if (wrapped != "")
+                    wrapped += Environment.NewLine;
 
-			return wrapped;
-		}
+                wrapped += line;
+            }
 
-		static string get_first_line(ref string str)
-		{
-			string line = "";
+            return wrapped;
+        }
 
-			int length = Math.Min(LINE_LENGTH, str.Length);
-			int index = str.IndexOf(" ", length);
-			if (index == -1)
-			{
-				line = str;
-				str = "";
-			}
-			else
-			{
-				line = str.Substring(0, index);
-				str = str.Substring(index + 1);
-			}
+        private static string get_first_line(ref string str)
+        {
+            var line = "";
 
-			return line;
-		}
+            var length = Math.Min(LineLength, str.Length);
+            var index = str.IndexOf(" ", length);
+            if (index == -1)
+            {
+                line = str;
+                str = "";
+            }
+            else
+            {
+                line = str.Substring(0, index);
+                str = str.Substring(index + 1);
+            }
 
-		public static string Abbreviation(string title)
-		{
-			string abbrev = "";
-			foreach (string token in title.Split(null))
-			{
-				if (token == "")
-					continue;
+            return line;
+        }
 
-				bool is_number = false;
-				try
-				{
-					int n = int.Parse(token);
-					is_number = true;
-				}
-				catch
-				{
-					is_number = false;
-				}
+        public static string Abbreviation(string title)
+        {
+            var abbrev = "";
+            foreach (var token in title.Split(null))
+            {
+                if (token == "")
+                    continue;
 
-				if (is_number)
-				{
-					abbrev += token;
-					continue;
-				}
+                var isNumber = false;
+                try
+                {
+                    isNumber = true;
+                }
+                catch
+                {
+                    isNumber = false;
+                }
 
-				char first = token[0];
+                if (isNumber)
+                {
+                    abbrev += token;
+                    continue;
+                }
 
-				if (Char.IsUpper(first))
-					abbrev += first;
-			}
+                var first = token[0];
 
-			return abbrev;
-		}
+                if (char.IsUpper(first))
+                    abbrev += first;
+            }
 
-		public static bool IsVowel(char ch)
-		{
-			if (fVowels == null)
-			{
-				fVowels = new List<char>();
+            return abbrev;
+        }
 
-				fVowels.Add('a');
-				fVowels.Add('e');
-				fVowels.Add('i');
-				fVowels.Add('o');
-				fVowels.Add('u');
-			}
+        public static bool IsVowel(char ch)
+        {
+            if (_fVowels == null)
+            {
+                _fVowels = new List<char>();
 
-			return fVowels.Contains(ch);
-		}
-		static List<char> fVowels = null;
+                _fVowels.Add('a');
+                _fVowels.Add('e');
+                _fVowels.Add('i');
+                _fVowels.Add('o');
+                _fVowels.Add('u');
+            }
 
-		public static bool StartsWithVowel(string str)
-		{
-			if (str.Length == 0)
-				return false;
+            return _fVowels.Contains(ch);
+        }
 
-			char first = Char.ToLower(str[0]);
-			return IsVowel(first);
-		}
+        public static bool StartsWithVowel(string str)
+        {
+            if (str.Length == 0)
+                return false;
 
-		public static string Capitalise(string str, bool title_case)
-		{
-			if (title_case)
-			{
-				string[] tokens = str.Split(null);
+            var first = char.ToLower(str[0]);
+            return IsVowel(first);
+        }
 
-				str = "";
-				foreach (string token in tokens)
-				{
-					if (str != "")
-						str += " ";
+        public static string Capitalise(string str, bool titleCase)
+        {
+            if (titleCase)
+            {
+                var tokens = str.Split(null);
 
-					str += Capitalise(token, false);
-				}
+                str = "";
+                foreach (var token in tokens)
+                {
+                    if (str != "")
+                        str += " ";
 
-				return str;
-			}
+                    str += Capitalise(token, false);
+                }
 
-			char first = str[0];
+                return str;
+            }
 
-			return Char.ToUpper(first) + str.Substring(1);
-		}
-	}
+            var first = str[0];
+
+            return char.ToUpper(first) + str.Substring(1);
+        }
+    }
 }

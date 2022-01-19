@@ -1,89 +1,84 @@
 ﻿using System;
 using System.Windows.Forms;
-
 using Masterplan.Data;
 using Masterplan.Tools;
 
 namespace Masterplan.UI
 {
-	partial class PowerAttackForm : Form
-	{
-		public PowerAttackForm(PowerAttack attack, bool functional_template, int level, IRole role)
-		{
-			InitializeComponent();
+    internal partial class PowerAttackForm : Form
+    {
+        private readonly bool _fFunctionalTemplate;
+        private readonly int _fLevel;
+        private readonly IRole _fRole;
 
-			Array defences = Enum.GetValues(typeof(DefenceType));
-			foreach (DefenceType defence in defences)
-				DefenceBox.Items.Add(defence);
+        public PowerAttack Attack { get; }
 
-			Application.Idle += new EventHandler(Application_Idle);
+        public PowerAttackForm(PowerAttack attack, bool functionalTemplate, int level, IRole role)
+        {
+            InitializeComponent();
 
-			fAttack = attack.Copy();
-			fFunctionalTemplate = functional_template;
-			fLevel = level;
-			fRole = role;
+            var defences = Enum.GetValues(typeof(DefenceType));
+            foreach (DefenceType defence in defences)
+                DefenceBox.Items.Add(defence);
 
-			BonusBox.Value = fAttack.Bonus;
-			DefenceBox.SelectedItem = fAttack.Defence;
+            Application.Idle += Application_Idle;
 
-			set_suggestion();
+            Attack = attack.Copy();
+            _fFunctionalTemplate = functionalTemplate;
+            _fLevel = level;
+            _fRole = role;
 
-			if (!fFunctionalTemplate)
-			{
-				InfoLbl.Visible = false;
-				Height -= InfoLbl.Height;
-			}
-		}
+            BonusBox.Value = Attack.Bonus;
+            DefenceBox.SelectedItem = Attack.Defence;
 
-		~PowerAttackForm()
-		{
-			Application.Idle -= Application_Idle;
-		}
+            set_suggestion();
 
-		void Application_Idle(object sender, EventArgs e)
-		{
-			DefenceType dt = (DefenceType)DefenceBox.SelectedItem;
-			int suggested = Statistics.AttackBonus(dt, fLevel, fRole);
-			int current = (int)BonusBox.Value;
+            if (!_fFunctionalTemplate)
+            {
+                InfoLbl.Visible = false;
+                Height -= InfoLbl.Height;
+            }
+        }
 
-			SuggestBtn.Enabled = (current != suggested);
-		}
+        ~PowerAttackForm()
+        {
+            Application.Idle -= Application_Idle;
+        }
 
-		public PowerAttack Attack
-		{
-			get { return fAttack; }
-		}
-		PowerAttack fAttack = null;
+        private void Application_Idle(object sender, EventArgs e)
+        {
+            var dt = (DefenceType)DefenceBox.SelectedItem;
+            var suggested = Statistics.AttackBonus(dt, _fLevel, _fRole);
+            var current = (int)BonusBox.Value;
 
-		bool fFunctionalTemplate = false;
-		int fLevel = 0;
-		IRole fRole = null;
+            SuggestBtn.Enabled = current != suggested;
+        }
 
-		private void OKBtn_Click(object sender, EventArgs e)
-		{
-			fAttack.Bonus = (int)BonusBox.Value;
-			fAttack.Defence = (DefenceType)DefenceBox.SelectedItem;
-		}
+        private void OKBtn_Click(object sender, EventArgs e)
+        {
+            Attack.Bonus = (int)BonusBox.Value;
+            Attack.Defence = (DefenceType)DefenceBox.SelectedItem;
+        }
 
-		private void SuggestBtn_Click(object sender, EventArgs e)
-		{
-			DefenceType dt = (DefenceType)DefenceBox.SelectedItem;
-			BonusBox.Value = Statistics.AttackBonus(dt, fLevel, fRole);
-		}
+        private void SuggestBtn_Click(object sender, EventArgs e)
+        {
+            var dt = (DefenceType)DefenceBox.SelectedItem;
+            BonusBox.Value = Statistics.AttackBonus(dt, _fLevel, _fRole);
+        }
 
-		private void DefenceBox_SelectedIndexChanged(object sender, EventArgs e)
-		{
-			set_suggestion();
-		}
+        private void DefenceBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            set_suggestion();
+        }
 
-		void set_suggestion()
-		{
-			DefenceType dt = (DefenceType)DefenceBox.SelectedItem;
-			int bonus = Statistics.AttackBonus(dt, fLevel, fRole);
-			SuggestBtn.Text = (bonus >= 0) ? "+" + bonus : bonus.ToString();
+        private void set_suggestion()
+        {
+            var dt = (DefenceType)DefenceBox.SelectedItem;
+            var bonus = Statistics.AttackBonus(dt, _fLevel, _fRole);
+            SuggestBtn.Text = bonus >= 0 ? "+" + bonus : bonus.ToString();
 
-			if (fFunctionalTemplate)
-				SuggestBtn.Text = "Level " + SuggestBtn.Text;
-		}
-	}
+            if (_fFunctionalTemplate)
+                SuggestBtn.Text = "Level " + SuggestBtn.Text;
+        }
+    }
 }

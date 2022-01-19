@@ -1,32 +1,27 @@
 ﻿using System;
 using System.Windows.Forms;
-
 using Masterplan.Data;
 
-namespace Masterplan.UI
+namespace Masterplan.UI.PlayerOptions
 {
-	partial class OptionFeatureForm : Form
-	{
-		public OptionFeatureForm(Feature feature)
-		{
-			InitializeComponent();
+    internal partial class OptionFeatureForm : Form
+    {
+        public Feature Feature { get; }
 
-			fFeature = feature.Copy();
+        public OptionFeatureForm(Feature feature)
+        {
+            InitializeComponent();
 
-			NameBox.Text = fFeature.Name;
-			DetailsBox.Text = fFeature.Details;
-		}
+            Feature = feature.Copy();
 
-		public Feature Feature
-		{
-			get { return fFeature; }
-		}
-		Feature fFeature = null;
+            NameBox.Text = Feature.Name;
+            DetailsBox.Text = Feature.Details;
+        }
 
-		private void OKBtn_Click(object sender, EventArgs e)
-		{
-			fFeature.Name = NameBox.Text;
-			fFeature.Details = DetailsBox.Text;
-		}
-	}
+        private void OKBtn_Click(object sender, EventArgs e)
+        {
+            Feature.Name = NameBox.Text;
+            Feature.Details = DetailsBox.Text;
+        }
+    }
 }

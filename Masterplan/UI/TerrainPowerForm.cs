@@ -1,68 +1,63 @@
 ﻿using System;
 using System.Windows.Forms;
-
 using Masterplan.Data;
 
 namespace Masterplan.UI
 {
-    partial class TerrainPowerForm : Form
+    internal partial class TerrainPowerForm : Form
     {
+        public TerrainPower Power { get; }
+
         public TerrainPowerForm(TerrainPower power)
         {
             InitializeComponent();
 
-            Array types = Enum.GetValues(typeof(TerrainPowerType));
+            var types = Enum.GetValues(typeof(TerrainPowerType));
             foreach (TerrainPowerType type in types)
                 TypeBox.Items.Add(type);
 
-            Array actions = Enum.GetValues(typeof(ActionType));
+            var actions = Enum.GetValues(typeof(ActionType));
             foreach (ActionType action in actions)
                 ActionBox.Items.Add(action);
 
-            fPower = power.Copy();
+            Power = power.Copy();
 
-            NameBox.Text = fPower.Name;
-            TypeBox.SelectedItem = fPower.Type;
-            ActionBox.SelectedItem = fPower.Action;
+            NameBox.Text = Power.Name;
+            TypeBox.SelectedItem = Power.Type;
+            ActionBox.SelectedItem = Power.Action;
 
-            FlavourBox.Text = fPower.FlavourText;
-            RequirementBox.Text = fPower.Requirement;
+            FlavourBox.Text = Power.FlavourText;
+            RequirementBox.Text = Power.Requirement;
 
-            CheckBox.Text = fPower.Check;
-            SuccessBox.Text = fPower.Success;
-            FailureBox.Text = fPower.Failure;
+            CheckBox.Text = Power.Check;
+            SuccessBox.Text = Power.Success;
+            FailureBox.Text = Power.Failure;
 
-            AttackBox.Text = fPower.Attack;
-            TargetBox.Text = fPower.Target;
-            HitBox.Text = fPower.Hit;
-            MissBox.Text = fPower.Miss;
-            EffectBox.Text = fPower.Effect;
+            AttackBox.Text = Power.Attack;
+            TargetBox.Text = Power.Target;
+            HitBox.Text = Power.Hit;
+            MissBox.Text = Power.Miss;
+            EffectBox.Text = Power.Effect;
         }
-
-        public TerrainPower Power
-        {
-            get { return fPower; }
-        }
-        TerrainPower fPower = null;
 
         private void OKBtn_Click(object sender, EventArgs e)
         {
-            fPower.Name = NameBox.Text;
-            fPower.Type = (TerrainPowerType)TypeBox.SelectedItem;
-            fPower.Action = (ActionType)ActionBox.SelectedItem;
+            Power.Name = NameBox.Text;
+            Power.Type = (TerrainPowerType)TypeBox.SelectedItem;
+            Power.Action = (ActionType)ActionBox.SelectedItem;
 
-            fPower.FlavourText = FlavourBox.Text;
-            fPower.Requirement = RequirementBox.Text;
+            Power.FlavourText = FlavourBox.Text;
+            Power.Requirement = RequirementBox.Text;
 
-            fPower.Check = CheckBox.Text;
-            fPower.Success = SuccessBox.Text;
-            fPower.Failure = FailureBox.Text;
+            Power.Check = CheckBox.Text;
+            Power.Success = SuccessBox.Text;
+            Power.Failure = FailureBox.Text;
 
-            fPower.Attack = AttackBox.Text;
-            fPower.Target = TargetBox.Text;
-            fPower.Hit = HitBox.Text;
-            fPower.Miss = MissBox.Text;
-            fPower.Effect = EffectBox.Text;
+            Power.Attack = AttackBox.Text;
+            Power.Target = TargetBox.Text;
+            Power.Hit = HitBox.Text;
+            Power.Miss = MissBox.Text;
+            Power.Effect = EffectBox.Text;
         }
     }
 }

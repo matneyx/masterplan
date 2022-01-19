@@ -2,49 +2,36 @@
 
 namespace Masterplan.Wizards
 {
-	partial class VariantFinishPage : UserControl, IWizardPage
-	{
-		public VariantFinishPage()
-		{
-			InitializeComponent();
-		}
+    internal partial class VariantFinishPage : UserControl, IWizardPage
+    {
+        public VariantFinishPage()
+        {
+            InitializeComponent();
+        }
 
-		#region IWizardPage Members
+        public bool AllowNext => false;
 
-		public bool AllowNext
-		{
-			get { return false; }
-		}
+        public bool AllowBack => true;
 
-		public bool AllowBack
-		{
-			get { return true; }
-		}
+        public bool AllowFinish => true;
 
-		public bool AllowFinish
-		{
-			get { return true; }
-		}
+        public void OnShown(object data)
+        {
+        }
 
-		public void OnShown(object data)
-		{
-		}
+        public bool OnBack()
+        {
+            return true;
+        }
 
-		public bool OnBack()
-		{
-			return true;
-		}
+        public bool OnNext()
+        {
+            return false;
+        }
 
-		public bool OnNext()
-		{
-			return false;
-		}
-
-		public bool OnFinish()
-		{
-			return true;
-		}
-
-		#endregion
-	}
+        public bool OnFinish()
+        {
+            return true;
+        }
+    }
 }

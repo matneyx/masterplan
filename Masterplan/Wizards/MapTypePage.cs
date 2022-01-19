@@ -1,85 +1,71 @@
 ﻿using System.Windows.Forms;
-
 using Masterplan.Tools.Generators;
 
 namespace Masterplan.Wizards
 {
-	partial class MapTypePage : UserControl, IWizardPage
-	{
-		public MapTypePage()
-		{
-			InitializeComponent();
-		}
+    internal partial class MapTypePage : UserControl, IWizardPage
+    {
+        private MapBuilderData _fData;
 
-		MapBuilderData fData = null;
+        public MapTypePage()
+        {
+            InitializeComponent();
+        }
 
-		#region IWizardPage Members
+        private void set_data()
+        {
+            if (DungeonBtn.Checked)
+                _fData.Type = MapAutoBuildType.Warren;
 
-		public bool AllowNext
-		{
-			get { return true; }
-		}
+            if (AreaBtn.Checked)
+                _fData.Type = MapAutoBuildType.FilledArea;
 
-		public bool AllowBack
-		{
-			get { return false; }
-		}
+            if (FreeformBtn.Checked)
+                _fData.Type = MapAutoBuildType.Freeform;
+        }
 
-		public bool AllowFinish
-		{
-			get { return false; }
-		}
+        public bool AllowNext => true;
 
-		public void OnShown(object data)
-		{
-			if (fData == null)
-			{
-				fData = data as MapBuilderData;
+        public bool AllowBack => false;
 
-				switch (fData.Type)
-				{
-					case MapAutoBuildType.Warren:
-						DungeonBtn.Checked = true;
-						break;
-					case MapAutoBuildType.FilledArea:
-						AreaBtn.Checked = true;
-						break;
-					case MapAutoBuildType.Freeform:
-						FreeformBtn.Checked = true;
-						break;
-				}
-			}
-		}
+        public bool AllowFinish => false;
 
-		public bool OnBack()
-		{
-			return true;
-		}
+        public void OnShown(object data)
+        {
+            if (_fData == null)
+            {
+                _fData = data as MapBuilderData;
 
-		public bool OnNext()
-		{
-			set_data();
-			return true;
-		}
+                switch (_fData.Type)
+                {
+                    case MapAutoBuildType.Warren:
+                        DungeonBtn.Checked = true;
+                        break;
+                    case MapAutoBuildType.FilledArea:
+                        AreaBtn.Checked = true;
+                        break;
+                    case MapAutoBuildType.Freeform:
+                        FreeformBtn.Checked = true;
+                        break;
+                }
+            }
+        }
 
-		public bool OnFinish()
-		{
-			set_data();
-			return true;
-		}
+        public bool OnBack()
+        {
+            return true;
+        }
 
-		#endregion
+        public bool OnNext()
+        {
+            set_data();
+            return true;
+        }
 
-		void set_data()
-		{
-			if (DungeonBtn.Checked)
-				fData.Type = MapAutoBuildType.Warren;
-
-			if (AreaBtn.Checked)
-				fData.Type = MapAutoBuildType.FilledArea;
-
-			if (FreeformBtn.Checked)
-				fData.Type = MapAutoBuildType.Freeform;
-		}
-	}
+        public bool OnFinish()
+        {
+            set_data();
+            return true;
+        }
+    }
 }

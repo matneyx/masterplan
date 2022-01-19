@@ -1,89 +1,84 @@
 ﻿using System;
 using System.Windows.Forms;
-
 using Masterplan.Data;
 
-namespace Masterplan.UI
+namespace Masterplan.UI.PlayerOptions
 {
-	partial class OptionWeaponForm : Form
-	{
-		public OptionWeaponForm(Weapon weapon)
-		{
-			InitializeComponent();
+    internal partial class OptionWeaponForm : Form
+    {
+        public Weapon Weapon { get; }
 
-			Array cats = Enum.GetValues(typeof(WeaponCategory));
-			foreach (WeaponCategory cat in cats)
-				CatBox.Items.Add(cat);
+        public OptionWeaponForm(Weapon weapon)
+        {
+            InitializeComponent();
 
-			Array types = Enum.GetValues(typeof(WeaponType));
-			foreach (WeaponType type in types)
-				TypeBox.Items.Add(type);
+            var cats = Enum.GetValues(typeof(WeaponCategory));
+            foreach (WeaponCategory cat in cats)
+                CatBox.Items.Add(cat);
 
-			GroupBox.Items.Add("Axe");
-			GroupBox.Items.Add("Box");
-			GroupBox.Items.Add("Crossbow");
-			GroupBox.Items.Add("Flail");
-			GroupBox.Items.Add("Hammer");
-			GroupBox.Items.Add("Heavy Blade");
-			GroupBox.Items.Add("Light Blade");
-			GroupBox.Items.Add("Mace");
-			GroupBox.Items.Add("Pick");
-			GroupBox.Items.Add("Polearm");
-			GroupBox.Items.Add("Sling");
-			GroupBox.Items.Add("Spear");
-			GroupBox.Items.Add("Staff");
-			GroupBox.Items.Add("Unarmed");
+            var types = Enum.GetValues(typeof(WeaponType));
+            foreach (WeaponType type in types)
+                TypeBox.Items.Add(type);
 
-			PropertiesBox.Items.Add("Brutal 1");
-			PropertiesBox.Items.Add("Brutal 2");
-			PropertiesBox.Items.Add("Defensive");
-			PropertiesBox.Items.Add("Heavy Thrown");
-			PropertiesBox.Items.Add("High Crit");
-			PropertiesBox.Items.Add("Light Thrown");
-			PropertiesBox.Items.Add("Load Free");
-			PropertiesBox.Items.Add("Load Minor");
-			PropertiesBox.Items.Add("Off-Hand");
-			PropertiesBox.Items.Add("Reach");
-			PropertiesBox.Items.Add("Small");
-			PropertiesBox.Items.Add("Stout");
-			PropertiesBox.Items.Add("Versatile");
+            GroupBox.Items.Add("Axe");
+            GroupBox.Items.Add("Box");
+            GroupBox.Items.Add("Crossbow");
+            GroupBox.Items.Add("Flail");
+            GroupBox.Items.Add("Hammer");
+            GroupBox.Items.Add("Heavy Blade");
+            GroupBox.Items.Add("Light Blade");
+            GroupBox.Items.Add("Mace");
+            GroupBox.Items.Add("Pick");
+            GroupBox.Items.Add("Polearm");
+            GroupBox.Items.Add("Sling");
+            GroupBox.Items.Add("Spear");
+            GroupBox.Items.Add("Staff");
+            GroupBox.Items.Add("Unarmed");
 
-			fWeapon = weapon.Copy();
+            PropertiesBox.Items.Add("Brutal 1");
+            PropertiesBox.Items.Add("Brutal 2");
+            PropertiesBox.Items.Add("Defensive");
+            PropertiesBox.Items.Add("Heavy Thrown");
+            PropertiesBox.Items.Add("High Crit");
+            PropertiesBox.Items.Add("Light Thrown");
+            PropertiesBox.Items.Add("Load Free");
+            PropertiesBox.Items.Add("Load Minor");
+            PropertiesBox.Items.Add("Off-Hand");
+            PropertiesBox.Items.Add("Reach");
+            PropertiesBox.Items.Add("Small");
+            PropertiesBox.Items.Add("Stout");
+            PropertiesBox.Items.Add("Versatile");
 
-			NameBox.Text = fWeapon.Name;
-			CatBox.SelectedItem = fWeapon.Category;
-			TypeBox.SelectedItem = fWeapon.Type;
-			TwoHandBox.Checked = fWeapon.TwoHanded;
-			ProfBox.Value = fWeapon.Proficiency;
-			DamageBox.Text = fWeapon.Damage;
-			RangeBox.Text = fWeapon.Range;
-			PriceBox.Text = fWeapon.Price;
-			WeightBox.Text = fWeapon.Weight;
-			GroupBox.Text = fWeapon.Group;
-			PropertiesBox.Text = fWeapon.Properties;
-			DetailsBox.Text = fWeapon.Description;
-		}
+            Weapon = weapon.Copy();
 
-		public Weapon Weapon
-		{
-			get { return fWeapon; }
-		}
-		Weapon fWeapon = null;
+            NameBox.Text = Weapon.Name;
+            CatBox.SelectedItem = Weapon.Category;
+            TypeBox.SelectedItem = Weapon.Type;
+            TwoHandBox.Checked = Weapon.TwoHanded;
+            ProfBox.Value = Weapon.Proficiency;
+            DamageBox.Text = Weapon.Damage;
+            RangeBox.Text = Weapon.Range;
+            PriceBox.Text = Weapon.Price;
+            WeightBox.Text = Weapon.Weight;
+            GroupBox.Text = Weapon.Group;
+            PropertiesBox.Text = Weapon.Properties;
+            DetailsBox.Text = Weapon.Description;
+        }
 
-		private void OKBtn_Click(object sender, EventArgs e)
-		{
-			fWeapon.Name = NameBox.Text;
-			fWeapon.Category = (WeaponCategory)CatBox.SelectedItem;
-			fWeapon.Type = (WeaponType)TypeBox.SelectedItem;
-			fWeapon.TwoHanded = TwoHandBox.Checked;
-			fWeapon.Proficiency = (int)ProfBox.Value;
-			fWeapon.Damage = DamageBox.Text;
-			fWeapon.Range = RangeBox.Text;
-			fWeapon.Price = PriceBox.Text;
-			fWeapon.Weight = WeightBox.Text;
-			fWeapon.Group = GroupBox.Text;
-			fWeapon.Properties = PropertiesBox.Text;
-			fWeapon.Description = DetailsBox.Text;
-		}
-	}
+        private void OKBtn_Click(object sender, EventArgs e)
+        {
+            Weapon.Name = NameBox.Text;
+            Weapon.Category = (WeaponCategory)CatBox.SelectedItem;
+            Weapon.Type = (WeaponType)TypeBox.SelectedItem;
+            Weapon.TwoHanded = TwoHandBox.Checked;
+            Weapon.Proficiency = (int)ProfBox.Value;
+            Weapon.Damage = DamageBox.Text;
+            Weapon.Range = RangeBox.Text;
+            Weapon.Price = PriceBox.Text;
+            Weapon.Weight = WeightBox.Text;
+            Weapon.Group = GroupBox.Text;
+            Weapon.Properties = PropertiesBox.Text;
+            Weapon.Description = DetailsBox.Text;
+        }
+    }
 }

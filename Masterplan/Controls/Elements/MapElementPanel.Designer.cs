@@ -1,4 +1,4 @@
-﻿namespace Masterplan.Controls
+﻿namespace Masterplan.Controls.Elements
 {
 	partial class MapElementPanel
 	{

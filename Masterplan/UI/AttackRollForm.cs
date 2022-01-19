@@ -2,360 +2,350 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
-
 using Masterplan.Data;
 using Masterplan.Tools;
 
 namespace Masterplan.UI
 {
-	partial class AttackRollForm : Form
-	{
-		public AttackRollForm(CreaturePower power, Encounter enc)
-		{
-			InitializeComponent();
+    internal partial class AttackRollForm : Form
+    {
+        private readonly Encounter _fEncounter;
 
-			Application.Idle += new EventHandler(Application_Idle);
+        private readonly CreaturePower _fPower;
 
-			fPower = power;
-			fEncounter = enc;
+        private readonly List<Pair<CombatData, int>> _fRolls = new List<Pair<CombatData, int>>();
 
-			add_attack_roll(null);
+        private bool _fAddedCombatant;
 
-			update_damage();
-			RollDamageBtn_Click(null, null);
-		}
+        public Pair<CombatData, int> SelectedRoll
+        {
+            get
+            {
+                if (RollList.SelectedItems.Count != 0)
+                    return RollList.SelectedItems[0].Tag as Pair<CombatData, int>;
 
-		~AttackRollForm()
-		{
-			Application.Idle -= Application_Idle;
-		}
+                return null;
+            }
+        }
 
-		void Application_Idle(object sender, EventArgs e)
-		{
-			ApplyDamageBox.Visible = fAddedCombatant;
-		}
+        public AttackRollForm(CreaturePower power, Encounter enc)
+        {
+            InitializeComponent();
 
-		CreaturePower fPower = null;
-		Encounter fEncounter = null;
+            Application.Idle += Application_Idle;
 
-		bool fAddedCombatant = false;
+            _fPower = power;
+            _fEncounter = enc;
 
-		List<Pair<CombatData, int>> fRolls = new List<Pair<CombatData, int>>();
+            add_attack_roll(null);
 
-		public Pair<CombatData, int> SelectedRoll
-		{
-			get
-			{
-				if (RollList.SelectedItems.Count != 0)
-					return RollList.SelectedItems[0].Tag as Pair<CombatData, int>;
+            update_damage();
+            RollDamageBtn_Click(null, null);
+        }
 
-				return null;
-			}
-		}
+        ~AttackRollForm()
+        {
+            Application.Idle -= Application_Idle;
+        }
 
-		private void OKBtn_Click(object sender, EventArgs e)
-		{
-			if (ApplyDamageBox.Visible && ApplyDamageBox.Checked)
-				apply_damage();
-		}
+        private void Application_Idle(object sender, EventArgs e)
+        {
+            ApplyDamageBox.Visible = _fAddedCombatant;
+        }
 
-		private void PowerBrowser_Navigating(object sender, WebBrowserNavigatingEventArgs e)
-		{
-			if (e.Url.Scheme == "opponent")
-			{
-				e.Cancel = true;
+        private void OKBtn_Click(object sender, EventArgs e)
+        {
+            if (ApplyDamageBox.Visible && ApplyDamageBox.Checked)
+                apply_damage();
+        }
 
-				Guid id = new Guid(e.Url.LocalPath);
-				CombatData cd = fEncounter.FindCombatData(id);
+        private void PowerBrowser_Navigating(object sender, WebBrowserNavigatingEventArgs e)
+        {
+            if (e.Url.Scheme == "opponent")
+            {
+                e.Cancel = true;
 
-				add_attack_roll(cd);
-			}
+                var id = new Guid(e.Url.LocalPath);
+                var cd = _fEncounter.FindCombatData(id);
 
-			if (e.Url.Scheme == "hero")
-			{
-				e.Cancel = true;
+                add_attack_roll(cd);
+            }
 
-				Guid id = new Guid(e.Url.LocalPath);
-				Hero hero = Session.Project.FindHero(id);
-				if (hero != null)
-				{
-					CombatData cd = hero.CombatData;
+            if (e.Url.Scheme == "hero")
+            {
+                e.Cancel = true;
 
-					add_attack_roll(cd);
-				}
-			}
+                var id = new Guid(e.Url.LocalPath);
+                var hero = Session.Project.FindHero(id);
+                if (hero != null)
+                {
+                    var cd = hero.CombatData;
 
-			if (e.Url.Scheme == "target")
-			{
-				e.Cancel = true;
+                    add_attack_roll(cd);
+                }
+            }
 
-				add_attack_roll(null);
-			}
-		}
+            if (e.Url.Scheme == "target")
+            {
+                e.Cancel = true;
 
-		private void RollList_DoubleClick(object sender, EventArgs e)
-		{
-			if (SelectedRoll != null)
-			{
-				int roll = Session.Dice(1, 20);
-				SelectedRoll.Second = roll;
-				update_list();
-			}
-		}
+                add_attack_roll(null);
+            }
+        }
 
-		private void RollDamageBtn_Click(object sender, EventArgs e)
-		{
-			DiceExpression exp = DiceExpression.Parse(DamageExpLbl.Text);
-			if (exp != null)
-			{
-				int roll = exp.Evaluate();
-				DamageBox.Value = roll;
-			}
-		}
+        private void RollList_DoubleClick(object sender, EventArgs e)
+        {
+            if (SelectedRoll != null)
+            {
+                var roll = Session.Dice(1, 20);
+                SelectedRoll.Second = roll;
+                update_list();
+            }
+        }
 
-		private void DamageBox_ValueChanged(object sender, EventArgs e)
-		{
-			int roll = (int)DamageBox.Value;
-			int miss = roll / 2;
-			MissValueLbl.Text = miss.ToString();
-		}
+        private void RollDamageBtn_Click(object sender, EventArgs e)
+        {
+            var exp = DiceExpression.Parse(DamageExpLbl.Text);
+            if (exp != null)
+            {
+                var roll = exp.Evaluate();
+                DamageBox.Value = roll;
+            }
+        }
 
-		void update_power()
-		{
-			List<string> lines = new List<string>();
+        private void DamageBox_ValueChanged(object sender, EventArgs e)
+        {
+            var roll = (int)DamageBox.Value;
+            var miss = roll / 2;
+            MissValueLbl.Text = miss.ToString();
+        }
 
-			lines.AddRange(HTML.GetHead(fPower.Name, "", Session.Preferences.TextSize));
+        private void update_power()
+        {
+            var lines = new List<string>();
 
-			lines.Add("<BODY>");
+            lines.AddRange(Html.GetHead(_fPower.Name, "", Session.Preferences.TextSize));
 
-			lines.Add("<P class=table>");
-			lines.Add("<TABLE>");
-			lines.AddRange(fPower.AsHTML(null, CardMode.View, false));
-			lines.Add("</TABLE>");
-			lines.Add("</P>");
+            lines.Add("<BODY>");
 
-			lines.Add("<P class=instruction align=left>");
-			lines.Add("Click to add an attack roll for:");
-			string heroes = "";
-			foreach (Hero hero in Session.Project.Heroes)
-			{
-				CombatData cd = hero.CombatData;
+            lines.Add("<P class=table>");
+            lines.Add("<TABLE>");
+            lines.AddRange(_fPower.AsHtml(null, CardMode.View, false));
+            lines.Add("</TABLE>");
+            lines.Add("</P>");
 
-				if ((!roll_exists(hero.ID)) && (hero.GetState(cd.Damage) != CreatureState.Defeated))
-				{
-					if (heroes != "")
-						heroes += " | ";
+            lines.Add("<P class=instruction align=left>");
+            lines.Add("Click to add an attack roll for:");
+            var heroes = "";
+            foreach (var hero in Session.Project.Heroes)
+            {
+                var cd = hero.CombatData;
 
-					heroes += "<A href=hero:" + hero.ID + ">" + hero.Name + "</A>";
-				}
-			}
-			if (heroes != "")
-			{
-				lines.Add("<BR>");
-				lines.Add(heroes);
-			}
-			string creatures = "";
-			foreach (EncounterSlot slot in fEncounter.Slots)
-			{
-				foreach (CombatData cd in slot.CombatData)
-				{
-					if ((!roll_exists(cd.ID)) && (slot.GetState(cd) != CreatureState.Defeated))
-					{
-						if (creatures != "")
-							creatures += " | ";
+                if (!roll_exists(hero.Id) && hero.GetState(cd.Damage) != CreatureState.Defeated)
+                {
+                    if (heroes != "")
+                        heroes += " | ";
 
-						creatures += "<A href=opponent:" + cd.ID + ">" + cd.DisplayName + "</A>";
-					}
-				}
-			}
-			if (creatures != "")
-			{
-				lines.Add("<BR>");
-				lines.Add(creatures);
-			}
-			lines.Add("<BR>");
-			lines.Add("<A href=target:blank>An unnamed target</A>");
-			lines.Add("</P>");
+                    heroes += "<A href=hero:" + hero.Id + ">" + hero.Name + "</A>";
+                }
+            }
 
-			lines.Add("</BODY>");
-			lines.Add("</HTML>");
+            if (heroes != "")
+            {
+                lines.Add("<BR>");
+                lines.Add(heroes);
+            }
 
-			PowerBrowser.DocumentText = HTML.Concatenate(lines);
-		}
+            var creatures = "";
+            foreach (var slot in _fEncounter.Slots)
+            foreach (var cd in slot.CombatData)
+                if (!roll_exists(cd.Id) && slot.GetState(cd) != CreatureState.Defeated)
+                {
+                    if (creatures != "")
+                        creatures += " | ";
 
-		void update_list()
-		{
-			RollList.Items.Clear();
+                    creatures += "<A href=opponent:" + cd.Id + ">" + cd.DisplayName + "</A>";
+                }
 
-			foreach (Pair<CombatData, int> roll in fRolls)
-			{
-				int die = roll.Second;
-				int bonus = (fPower.Attack != null) ? fPower.Attack.Bonus : 0;
-				int total = die + bonus;
+            if (creatures != "")
+            {
+                lines.Add("<BR>");
+                lines.Add(creatures);
+            }
 
-				ListViewItem lvi = RollList.Items.Add(roll.First != null ? roll.First.DisplayName : "Roll");
-				lvi.SubItems.Add(die.ToString());
-				lvi.SubItems.Add(bonus.ToString());
-				lvi.SubItems.Add(total.ToString());
+            lines.Add("<BR>");
+            lines.Add("<A href=target:blank>An unnamed target</A>");
+            lines.Add("</P>");
 
-				bool hit = true;
-				if ((roll.First != null) && (fPower.Attack != null))
-				{
-					// Work out whether we've hit the defence
-					int defence = 0;
-					Hero hero = Session.Project.FindHero(roll.First.ID);
-					if (hero != null)
-					{
-						switch (fPower.Attack.Defence)
-						{
-							case DefenceType.AC:
-								defence = hero.AC;
-								break;
-							case DefenceType.Fortitude:
-								defence = hero.Fortitude;
-								break;
-							case DefenceType.Reflex:
-								defence = hero.Reflex;
-								break;
-							case DefenceType.Will:
-								defence = hero.Will;
-								break;
-						}
-					}
-					else
-					{
-						EncounterSlot slot = fEncounter.FindSlot(roll.First);
+            lines.Add("</BODY>");
+            lines.Add("</HTML>");
 
-						switch (fPower.Attack.Defence)
-						{
-							case DefenceType.AC:
-								defence = slot.Card.AC;
-								break;
-							case DefenceType.Fortitude:
-								defence = slot.Card.Fortitude;
-								break;
-							case DefenceType.Reflex:
-								defence = slot.Card.Reflex;
-								break;
-							case DefenceType.Will:
-								defence = slot.Card.Will;
-								break;
-						}
-					}
+            PowerBrowser.DocumentText = Html.Concatenate(lines);
+        }
 
-					// Take account of defence-boosting conditions
-					foreach (OngoingCondition oc in roll.First.Conditions)
-					{
-						if (oc.Type != OngoingType.DefenceModifier)
-							continue;
+        private void update_list()
+        {
+            RollList.Items.Clear();
 
-						if (oc.Defences.Contains(fPower.Attack.Defence))
-							defence += oc.DefenceMod;
-					}
+            foreach (var roll in _fRolls)
+            {
+                var die = roll.Second;
+                var bonus = _fPower.Attack?.Bonus ?? 0;
+                var total = die + bonus;
 
-					hit = (total >= defence);
-				}
+                var lvi = RollList.Items.Add(roll.First != null ? roll.First.DisplayName : "Roll");
+                lvi.SubItems.Add(die.ToString());
+                lvi.SubItems.Add(bonus.ToString());
+                lvi.SubItems.Add(total.ToString());
 
-				if (die == 20)
-					lvi.Font = new Font(lvi.Font, lvi.Font.Style | FontStyle.Bold);
-				else if (die == 1)
-					lvi.ForeColor = Color.Red;
-				else if (!hit)
-					lvi.ForeColor = SystemColors.GrayText;
+                var hit = true;
+                if (roll.First != null && _fPower.Attack != null)
+                {
+                    // Work out whether we've hit the defence
+                    var defence = 0;
+                    var hero = Session.Project.FindHero(roll.First.Id);
+                    if (hero != null)
+                    {
+                        switch (_fPower.Attack.Defence)
+                        {
+                            case DefenceType.Ac:
+                                defence = hero.Ac;
+                                break;
+                            case DefenceType.Fortitude:
+                                defence = hero.Fortitude;
+                                break;
+                            case DefenceType.Reflex:
+                                defence = hero.Reflex;
+                                break;
+                            case DefenceType.Will:
+                                defence = hero.Will;
+                                break;
+                        }
+                    }
+                    else
+                    {
+                        var slot = _fEncounter.FindSlot(roll.First);
 
-				lvi.Tag = roll;
-			}
-		}
+                        switch (_fPower.Attack.Defence)
+                        {
+                            case DefenceType.Ac:
+                                defence = slot.Card.Ac;
+                                break;
+                            case DefenceType.Fortitude:
+                                defence = slot.Card.Fortitude;
+                                break;
+                            case DefenceType.Reflex:
+                                defence = slot.Card.Reflex;
+                                break;
+                            case DefenceType.Will:
+                                defence = slot.Card.Will;
+                                break;
+                        }
+                    }
 
-		void update_damage()
-		{
-			string dmg_str = fPower.Damage;
-			if (dmg_str == "")
-			{
-				Pages.TabPages.Remove(DamagePage);
-			}
-			else
-			{
-				DiceExpression exp = DiceExpression.Parse(dmg_str);
-				
-				DamageExpLbl.Text = dmg_str;
-				CritValueLbl.Text = exp.Maximum.ToString();
-			}
-		}
+                    // Take account of defence-boosting conditions
+                    foreach (var oc in roll.First.Conditions)
+                    {
+                        if (oc.Type != OngoingType.DefenceModifier)
+                            continue;
 
-		void add_attack_roll(CombatData cd)
-		{
-			if (cd != null)
-			{
-				if ((fRolls.Count == 1) && (fRolls[0].First == null))
-					fRolls.Clear();
-			}
+                        if (oc.Defences.Contains(_fPower.Attack.Defence))
+                            defence += oc.DefenceMod;
+                    }
 
-			int roll = Session.Dice(1, 20);
-			fRolls.Add(new Pair<CombatData, int>(cd, roll));
+                    hit = total >= defence;
+                }
 
-			if (cd != null)
-				fAddedCombatant = true;
+                if (die == 20)
+                    lvi.Font = new Font(lvi.Font, lvi.Font.Style | FontStyle.Bold);
+                else if (die == 1)
+                    lvi.ForeColor = Color.Red;
+                else if (!hit)
+                    lvi.ForeColor = SystemColors.GrayText;
 
-			update_list();
-			update_power();
-		}
+                lvi.Tag = roll;
+            }
+        }
 
-		bool roll_exists(Guid id)
-		{
-			foreach (Pair<CombatData, int> roll in fRolls)
-			{
-				if ((roll.First != null) && (roll.First.ID == id))
-					return true;
-			}
+        private void update_damage()
+        {
+            var dmgStr = _fPower.Damage;
+            if (dmgStr == "")
+            {
+                Pages.TabPages.Remove(DamagePage);
+            }
+            else
+            {
+                var exp = DiceExpression.Parse(dmgStr);
 
-			return false;
-		}
+                DamageExpLbl.Text = dmgStr;
+                CritValueLbl.Text = exp.Maximum.ToString();
+            }
+        }
 
-		void apply_damage()
-		{
-			foreach (ListViewItem lvi in RollList.Items)
-			{
-				Pair<CombatData, int> roll = lvi.Tag as Pair<CombatData, int>;
-				if (roll.First == null)
-					continue;
+        private void add_attack_roll(CombatData cd)
+        {
+            if (cd != null)
+                if (_fRolls.Count == 1 && _fRolls[0].First == null)
+                    _fRolls.Clear();
 
-				int damage = 0;
-				if (roll.Second == 20)
-				{
-					damage = int.Parse(CritValueLbl.Text);
-				}
-				else if (lvi.ForeColor == SystemColors.WindowText)
-				{
-					// Hit
-					damage = (int)DamageBox.Value;
-				}
-				else
-				{
-					// Miss
-					// TODO: Does the power do half damage on a miss?
-					// Remember that minions are unaffected by this
-				}
+            var roll = Session.Dice(1, 20);
+            _fRolls.Add(new Pair<CombatData, int>(cd, roll));
 
-				if (damage == 0)
-					continue;
+            if (cd != null)
+                _fAddedCombatant = true;
 
-				// Determine damage type(s)
-				Array array = Enum.GetValues(typeof(DamageType));
-				List<DamageType> types = new List<DamageType>();
-				foreach (DamageType type in array)
-				{
-					string details = fPower.Details.ToLower();
-					string dmg = type.ToString().ToLower();
-					if (details.Contains(dmg))
-						types.Add(type);
-				}
+            update_list();
+            update_power();
+        }
 
-				EncounterSlot slot = fEncounter.FindSlot(roll.First);
-				EncounterCard card = (slot != null) ? slot.Card : null;
+        private bool roll_exists(Guid id)
+        {
+            foreach (var roll in _fRolls)
+                if (roll.First != null && roll.First.Id == id)
+                    return true;
 
-				DamageForm.DoDamage(roll.First, card, damage, types, false);
-			}
-		}
-	}
+            return false;
+        }
+
+        private void apply_damage()
+        {
+            foreach (ListViewItem lvi in RollList.Items)
+            {
+                var roll = lvi.Tag as Pair<CombatData, int>;
+                if (roll.First == null)
+                    continue;
+
+                var damage = 0;
+                if (roll.Second == 20)
+                {
+                    damage = int.Parse(CritValueLbl.Text);
+                }
+                else if (lvi.ForeColor == SystemColors.WindowText)
+                {
+                    // Hit
+                    damage = (int)DamageBox.Value;
+                }
+
+                if (damage == 0)
+                    continue;
+
+                // Determine damage type(s)
+                var array = Enum.GetValues(typeof(DamageType));
+                var types = new List<DamageType>();
+                foreach (DamageType type in array)
+                {
+                    var details = _fPower.Details.ToLower();
+                    var dmg = type.ToString().ToLower();
+                    if (details.Contains(dmg))
+                        types.Add(type);
+                }
+
+                var slot = _fEncounter.FindSlot(roll.First);
+                var card = slot?.Card;
+
+                DamageForm.DoDamage(roll.First, card, damage, types, false);
+            }
+        }
+    }
 }

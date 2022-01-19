@@ -1,130 +1,125 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-
 using Masterplan.Data;
 using Masterplan.Tools;
 
 namespace Masterplan.UI
 {
-	partial class ArtifactSelectForm : Form
-	{
-		public ArtifactSelectForm()
-		{
-			InitializeComponent();
+    internal partial class ArtifactSelectForm : Form
+    {
+        public Artifact Artifact
+        {
+            get
+            {
+                if (ItemList.SelectedItems.Count != 0)
+                    return ItemList.SelectedItems[0].Tag as Artifact;
 
-			Application.Idle += new EventHandler(Application_Idle);
+                return null;
+            }
+        }
 
-			Browser.DocumentText = "";
-			ItemList_SelectedIndexChanged(null, null);
-	
-			update_list();
-		}
+        public ArtifactSelectForm()
+        {
+            InitializeComponent();
 
-		~ArtifactSelectForm()
-		{
-			Application.Idle -= Application_Idle;
-		}
+            Application.Idle += Application_Idle;
 
-		void Application_Idle(object sender, EventArgs e)
-		{
-			OKBtn.Enabled = (Artifact != null);
-		}
+            Browser.DocumentText = "";
+            ItemList_SelectedIndexChanged(null, null);
 
-		public Artifact Artifact
-		{
-			get
-			{
-				if (ItemList.SelectedItems.Count != 0)
-					return ItemList.SelectedItems[0].Tag as Artifact;
+            update_list();
+        }
 
-				return null;
-			}
-		}
+        ~ArtifactSelectForm()
+        {
+            Application.Idle -= Application_Idle;
+        }
 
-		private void NameBox_TextChanged(object sender, EventArgs e)
-		{
-			update_list();
-		}
+        private void Application_Idle(object sender, EventArgs e)
+        {
+            OKBtn.Enabled = Artifact != null;
+        }
 
-		private void ItemList_SelectedIndexChanged(object sender, EventArgs e)
-		{
-			string html = HTML.Artifact(Artifact, Session.Preferences.TextSize, false, true);
+        private void NameBox_TextChanged(object sender, EventArgs e)
+        {
+            update_list();
+        }
 
-			Browser.Document.OpenNew(true);
-			Browser.Document.Write(html);
-		}
+        private void ItemList_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            var html = Html.Artifact(Artifact, Session.Preferences.TextSize, false, true);
 
-		private void ItemList_DoubleClick(object sender, EventArgs e)
-		{
-			if (Artifact != null)
-			{
-				DialogResult = DialogResult.OK;
-				Close();
-			}
-		}
+            Browser.Document.OpenNew(true);
+            Browser.Document.Write(html);
+        }
 
-		void update_list()
-		{
-			List<Artifact> artifacts = new List<Artifact>();
-			foreach (Artifact a in Session.Artifacts)
-			{
-				if (match(a, NameBox.Text))
-					artifacts.Add(a);
-			}
+        private void ItemList_DoubleClick(object sender, EventArgs e)
+        {
+            if (Artifact != null)
+            {
+                DialogResult = DialogResult.OK;
+                Close();
+            }
+        }
 
-			ListViewGroup lvg_heroic = ItemList.Groups.Add("Heroic Tier", "Heroic Tier");
-			ListViewGroup lvg_paragon = ItemList.Groups.Add("Paragon Tier", "Paragon Tier");
-			ListViewGroup lvg_epic = ItemList.Groups.Add("Epic Tier", "Epic Tier");
+        private void update_list()
+        {
+            var artifacts = new List<Artifact>();
+            foreach (var a in Session.Artifacts)
+                if (Match(a, NameBox.Text))
+                    artifacts.Add(a);
 
-			List<ListViewItem> list_items = new List<ListViewItem>();
-			foreach (Artifact item in artifacts)
-			{
-				ListViewItem lvi = new ListViewItem(item.Name);
-				lvi.SubItems.Add(item.Tier + " Tier");
-				lvi.Tag = item;
+            var lvgHeroic = ItemList.Groups.Add("Heroic Tier", "Heroic Tier");
+            var lvgParagon = ItemList.Groups.Add("Paragon Tier", "Paragon Tier");
+            var lvgEpic = ItemList.Groups.Add("Epic Tier", "Epic Tier");
 
-				switch (item.Tier)
-				{
-					case Tier.Heroic:
-						lvi.Group = lvg_heroic;
-						break;
-					case Tier.Paragon:
-						lvi.Group = lvg_paragon;
-						break;
-					case Tier.Epic:
-						lvi.Group = lvg_epic;
-						break;
-				}
+            var listItems = new List<ListViewItem>();
+            foreach (var item in artifacts)
+            {
+                var lvi = new ListViewItem(item.Name);
+                lvi.SubItems.Add(item.Tier + " Tier");
+                lvi.Tag = item;
 
-				list_items.Add(lvi);
-			}
+                switch (item.Tier)
+                {
+                    case Tier.Heroic:
+                        lvi.Group = lvgHeroic;
+                        break;
+                    case Tier.Paragon:
+                        lvi.Group = lvgParagon;
+                        break;
+                    case Tier.Epic:
+                        lvi.Group = lvgEpic;
+                        break;
+                }
 
-			ItemList.BeginUpdate();
-			ItemList.Items.Clear();
-			ItemList.Items.AddRange(list_items.ToArray());
-			ItemList.EndUpdate();
-		}
+                listItems.Add(lvi);
+            }
 
-		bool match(Artifact item, string query)
-		{
-			string[] tokens = query.ToLower().Split();
+            ItemList.BeginUpdate();
+            ItemList.Items.Clear();
+            ItemList.Items.AddRange(listItems.ToArray());
+            ItemList.EndUpdate();
+        }
 
-			foreach (string token in tokens)
-			{
-				if (!match_token(item, token))
-					return false;
-			}
+        private bool Match(Artifact item, string query)
+        {
+            var tokens = query.ToLower().Split();
 
-			return true;
-		}
+            foreach (var token in tokens)
+                if (!match_token(item, token))
+                    return false;
 
-		bool match_token(Artifact item, string token)
-		{
-			if (item.Name.ToLower().Contains(token))
-				return true;
+            return true;
+        }
 
-			return false;
-		}
-	}
+        private bool match_token(Artifact item, string token)
+        {
+            if (item.Name.ToLower().Contains(token))
+                return true;
+
+            return false;
+        }
+    }
 }

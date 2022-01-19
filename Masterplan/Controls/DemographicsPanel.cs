@@ -4,450 +4,429 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
-
 using Masterplan.Data;
 using Masterplan.Tools;
 
 namespace Masterplan.Controls
 {
-	#region Enumerations
+    /// <summary>
+    ///     Different types of information that can be shown in a DemographicsPanel control.
+    /// </summary>
+    public enum DemographicsSource
+    {
+        /// <summary>
+        ///     Show creature breakdown.
+        /// </summary>
+        Creatures,
 
-	/// <summary>
-	/// Different types of information that can be shown in a DemographicsPanel control.
-	/// </summary>
-	public enum DemographicsSource
-	{
-		/// <summary>
-		/// Show creature breakdown.
-		/// </summary>
-		Creatures,
+        /// <summary>
+        ///     Show trap breakdown.
+        /// </summary>
+        Traps,
 
-		/// <summary>
-		/// Show trap breakdown.
-		/// </summary>
-		Traps,
+        /// <summary>
+        ///     Show magic item breakdown.
+        /// </summary>
+        MagicItems
+    }
 
-		/// <summary>
-		/// Show magic item breakdown.
-		/// </summary>
-		MagicItems
-	}
+    /// <summary>
+    ///     Different types of breakdown that can be used in a DemographicsPanel control.
+    /// </summary>
+    public enum DemographicsMode
+    {
+        /// <summary>
+        ///     Show breakdown by level.
+        /// </summary>
+        Level,
 
-	/// <summary>
-	/// Different types of breakdown that can be used in a DemographicsPanel control.
-	/// </summary>
-	public enum DemographicsMode
-	{
-		/// <summary>
-		/// Show breakdown by level.
-		/// </summary>
-		Level,
+        /// <summary>
+        ///     Show breakdown by role.
+        /// </summary>
+        Role,
 
-		/// <summary>
-		/// Show breakdown by role.
-		/// </summary>
-		Role,
+        /// <summary>
+        ///     Show breakdown by standard / elite / solo / minion.
+        /// </summary>
+        Status
+    }
 
-		/// <summary>
-		/// Show breakdown by standard / elite / solo / minion.
-		/// </summary>
-		Status
-	}
+    /// <summary>
+    ///     Panel to show various breakdowns of creatures in a library.
+    /// </summary>
+    public partial class DemographicsPanel : UserControl
+    {
+        private readonly StringFormat _centered = new StringFormat();
 
-	#endregion
+        private Dictionary<string, int> _breakdown;
 
-	/// <summary>
-	/// Panel to show various breakdowns of creatures in a library.
-	/// </summary>
-	public partial class DemographicsPanel : UserControl
-	{
-		/// <summary>
-		/// Default constructor.
-		/// </summary>
-		public DemographicsPanel()
-		{
-			InitializeComponent();
+        private Library _fLibrary;
 
-			SetStyle(ControlStyles.AllPaintingInWmPaint
-				| ControlStyles.OptimizedDoubleBuffer
-				| ControlStyles.ResizeRedraw
-				| ControlStyles.UserPaint, true);
+        private DemographicsMode _fMode = DemographicsMode.Level;
 
-			fCentred.Alignment = StringAlignment.Center;
-			fCentred.LineAlignment = StringAlignment.Center;
-			fCentred.Trimming = StringTrimming.EllipsisWord;
-		}
+        private DemographicsSource _fSource = DemographicsSource.Creatures;
 
-		#region Properties
+        /// <summary>
+        ///     Gets or sets the library to display.
+        /// </summary>
+        [Category("Data")]
+        [Description("The library to display.")]
+        public Library Library
+        {
+            get => _fLibrary;
+            set
+            {
+                _fLibrary = value;
+                _breakdown = null;
 
-		/// <summary>
-		/// Gets or sets the library to display.
-		/// </summary>
-		[Category("Data"), Description("The library to display.")]
-		public Library Library
-		{
-			get { return fLibrary; }
-			set
-			{
-				fLibrary = value;
-				fBreakdown = null;
+                Invalidate();
+            }
+        }
 
-				Invalidate();
-			}
-		}
-		Library fLibrary = null;
+        /// <summary>
+        ///     Gets or sets the category of information to show.
+        /// </summary>
+        [Category("Appearance")]
+        [Description("The category of information to show.")]
+        public DemographicsSource Source
+        {
+            get => _fSource;
+            set
+            {
+                _fSource = value;
+                _breakdown = null;
 
-		/// <summary>
-		/// Gets or sets the category of information to show.
-		/// </summary>
-		[Category("Appearance"), Description("The category of information to show.")]
-		public DemographicsSource Source
-		{
-			get { return fSource; }
-			set
-			{
-				fSource = value;
-				fBreakdown = null;
+                Invalidate();
+            }
+        }
 
-				Invalidate();
-			}
-		}
-		DemographicsSource fSource = DemographicsSource.Creatures;
+        /// <summary>
+        ///     Gets or sets the type of breakdown to show.
+        /// </summary>
+        [Category("Appearance")]
+        [Description("The type of breakdown to show.")]
+        public DemographicsMode Mode
+        {
+            get => _fMode;
+            set
+            {
+                _fMode = value;
+                _breakdown = null;
 
-		/// <summary>
-		/// Gets or sets the type of breakdown to show.
-		/// </summary>
-		[Category("Appearance"), Description("The type of breakdown to show.")]
-		public DemographicsMode Mode
-		{
-			get { return fMode; }
-			set
-			{
-				fMode = value;
-				fBreakdown = null;
+                Invalidate();
+            }
+        }
 
-				Invalidate();
-			}
-		}
-		DemographicsMode fMode = DemographicsMode.Level;
+        /// <summary>
+        ///     Default constructor.
+        /// </summary>
+        public DemographicsPanel()
+        {
+            InitializeComponent();
 
-		#endregion
+            SetStyle(ControlStyles.AllPaintingInWmPaint
+                     | ControlStyles.OptimizedDoubleBuffer
+                     | ControlStyles.ResizeRedraw
+                     | ControlStyles.UserPaint, true);
 
-		internal void ShowTable(ReportTable table)
-		{
-			fBreakdown = new Dictionary<string, int>();
+            _centered.Alignment = StringAlignment.Center;
+            _centered.LineAlignment = StringAlignment.Center;
+            _centered.Trimming = StringTrimming.EllipsisWord;
+        }
 
-			foreach (ReportRow row in table.Rows)
-			{
-				fBreakdown[row.Heading] = row.Total;
-			}
+        internal void ShowTable(ReportTable table)
+        {
+            _breakdown = new Dictionary<string, int>();
 
-			Invalidate();
-		}
+            foreach (var row in table.Rows) _breakdown[row.Heading] = row.Total;
 
-		StringFormat fCentred = new StringFormat();
+            Invalidate();
+        }
 
-		Dictionary<string, int> fBreakdown = null;
+        /// <summary>
+        ///     Called in response to the Paint event.
+        /// </summary>
+        /// <param name="e">The event data.</param>
+        protected override void OnPaint(PaintEventArgs e)
+        {
+            if (_breakdown == null)
+                analyse_data();
 
-		/// <summary>
-		/// Called in response to the Paint event.
-		/// </summary>
-		/// <param name="e">The event data.</param>
-		protected override void OnPaint(PaintEventArgs e)
-		{
-			if (fBreakdown == null)
-				analyse_data();
+            e.Graphics.FillRectangle(Brushes.White, ClientRectangle);
 
-			e.Graphics.FillRectangle(Brushes.White, ClientRectangle);
+            var columnCount = _breakdown.Keys.Count;
+            if (columnCount == 0)
+                return;
 
-			int column_count = fBreakdown.Keys.Count;
-			if (column_count == 0)
-				return;
+            var minValue = 0;
+            var maxValue = 0;
+            foreach (var key in _breakdown.Keys)
+            {
+                var value = _breakdown[key];
 
-			int min_value = 0;
-			int max_value = 0;
-			foreach (string key in fBreakdown.Keys)
-			{
-				int value = fBreakdown[key];
+                maxValue = Math.Max(maxValue, value);
+                minValue = Math.Min(minValue, value);
+            }
 
-				max_value = Math.Max(max_value, value);
-				min_value = Math.Min(min_value, value);
-			}
-			int range = max_value - min_value;
-			if (range == 0)
-				return;
+            var range = maxValue - minValue;
+            if (range == 0)
+                return;
 
-			int border = 20;
-			Rectangle rect = new Rectangle(border, border, ClientRectangle.Width - (2 * border), ClientRectangle.Height - (3 * border));
-			float bar_width = (float)rect.Width / column_count;
+            var border = 20;
+            var rect = new Rectangle(border, border, ClientRectangle.Width - 2 * border,
+                ClientRectangle.Height - 3 * border);
+            var barWidth = (float)rect.Width / columnCount;
 
-			List<string> labels = new List<string>();
-			labels.AddRange(fBreakdown.Keys);
+            var labels = new List<string>();
+            labels.AddRange(_breakdown.Keys);
 
-			using (Font count_font = new Font(Font.FontFamily, Font.Size * 0.8f))
-			{
-				for (int column_index = 0; column_index != labels.Count; ++column_index)
-				{
-					string label = labels[column_index];
+            using (var countFont = new Font(Font.FontFamily, Font.Size * 0.8f))
+            {
+                for (var columnIndex = 0; columnIndex != labels.Count; ++columnIndex)
+                {
+                    var label = labels[columnIndex];
 
-					float x = bar_width * column_index;
-					RectangleF label_rect = new RectangleF(rect.Left + x, rect.Bottom, bar_width, border);
-					e.Graphics.DrawString(label, count_font, Brushes.Black, label_rect, fCentred);
+                    var x = barWidth * columnIndex;
+                    var labelRect = new RectangleF(rect.Left + x, rect.Bottom, barWidth, border);
+                    e.Graphics.DrawString(label, countFont, Brushes.Black, labelRect, _centered);
 
-					int value = fBreakdown[label];
-					if (value != 0)
-					{
-						Color top_colour = (value >= 0) ? Color.LightGray : Color.White;
-						Color bottom_colour = (value >= 0) ? Color.White : Color.LightGray;
+                    var value = _breakdown[label];
+                    if (value != 0)
+                    {
+                        var topColour = value >= 0 ? Color.LightGray : Color.White;
+                        var bottomColour = value >= 0 ? Color.White : Color.LightGray;
 
-						int top = Math.Max(value, 0);
-						int bottom = Math.Min(value, 0);
+                        var top = Math.Max(value, 0);
+                        var bottom = Math.Min(value, 0);
 
-						int top_y = rect.Bottom - ((rect.Height - border) * (top - min_value) / range);
-						int height = (rect.Height - border) * (top - bottom) / range;
-						RectangleF bar = new RectangleF(rect.Left + x, top_y, bar_width, height);
+                        var topY = rect.Bottom - (rect.Height - border) * (top - minValue) / range;
+                        var height = (rect.Height - border) * (top - bottom) / range;
+                        var bar = new RectangleF(rect.Left + x, topY, barWidth, height);
 
-						using (Brush bar_fill = new LinearGradientBrush(bar, top_colour, bottom_colour, LinearGradientMode.Vertical))
-						{
-							e.Graphics.FillRectangle(bar_fill, bar);
-							e.Graphics.DrawRectangle(Pens.Gray, bar.X, bar.Y, bar.Width, bar.Height);
-						}
+                        using (Brush barFill =
+                               new LinearGradientBrush(bar, topColour, bottomColour, LinearGradientMode.Vertical))
+                        {
+                            e.Graphics.FillRectangle(barFill, bar);
+                            e.Graphics.DrawRectangle(Pens.Gray, bar.X, bar.Y, bar.Width, bar.Height);
+                        }
 
-						RectangleF count_rect = new RectangleF(rect.Left + x, rect.Top, bar_width, border);
-						e.Graphics.DrawString(value.ToString(), count_font, Brushes.Gray, count_rect, fCentred);
-					}
-				}
-			}
+                        var countRect = new RectangleF(rect.Left + x, rect.Top, barWidth, border);
+                        e.Graphics.DrawString(value.ToString(), countFont, Brushes.Gray, countRect, _centered);
+                    }
+                }
+            }
 
-			int zero_y = rect.Bottom - ((rect.Height - border) * (0 - min_value) / range);
+            var zeroY = rect.Bottom - (rect.Height - border) * (0 - minValue) / range;
 
-			e.Graphics.DrawLine(Pens.Black, rect.Left, zero_y, rect.Right, zero_y);
-			e.Graphics.DrawLine(Pens.Black, rect.Left, rect.Bottom, rect.Left, rect.Top);
-		}
+            e.Graphics.DrawLine(Pens.Black, rect.Left, zeroY, rect.Right, zeroY);
+            e.Graphics.DrawLine(Pens.Black, rect.Left, rect.Bottom, rect.Left, rect.Top);
+        }
 
-		void analyse_data()
-		{
-			try
-			{
-				List<Library> libraries = new List<Library>();
-				if (fLibrary == null)
-					libraries.AddRange(Session.Libraries);
-				else
-					libraries.Add(fLibrary);
+        private void analyse_data()
+        {
+            try
+            {
+                var libraries = new List<Library>();
+                if (_fLibrary == null)
+                    libraries.AddRange(Session.Libraries);
+                else
+                    libraries.Add(_fLibrary);
 
-				fBreakdown = new Dictionary<string, int>();
+                _breakdown = new Dictionary<string, int>();
 
-				set_labels(libraries);
+                set_labels(libraries);
 
-				foreach (Library lib in libraries)
-					add_library(lib);
-			}
-			catch (Exception ex)
-			{
-				LogSystem.Trace(ex);
-			}
-		}
+                foreach (var lib in libraries)
+                    add_library(lib);
+            }
+            catch (Exception ex)
+            {
+                LogSystem.Trace(ex);
+            }
+        }
 
-		void set_labels(List<Library> libraries)
-		{
-			switch (fMode)
-			{
-				case DemographicsMode.Level:
-					{
-						int max_level = find_max_level(fSource, libraries);
-						for (int n = 1; n <= max_level; ++n)
-							fBreakdown[n.ToString()] = 0;
-					}
-					break;
-				case DemographicsMode.Role:
-					{
-						switch (fSource)
-						{
-							case DemographicsSource.Creatures:
-								{
-									fBreakdown["Artillery"] = 0;
-									fBreakdown["Brute"] = 0;
-									fBreakdown["Controller"] = 0;
-									fBreakdown["Lurker"] = 0;
-									fBreakdown["Skirmisher"] = 0;
-									fBreakdown["Soldier"] = 0;
-								}
-								break;
-							case DemographicsSource.Traps:
-								{
-									fBreakdown["Blaster"] = 0;
-									fBreakdown["Lurker"] = 0;
-									fBreakdown["Obstacle"] = 0;
-									fBreakdown["Warder"] = 0;
-								}
-								break;
-						}
-					}
-					break;
-				case DemographicsMode.Status:
-					{
-						fBreakdown["Standard"] = 0;
-						fBreakdown["Elite"] = 0;
-						fBreakdown["Solo"] = 0;
-						fBreakdown["Minion"] = 0;
-						fBreakdown["Leader"] = 0;
-					}
-					break;
-			}
-		}
+        private void set_labels(List<Library> libraries)
+        {
+            switch (_fMode)
+            {
+                case DemographicsMode.Level:
+                {
+                    var maxLevel = find_max_level(_fSource, libraries);
+                    for (var n = 1; n <= maxLevel; ++n)
+                        _breakdown[n.ToString()] = 0;
+                }
+                    break;
+                case DemographicsMode.Role:
+                {
+                    switch (_fSource)
+                    {
+                        case DemographicsSource.Creatures:
+                        {
+                            _breakdown["Artillery"] = 0;
+                            _breakdown["Brute"] = 0;
+                            _breakdown["Controller"] = 0;
+                            _breakdown["Lurker"] = 0;
+                            _breakdown["Skirmisher"] = 0;
+                            _breakdown["Soldier"] = 0;
+                        }
+                            break;
+                        case DemographicsSource.Traps:
+                        {
+                            _breakdown["Blaster"] = 0;
+                            _breakdown["Lurker"] = 0;
+                            _breakdown["Obstacle"] = 0;
+                            _breakdown["Warder"] = 0;
+                        }
+                            break;
+                    }
+                }
+                    break;
+                case DemographicsMode.Status:
+                {
+                    _breakdown["Standard"] = 0;
+                    _breakdown["Elite"] = 0;
+                    _breakdown["Solo"] = 0;
+                    _breakdown["Minion"] = 0;
+                    _breakdown["Leader"] = 0;
+                }
+                    break;
+            }
+        }
 
-		int find_max_level(DemographicsSource source, List<Library> libraries)
-		{
-			int max_level = 0;
+        private int find_max_level(DemographicsSource source, List<Library> libraries)
+        {
+            var maxLevel = 0;
 
-			foreach (Library lib in libraries)
-			{
-				switch (source)
-				{
-					case DemographicsSource.Creatures:
-						{
-							foreach (Creature c in lib.Creatures)
-							{
-								if (c.Level > max_level)
-									max_level = c.Level;
-							}
-						}
-						break;
-					case DemographicsSource.Traps:
-						{
-							foreach (Trap t in lib.Traps)
-							{
-								if (t.Level > max_level)
-									max_level = t.Level;
-							}
-						}
-						break;
-					case DemographicsSource.MagicItems:
-						{
-							foreach (MagicItem mi in lib.MagicItems)
-							{
-								if (mi.Level > max_level)
-									max_level = mi.Level;
-							}
-						}
-						break;
-				}
-			}
+            foreach (var lib in libraries)
+                switch (source)
+                {
+                    case DemographicsSource.Creatures:
+                    {
+                        foreach (var c in lib.Creatures)
+                            if (c.Level > maxLevel)
+                                maxLevel = c.Level;
+                    }
+                        break;
+                    case DemographicsSource.Traps:
+                    {
+                        foreach (var t in lib.Traps)
+                            if (t.Level > maxLevel)
+                                maxLevel = t.Level;
+                    }
+                        break;
+                    case DemographicsSource.MagicItems:
+                    {
+                        foreach (var mi in lib.MagicItems)
+                            if (mi.Level > maxLevel)
+                                maxLevel = mi.Level;
+                    }
+                        break;
+                }
 
-			return max_level;
-		}
+            return maxLevel;
+        }
 
-		void add_library(Library library)
-		{
-			switch (fSource)
-			{
-				case DemographicsSource.Creatures:
-					{
-						foreach (Creature c in library.Creatures)
-						{
-							switch (fMode)
-							{
-								case DemographicsMode.Level:
-									{
-										add(c.Level.ToString());
-									}
-									break;
-								case DemographicsMode.Role:
-								case DemographicsMode.Status:
-									{
-										analyse_role(c.Role);
-									}
-									break;
-							}
-						}
-					}
-					break;
-				case DemographicsSource.Traps:
-					{
-						foreach (Trap t in library.Traps)
-						{
-							switch (fMode)
-							{
-								case DemographicsMode.Level:
-									{
-										add(t.Level.ToString());
-									}
-									break;
-								case DemographicsMode.Role:
-								case DemographicsMode.Status:
-									{
-										analyse_role(t.Role);
-									}
-									break;
-							}
-						}
-					}
-					break;
-				case DemographicsSource.MagicItems:
-					{
-						foreach (MagicItem mi in library.MagicItems)
-						{
-							switch (fMode)
-							{
-								case DemographicsMode.Level:
-									{
-										add(mi.Level.ToString());
-									}
-									break;
-							}
-						}
-					}
-					break;
-			}
-		}
+        private void add_library(Library library)
+        {
+            switch (_fSource)
+            {
+                case DemographicsSource.Creatures:
+                {
+                    foreach (var c in library.Creatures)
+                        switch (_fMode)
+                        {
+                            case DemographicsMode.Level:
+                            {
+                                Add(c.Level.ToString());
+                            }
+                                break;
+                            case DemographicsMode.Role:
+                            case DemographicsMode.Status:
+                            {
+                                analyse_role(c.Role);
+                            }
+                                break;
+                        }
+                }
+                    break;
+                case DemographicsSource.Traps:
+                {
+                    foreach (var t in library.Traps)
+                        switch (_fMode)
+                        {
+                            case DemographicsMode.Level:
+                            {
+                                Add(t.Level.ToString());
+                            }
+                                break;
+                            case DemographicsMode.Role:
+                            case DemographicsMode.Status:
+                            {
+                                analyse_role(t.Role);
+                            }
+                                break;
+                        }
+                }
+                    break;
+                case DemographicsSource.MagicItems:
+                {
+                    foreach (var mi in library.MagicItems)
+                        switch (_fMode)
+                        {
+                            case DemographicsMode.Level:
+                            {
+                                Add(mi.Level.ToString());
+                            }
+                                break;
+                        }
+                }
+                    break;
+            }
+        }
 
-		void analyse_role(IRole role)
-		{
-			ComplexRole cr = role as ComplexRole;
-			if (cr != null)
-			{
-				switch (fMode)
-				{
-					case DemographicsMode.Role:
-						{
-							add(cr.Type.ToString());
-						}
-						break;
-					case DemographicsMode.Status:
-						{
-							add(cr.Flag.ToString());
+        private void analyse_role(IRole role)
+        {
+            var cr = role as ComplexRole;
+            if (cr != null)
+                switch (_fMode)
+                {
+                    case DemographicsMode.Role:
+                    {
+                        Add(cr.Type.ToString());
+                    }
+                        break;
+                    case DemographicsMode.Status:
+                    {
+                        Add(cr.Flag.ToString());
 
-							if (cr.Leader)
-								add("Leader");
-						}
-						break;
-				}
-			}
+                        if (cr.Leader)
+                            Add("Leader");
+                    }
+                        break;
+                }
 
-			Minion m = role as Minion;
-			if (m != null)
-			{
-				switch (fMode)
-				{
-					case DemographicsMode.Role:
-						{
-							if (m.HasRole)
-								add(m.Type.ToString());
-						}
-						break;
-					case DemographicsMode.Status:
-						{
-							add("Minion");
-						}
-						break;
-				}
-			}
-		}
+            var m = role as Minion;
+            if (m != null)
+                switch (_fMode)
+                {
+                    case DemographicsMode.Role:
+                    {
+                        if (m.HasRole)
+                            Add(m.Type.ToString());
+                    }
+                        break;
+                    case DemographicsMode.Status:
+                    {
+                        Add("Minion");
+                    }
+                        break;
+                }
+        }
 
-		void add(string label)
-		{
-			if (fBreakdown.ContainsKey(label))
-				fBreakdown[label] += 1;
-		}
-	}
+        private void Add(string label)
+        {
+            if (_breakdown.ContainsKey(label))
+                _breakdown[label] += 1;
+        }
+    }
 }

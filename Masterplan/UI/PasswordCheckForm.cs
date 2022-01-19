@@ -3,36 +3,37 @@ using System.Windows.Forms;
 
 namespace Masterplan.UI
 {
-	partial class PasswordCheckForm : Form
-	{
-		public PasswordCheckForm(string password, string hint)
-		{
-			InitializeComponent();
+    internal partial class PasswordCheckForm : Form
+    {
+        private readonly string _fHint = "";
 
-			fPassword = password;
-			fHint = hint;
+        private readonly string _fPassword = "";
 
-			HintBtn.Visible = (fHint != "");
-			Application.Idle += new EventHandler(Application_Idle);
-		}
+        public PasswordCheckForm(string password, string hint)
+        {
+            InitializeComponent();
 
-		~PasswordCheckForm()
-		{
-			Application.Idle -= Application_Idle;
-		}
+            _fPassword = password;
+            _fHint = hint;
 
-		void Application_Idle(object sender, EventArgs e)
-		{
-			OKBtn.Enabled = (PasswordBox.Text.ToLower() == fPassword);
-		}
+            HintBtn.Visible = _fHint != "";
+            Application.Idle += Application_Idle;
+        }
 
-		string fPassword = "";
-		string fHint = "";
+        ~PasswordCheckForm()
+        {
+            Application.Idle -= Application_Idle;
+        }
 
-		private void HintBtn_Click(object sender, EventArgs e)
-		{
-			string str = "Password hint: " + fHint;
-			MessageBox.Show(this, str, "Masterplan", MessageBoxButtons.OK, MessageBoxIcon.Information);
-		}
-	}
+        private void Application_Idle(object sender, EventArgs e)
+        {
+            OKBtn.Enabled = PasswordBox.Text.ToLower() == _fPassword;
+        }
+
+        private void HintBtn_Click(object sender, EventArgs e)
+        {
+            var str = "Password hint: " + _fHint;
+            MessageBox.Show(this, str, "Masterplan", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+    }
 }

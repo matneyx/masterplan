@@ -2,226 +2,222 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
-
 using Masterplan.Data;
 
 namespace Masterplan.UI
 {
-	partial class RechargeForm : Form
-	{
-		public RechargeForm(CombatData data, EncounterCard card)
-		{
-			InitializeComponent();
+    internal partial class RechargeForm : Form
+    {
+        private readonly EncounterCard _fCard;
 
-			Application.Idle += new EventHandler(Application_Idle);
+        private readonly CombatData _fData;
 
-			fData = data;
-			fCard = card;
+        private readonly Dictionary<Guid, int> _fRolls = new Dictionary<Guid, int>();
 
-			Text = "Power Recharging: " + fData.DisplayName;
+        public Guid SelectedPowerId
+        {
+            get
+            {
+                if (EffectList.SelectedItems.Count != 0)
+                    return (Guid)EffectList.SelectedItems[0].Tag;
 
-			foreach (Guid power_id in fData.UsedPowers)
-			{
-				CreaturePower power = get_power(power_id);
-				if ((power == null) || (power.Action == null) || (power.Action.Recharge == ""))
-					continue;
+                return Guid.Empty;
+            }
+        }
 
-				fRolls[power_id] = Session.Dice(1, 6);
-			}
+        public RechargeForm(CombatData data, EncounterCard card)
+        {
+            InitializeComponent();
 
-			update_list();
-		}
+            Application.Idle += Application_Idle;
 
-		~RechargeForm()
-		{
-			Application.Idle -= Application_Idle;
-		}
+            _fData = data;
+            _fCard = card;
 
-		void Application_Idle(object sender, EventArgs e)
-		{
-			RollBtn.Enabled = (SelectedPowerID != Guid.Empty);
+            Text = "Power Recharging: " + _fData.DisplayName;
 
-			if (SelectedPowerID == Guid.Empty)
-			{
-				SavedBtn.Enabled = false;
-				NotSavedBtn.Enabled = false;
-			}
-			else
-			{
-				int roll = fRolls[SelectedPowerID];
+            foreach (var powerId in _fData.UsedPowers)
+            {
+                var power = get_power(powerId);
+                if (power?.Action == null || power.Action.Recharge == "")
+                    continue;
 
-				SavedBtn.Enabled = (roll != int.MaxValue);
-				NotSavedBtn.Enabled = (roll != int.MinValue);
-			}
-		}
+                _fRolls[powerId] = Session.Dice(1, 6);
+            }
 
-		CombatData fData = null;
-		EncounterCard fCard = null;
+            update_list();
+        }
 
-		Dictionary<Guid, int> fRolls = new Dictionary<Guid, int>();
+        ~RechargeForm()
+        {
+            Application.Idle -= Application_Idle;
+        }
 
-		public Guid SelectedPowerID
-		{
-			get
-			{
-				if (EffectList.SelectedItems.Count != 0)
-					return (Guid)EffectList.SelectedItems[0].Tag;
+        private void Application_Idle(object sender, EventArgs e)
+        {
+            RollBtn.Enabled = SelectedPowerId != Guid.Empty;
 
-				return Guid.Empty;
-			}
-		}
+            if (SelectedPowerId == Guid.Empty)
+            {
+                SavedBtn.Enabled = false;
+                NotSavedBtn.Enabled = false;
+            }
+            else
+            {
+                var roll = _fRolls[SelectedPowerId];
 
-		private void OKBtn_Click(object sender, EventArgs e)
-		{
-			List<Guid> obsolete = new List<Guid>();
-			foreach (Guid power_id in fRolls.Keys)
-			{
-				if (!fRolls.ContainsKey(power_id))
-					continue;
+                SavedBtn.Enabled = roll != int.MaxValue;
+                NotSavedBtn.Enabled = roll != int.MinValue;
+            }
+        }
 
-				int roll = fRolls[power_id];
+        private void OKBtn_Click(object sender, EventArgs e)
+        {
+            var obsolete = new List<Guid>();
+            foreach (var powerId in _fRolls.Keys)
+            {
+                if (!_fRolls.ContainsKey(powerId))
+                    continue;
 
-				CreaturePower power = get_power(power_id);
-				if ((power == null) || (power.Action == null) || (power.Action.Recharge == ""))
-					continue;
+                var roll = _fRolls[powerId];
 
-				int min = get_minimum(power.Action.Recharge);
-				if ((min != 0) && (roll >= min))
-					obsolete.Add(power_id);
-			}
-			foreach (Guid power_id in obsolete)
-			{
-				fData.UsedPowers.Remove(power_id);
-			}
-		}
+                var power = get_power(powerId);
+                if (power?.Action == null || power.Action.Recharge == "")
+                    continue;
 
-		private void RollBtn_Click(object sender, EventArgs e)
-		{
-			if (SelectedPowerID != Guid.Empty)
-			{
-				fRolls[SelectedPowerID] = Session.Dice(1, 6);
-				update_list();
-			}
-		}
+                var min = get_minimum(power.Action.Recharge);
+                if (min != 0 && roll >= min)
+                    obsolete.Add(powerId);
+            }
 
-		private void SavedBtn_Click(object sender, EventArgs e)
-		{
-			if (SelectedPowerID != Guid.Empty)
-			{
-				fRolls[SelectedPowerID] = int.MaxValue;
-				update_list();
-			}
-		}
+            foreach (var powerId in obsolete) _fData.UsedPowers.Remove(powerId);
+        }
 
-		private void NotSavedBtn_Click(object sender, EventArgs e)
-		{
-			if (SelectedPowerID != Guid.Empty)
-			{
-				fRolls[SelectedPowerID] = int.MinValue;
-				update_list();
-			}
-		}
+        private void RollBtn_Click(object sender, EventArgs e)
+        {
+            if (SelectedPowerId != Guid.Empty)
+            {
+                _fRolls[SelectedPowerId] = Session.Dice(1, 6);
+                update_list();
+            }
+        }
 
-		private void update_list()
-		{
-			Guid selection = SelectedPowerID;
+        private void SavedBtn_Click(object sender, EventArgs e)
+        {
+            if (SelectedPowerId != Guid.Empty)
+            {
+                _fRolls[SelectedPowerId] = int.MaxValue;
+                update_list();
+            }
+        }
 
-			EffectList.BeginUpdate();
-			EffectList.Items.Clear();
-			foreach (Guid power_id in fData.UsedPowers)
-			{
-				if (!fRolls.ContainsKey(power_id))
-					continue;
+        private void NotSavedBtn_Click(object sender, EventArgs e)
+        {
+            if (SelectedPowerId != Guid.Empty)
+            {
+                _fRolls[SelectedPowerId] = int.MinValue;
+                update_list();
+            }
+        }
 
-				CreaturePower power = get_power(power_id);
-				if (power == null)
-					continue;
+        private void update_list()
+        {
+            var selection = SelectedPowerId;
 
-				int roll = fRolls[power_id];
+            EffectList.BeginUpdate();
+            EffectList.Items.Clear();
+            foreach (var powerId in _fData.UsedPowers)
+            {
+                if (!_fRolls.ContainsKey(powerId))
+                    continue;
 
-				ListViewItem lvi = EffectList.Items.Add(power.Name);
-				lvi.SubItems.Add(power.Action.Recharge);
-				lvi.Tag = power.ID;
-				if (power_id == selection)
-					lvi.Selected = true;
+                var power = get_power(powerId);
+                if (power == null)
+                    continue;
 
-				if (roll == int.MinValue)
-				{
-					lvi.SubItems.Add("-");
-					lvi.SubItems.Add("Not recharged");
-				}
-				else if (roll == int.MaxValue)
-				{
-					lvi.SubItems.Add("-");
-					lvi.SubItems.Add("Recharged");
-					lvi.ForeColor = SystemColors.GrayText;
-				}
-				else
-				{
-					int min = get_minimum(power.Action.Recharge);
-					if (min == int.MaxValue)
-					{
-						lvi.SubItems.Add("Not rolled");
-						lvi.SubItems.Add("Not rolled");
-					}
-					else
-					{
-						lvi.SubItems.Add(roll.ToString());
+                var roll = _fRolls[powerId];
 
-						if (roll >= min)
-						{
-							lvi.SubItems.Add("Recharged");
-							lvi.ForeColor = SystemColors.GrayText;
-						}
-						else
-						{
-							lvi.SubItems.Add("Not recharged");
-						}
-					}
-				}
-			}
+                var lvi = EffectList.Items.Add(power.Name);
+                lvi.SubItems.Add(power.Action.Recharge);
+                lvi.Tag = power.Id;
+                if (powerId == selection)
+                    lvi.Selected = true;
 
-			if (EffectList.Items.Count == 0)
-			{
-				ListViewItem lvi = EffectList.Items.Add("(no rechargable powers)");
-				lvi.ForeColor = SystemColors.GrayText;
-			}
+                if (roll == int.MinValue)
+                {
+                    lvi.SubItems.Add("-");
+                    lvi.SubItems.Add("Not recharged");
+                }
+                else if (roll == int.MaxValue)
+                {
+                    lvi.SubItems.Add("-");
+                    lvi.SubItems.Add("Recharged");
+                    lvi.ForeColor = SystemColors.GrayText;
+                }
+                else
+                {
+                    var min = get_minimum(power.Action.Recharge);
+                    if (min == int.MaxValue)
+                    {
+                        lvi.SubItems.Add("Not rolled");
+                        lvi.SubItems.Add("Not rolled");
+                    }
+                    else
+                    {
+                        lvi.SubItems.Add(roll.ToString());
 
-			EffectList.EndUpdate();
-		}
+                        if (roll >= min)
+                        {
+                            lvi.SubItems.Add("Recharged");
+                            lvi.ForeColor = SystemColors.GrayText;
+                        }
+                        else
+                        {
+                            lvi.SubItems.Add("Not recharged");
+                        }
+                    }
+                }
+            }
 
-		CreaturePower get_power(Guid power_id)
-		{
-			List<CreaturePower> powers = fCard.CreaturePowers;
-			foreach (CreaturePower power in powers)
-			{
-				if (power.ID == power_id)
-					return power;
-			}
+            if (EffectList.Items.Count == 0)
+            {
+                var lvi = EffectList.Items.Add("(no rechargable powers)");
+                lvi.ForeColor = SystemColors.GrayText;
+            }
 
-			return null;
-		}
+            EffectList.EndUpdate();
+        }
 
-		int get_minimum(string recharge_str)
-		{
-			int min = int.MaxValue;
+        private CreaturePower get_power(Guid powerId)
+        {
+            var powers = _fCard.CreaturePowers;
+            foreach (var power in powers)
+                if (power.Id == powerId)
+                    return power;
 
-			if (recharge_str.Contains("6"))
-				min = 6;
+            return null;
+        }
 
-			if (recharge_str.Contains("5"))
-				min = 5;
+        private int get_minimum(string rechargeStr)
+        {
+            var min = int.MaxValue;
 
-			if (recharge_str.Contains("4"))
-				min = 4;
+            if (rechargeStr.Contains("6"))
+                min = 6;
 
-			if (recharge_str.Contains("3"))
-				min = 3;
+            if (rechargeStr.Contains("5"))
+                min = 5;
 
-			if (recharge_str.Contains("2"))
-				min = 2;
+            if (rechargeStr.Contains("4"))
+                min = 4;
 
-			return min;
-		}
-	}
+            if (rechargeStr.Contains("3"))
+                min = 3;
+
+            if (rechargeStr.Contains("2"))
+                min = 2;
+
+            return min;
+        }
+    }
 }

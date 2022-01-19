@@ -1,31 +1,26 @@
 ﻿using System;
 using System.Windows.Forms;
-
 using Masterplan.Data;
 
 namespace Masterplan.UI
 {
-	partial class DayForm : Form
-	{
-		public DayForm(DayInfo day)
-		{
-			InitializeComponent();
+    internal partial class DayForm : Form
+    {
+        public DayInfo DayInfo { get; }
 
-			fDayInfo = day.Copy();
+        public DayForm(DayInfo day)
+        {
+            InitializeComponent();
 
-			NameBox.Text = fDayInfo.Name;
-			NameBox.SelectAll();
-		}
+            DayInfo = day.Copy();
 
-		public DayInfo DayInfo
-		{
-			get { return fDayInfo; }
-		}
-		DayInfo fDayInfo = null;
+            NameBox.Text = DayInfo.Name;
+            NameBox.SelectAll();
+        }
 
-		private void OKBtn_Click(object sender, EventArgs e)
-		{
-			fDayInfo.Name = NameBox.Text;
-		}
-	}
+        private void OKBtn_Click(object sender, EventArgs e)
+        {
+            DayInfo.Name = NameBox.Text;
+        }
+    }
 }

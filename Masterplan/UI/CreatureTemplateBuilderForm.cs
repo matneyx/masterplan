@@ -1,321 +1,301 @@
 ﻿using System;
 using System.Windows.Forms;
-
 using Masterplan.Data;
 using Masterplan.Tools;
 
 namespace Masterplan.UI
 {
-	partial class CreatureTemplateBuilderForm : Form
-	{
-		public CreatureTemplateBuilderForm(CreatureTemplate template)
-		{
-			InitializeComponent();
+    internal partial class CreatureTemplateBuilderForm : Form
+    {
+        public CreatureTemplate Template { get; }
 
-			fTemplate = template.Copy();
+        public CreatureTemplateBuilderForm(CreatureTemplate template)
+        {
+            InitializeComponent();
 
-			update_statblock();
-		}
+            Template = template.Copy();
 
-		public CreatureTemplate Template
-		{
-			get { return fTemplate; }
-		}
-		CreatureTemplate fTemplate = null;
+            update_statblock();
+        }
 
-		private void Browser_Navigating(object sender, WebBrowserNavigatingEventArgs e)
-		{
-			if (e.Url.Scheme == "build")
-			{
-				if (e.Url.LocalPath == "profile")
-				{
-					e.Cancel = true;
+        private void Browser_Navigating(object sender, WebBrowserNavigatingEventArgs e)
+        {
+            if (e.Url.Scheme == "build")
+            {
+                if (e.Url.LocalPath == "profile")
+                {
+                    e.Cancel = true;
 
-					CreatureTemplateProfileForm dlg = new CreatureTemplateProfileForm(fTemplate);
-					if (dlg.ShowDialog() == DialogResult.OK)
-					{
-						fTemplate.Name = dlg.Template.Name;
-						fTemplate.Type = dlg.Template.Type;
-						fTemplate.Role = dlg.Template.Role;
-						fTemplate.Leader = dlg.Template.Leader;
+                    var dlg = new CreatureTemplateProfileForm(Template);
+                    if (dlg.ShowDialog() == DialogResult.OK)
+                    {
+                        Template.Name = dlg.Template.Name;
+                        Template.Type = dlg.Template.Type;
+                        Template.Role = dlg.Template.Role;
+                        Template.Leader = dlg.Template.Leader;
 
-						update_statblock();
-					}
-				}
+                        update_statblock();
+                    }
+                }
 
-				if (e.Url.LocalPath == "combat")
-				{
-					e.Cancel = true;
+                if (e.Url.LocalPath == "combat")
+                {
+                    e.Cancel = true;
 
-					CreatureTemplateStatsForm dlg = new CreatureTemplateStatsForm(fTemplate);
-					if (dlg.ShowDialog() == DialogResult.OK)
-					{
-						fTemplate.HP = dlg.Template.HP;
-						fTemplate.Initiative = dlg.Template.Initiative;
-						fTemplate.AC = dlg.Template.AC;
-						fTemplate.Fortitude = dlg.Template.Fortitude;
-						fTemplate.Reflex = dlg.Template.Reflex;
-						fTemplate.Will = dlg.Template.Will;
+                    var dlg = new CreatureTemplateStatsForm(Template);
+                    if (dlg.ShowDialog() == DialogResult.OK)
+                    {
+                        Template.Hp = dlg.Template.Hp;
+                        Template.Initiative = dlg.Template.Initiative;
+                        Template.Ac = dlg.Template.Ac;
+                        Template.Fortitude = dlg.Template.Fortitude;
+                        Template.Reflex = dlg.Template.Reflex;
+                        Template.Will = dlg.Template.Will;
 
-						update_statblock();
-					}
-				}
+                        update_statblock();
+                    }
+                }
 
-				if (e.Url.LocalPath == "damage")
-				{
-					e.Cancel = true;
+                if (e.Url.LocalPath == "damage")
+                {
+                    e.Cancel = true;
 
-					DamageModListForm dlg = new DamageModListForm(fTemplate);
-					if (dlg.ShowDialog() == DialogResult.OK)
-					{
-						update_statblock();
-					}
-				}
+                    var dlg = new DamageModListForm(Template);
+                    if (dlg.ShowDialog() == DialogResult.OK) update_statblock();
+                }
 
-				if (e.Url.LocalPath == "senses")
-				{
-					e.Cancel = true;
+                if (e.Url.LocalPath == "senses")
+                {
+                    e.Cancel = true;
 
-					DetailsForm dlg = new DetailsForm(fTemplate.Senses, "Senses", "");
-					if (dlg.ShowDialog() == DialogResult.OK)
-					{
-						fTemplate.Senses = dlg.Details;
-						update_statblock();
-					}
-				}
+                    var dlg = new DetailsForm(Template.Senses, "Senses", "");
+                    if (dlg.ShowDialog() == DialogResult.OK)
+                    {
+                        Template.Senses = dlg.Details;
+                        update_statblock();
+                    }
+                }
 
-				if (e.Url.LocalPath == "movement")
-				{
-					e.Cancel = true;
+                if (e.Url.LocalPath == "movement")
+                {
+                    e.Cancel = true;
 
-					DetailsForm dlg = new DetailsForm(fTemplate.Movement, "Movement", "");
-					if (dlg.ShowDialog() == DialogResult.OK)
-					{
-						fTemplate.Movement = dlg.Details;
-						update_statblock();
-					}
-				}
+                    var dlg = new DetailsForm(Template.Movement, "Movement", "");
+                    if (dlg.ShowDialog() == DialogResult.OK)
+                    {
+                        Template.Movement = dlg.Details;
+                        update_statblock();
+                    }
+                }
 
-				if (e.Url.LocalPath == "tactics")
-				{
-					e.Cancel = true;
+                if (e.Url.LocalPath == "tactics")
+                {
+                    e.Cancel = true;
 
-					DetailsForm dlg = new DetailsForm(fTemplate.Tactics, "Tactics", "");
-					if (dlg.ShowDialog() == DialogResult.OK)
-					{
-						fTemplate.Tactics = dlg.Details;
-						update_statblock();
-					}
-				}
-			}
+                    var dlg = new DetailsForm(Template.Tactics, "Tactics", "");
+                    if (dlg.ShowDialog() == DialogResult.OK)
+                    {
+                        Template.Tactics = dlg.Details;
+                        update_statblock();
+                    }
+                }
+            }
 
-			if (e.Url.Scheme == "power")
-			{
-				if (e.Url.LocalPath == "addpower")
-				{
-					e.Cancel = true;
+            if (e.Url.Scheme == "power")
+            {
+                if (e.Url.LocalPath == "addpower")
+                {
+                    e.Cancel = true;
 
-					CreaturePower pwr = new CreaturePower();
-					pwr.Name = "New Power";
-					pwr.Action = new PowerAction();
+                    var pwr = new CreaturePower();
+                    pwr.Name = "New Power";
+                    pwr.Action = new PowerAction();
 
-					bool functional = fTemplate.Type == CreatureTemplateType.Functional;
-					PowerBuilderForm dlg = new PowerBuilderForm(pwr, null, functional);
-					if (dlg.ShowDialog() == DialogResult.OK)
-					{
-						fTemplate.CreaturePowers.Add(dlg.Power);
-						update_statblock();
-					}
-				}
+                    var functional = Template.Type == CreatureTemplateType.Functional;
+                    var dlg = new PowerBuilderForm(pwr, null, functional);
+                    if (dlg.ShowDialog() == DialogResult.OK)
+                    {
+                        Template.CreaturePowers.Add(dlg.Power);
+                        update_statblock();
+                    }
+                }
 
-				if (e.Url.LocalPath == "addtrait")
-				{
-					e.Cancel = true;
+                if (e.Url.LocalPath == "addtrait")
+                {
+                    e.Cancel = true;
 
-					CreaturePower pwr = new CreaturePower();
-					pwr.Name = "New Trait";
-					pwr.Action = null;
+                    var pwr = new CreaturePower();
+                    pwr.Name = "New Trait";
+                    pwr.Action = null;
 
-					bool functional = fTemplate.Type == CreatureTemplateType.Functional;
-					PowerBuilderForm dlg = new PowerBuilderForm(pwr, null, functional);
-					if (dlg.ShowDialog() == DialogResult.OK)
-					{
-						fTemplate.CreaturePowers.Add(dlg.Power);
-						update_statblock();
-					}
-				}
+                    var functional = Template.Type == CreatureTemplateType.Functional;
+                    var dlg = new PowerBuilderForm(pwr, null, functional);
+                    if (dlg.ShowDialog() == DialogResult.OK)
+                    {
+                        Template.CreaturePowers.Add(dlg.Power);
+                        update_statblock();
+                    }
+                }
 
-				if (e.Url.LocalPath == "addaura")
-				{
-					e.Cancel = true;
+                if (e.Url.LocalPath == "addaura")
+                {
+                    e.Cancel = true;
 
-					Aura aura = new Aura();
-					aura.Name = "New Aura";
-					aura.Details = "1";
+                    var aura = new Aura();
+                    aura.Name = "New Aura";
+                    aura.Details = "1";
 
-					AuraForm dlg = new AuraForm(aura);
-					if (dlg.ShowDialog() == DialogResult.OK)
-					{
-						fTemplate.Auras.Add(dlg.Aura);
-						update_statblock();
-					}
-				}
+                    var dlg = new AuraForm(aura);
+                    if (dlg.ShowDialog() == DialogResult.OK)
+                    {
+                        Template.Auras.Add(dlg.Aura);
+                        update_statblock();
+                    }
+                }
 
-				if (e.Url.LocalPath == "regenedit")
-				{
-					e.Cancel = true;
+                if (e.Url.LocalPath == "regenedit")
+                {
+                    e.Cancel = true;
 
-					Regeneration regen = fTemplate.Regeneration;
-					if (regen == null)
-						regen = new Regeneration(5, "");
+                    var regen = Template.Regeneration;
+                    if (regen == null)
+                        regen = new Regeneration(5, "");
 
-					RegenerationForm dlg = new RegenerationForm(regen);
-					if (dlg.ShowDialog() == DialogResult.OK)
-					{
-						fTemplate.Regeneration = dlg.Regeneration;
-						update_statblock();
-					}
-				}
+                    var dlg = new RegenerationForm(regen);
+                    if (dlg.ShowDialog() == DialogResult.OK)
+                    {
+                        Template.Regeneration = dlg.Regeneration;
+                        update_statblock();
+                    }
+                }
 
-				if (e.Url.LocalPath == "regenremove")
-				{
-					e.Cancel = true;
+                if (e.Url.LocalPath == "regenremove")
+                {
+                    e.Cancel = true;
 
-					fTemplate.Regeneration = null;
-					update_statblock();
-				}
-			}
+                    Template.Regeneration = null;
+                    update_statblock();
+                }
+            }
 
-			if (e.Url.Scheme == "powerup")
-			{
-			}
+            if (e.Url.Scheme == "powerup")
+            {
+            }
 
-			if (e.Url.Scheme == "powerdown")
-			{
-			}
+            if (e.Url.Scheme == "powerdown")
+            {
+            }
 
-			if (e.Url.Scheme == "poweredit")
-			{
-				CreaturePower pwr = find_power(new Guid(e.Url.LocalPath));
-				if (pwr != null)
-				{
-					e.Cancel = true;
-					int index = fTemplate.CreaturePowers.IndexOf(pwr);
+            if (e.Url.Scheme == "poweredit")
+            {
+                var pwr = find_power(new Guid(e.Url.LocalPath));
+                if (pwr != null)
+                {
+                    e.Cancel = true;
+                    var index = Template.CreaturePowers.IndexOf(pwr);
 
-					bool functional = fTemplate.Type == CreatureTemplateType.Functional;
-					PowerBuilderForm dlg = new PowerBuilderForm(pwr, null, functional);
-					if (dlg.ShowDialog() == DialogResult.OK)
-					{
-						fTemplate.CreaturePowers[index] = dlg.Power;
-						update_statblock();
-					}
-				}
-			}
+                    var functional = Template.Type == CreatureTemplateType.Functional;
+                    var dlg = new PowerBuilderForm(pwr, null, functional);
+                    if (dlg.ShowDialog() == DialogResult.OK)
+                    {
+                        Template.CreaturePowers[index] = dlg.Power;
+                        update_statblock();
+                    }
+                }
+            }
 
-			if (e.Url.Scheme == "powerremove")
-			{
-				CreaturePower pwr = find_power(new Guid(e.Url.LocalPath));
-				if (pwr != null)
-				{
-					e.Cancel = true;
+            if (e.Url.Scheme == "powerremove")
+            {
+                var pwr = find_power(new Guid(e.Url.LocalPath));
+                if (pwr != null)
+                {
+                    e.Cancel = true;
 
-					fTemplate.CreaturePowers.Remove(pwr);
-					update_statblock();
-				}
-			}
+                    Template.CreaturePowers.Remove(pwr);
+                    update_statblock();
+                }
+            }
 
-			if (e.Url.Scheme == "auraedit")
-			{
-				Aura aura = find_aura(new Guid(e.Url.LocalPath));
-				if (aura != null)
-				{
-					e.Cancel = true;
-					int index = fTemplate.Auras.IndexOf(aura);
+            if (e.Url.Scheme == "auraedit")
+            {
+                var aura = find_aura(new Guid(e.Url.LocalPath));
+                if (aura != null)
+                {
+                    e.Cancel = true;
+                    var index = Template.Auras.IndexOf(aura);
 
-					AuraForm dlg = new AuraForm(aura);
-					if (dlg.ShowDialog() == DialogResult.OK)
-					{
-						fTemplate.Auras[index] = dlg.Aura;
-						update_statblock();
-					}
-				}
-			}
+                    var dlg = new AuraForm(aura);
+                    if (dlg.ShowDialog() == DialogResult.OK)
+                    {
+                        Template.Auras[index] = dlg.Aura;
+                        update_statblock();
+                    }
+                }
+            }
 
-			if (e.Url.Scheme == "auraremove")
-			{
-				Aura aura = find_aura(new Guid(e.Url.LocalPath));
-				if (aura != null)
-				{
-					e.Cancel = true;
+            if (e.Url.Scheme == "auraremove")
+            {
+                var aura = find_aura(new Guid(e.Url.LocalPath));
+                if (aura != null)
+                {
+                    e.Cancel = true;
 
-					fTemplate.Auras.Remove(aura);
-					update_statblock();
-				}
-			}
-		}
+                    Template.Auras.Remove(aura);
+                    update_statblock();
+                }
+            }
+        }
 
-		CreaturePower find_power(Guid id)
-		{
-			foreach (CreaturePower pwr in fTemplate.CreaturePowers)
-			{
-				if (pwr.ID == id)
-					return pwr;
-			}
+        private CreaturePower find_power(Guid id)
+        {
+            foreach (var pwr in Template.CreaturePowers)
+                if (pwr.Id == id)
+                    return pwr;
 
-			return null;
-		}
+            return null;
+        }
 
-		Aura find_aura(Guid id)
-		{
-			foreach (Aura aura in fTemplate.Auras)
-			{
-				if (aura.ID == id)
-					return aura;
-			}
+        private Aura find_aura(Guid id)
+        {
+            foreach (var aura in Template.Auras)
+                if (aura.Id == id)
+                    return aura;
 
-			return null;
-		}
+            return null;
+        }
 
-		void add_power(CreaturePower power)
-		{
-			fTemplate.CreaturePowers.Add(power);
-			update_statblock();
-		}
+        private void add_power(CreaturePower power)
+        {
+            Template.CreaturePowers.Add(power);
+            update_statblock();
+        }
 
-		#region Menu
+        private void OptionsVariant_Click(object sender, EventArgs e)
+        {
+        }
 
-		private void OptionsVariant_Click(object sender, EventArgs e)
-		{
-		}
+        private void update_statblock()
+        {
+            StatBlockBrowser.DocumentText = Html.CreatureTemplate(Template, Session.Preferences.TextSize, true);
+        }
 
-		#endregion
+        private void FileExport_Click(object sender, EventArgs e)
+        {
+            var dlg = new SaveFileDialog();
+            dlg.Title = "Export Creature Template";
+            dlg.FileName = Template.Name;
+            dlg.Filter = Program.CreatureTemplateFilter;
 
-		#region Updating
+            if (dlg.ShowDialog() == DialogResult.OK)
+            {
+                var ok = Serialisation<CreatureTemplate>.Save(dlg.FileName, Template, SerialisationMode.Binary);
 
-		void update_statblock()
-		{
-			StatBlockBrowser.DocumentText = HTML.CreatureTemplate(fTemplate, Session.Preferences.TextSize, true);
-		}
-
-		#endregion
-
-		private void FileExport_Click(object sender, EventArgs e)
-		{
-			SaveFileDialog dlg = new SaveFileDialog();
-			dlg.Title = "Export Creature Template";
-			dlg.FileName = fTemplate.Name;
-			dlg.Filter = Program.CreatureTemplateFilter;
-
-			if (dlg.ShowDialog() == DialogResult.OK)
-			{
-				bool ok = Serialisation<CreatureTemplate>.Save(dlg.FileName, fTemplate, SerialisationMode.Binary);
-
-				if (!ok)
-				{
-					string error = "The creature template could not be exported.";
-					MessageBox.Show(error, "Masterplan", MessageBoxButtons.OK, MessageBoxIcon.Error);
-				}
-			}
-		}
-	}
+                if (!ok)
+                {
+                    var error = "The creature template could not be exported.";
+                    MessageBox.Show(error, "Masterplan", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
+    }
 }

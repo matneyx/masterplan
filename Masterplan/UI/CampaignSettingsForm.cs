@@ -1,34 +1,33 @@
 ﻿using System;
 using System.Windows.Forms;
-
 using Masterplan.Data;
 
 namespace Masterplan.UI
 {
-	partial class CampaignSettingsForm : Form
-	{
-		public CampaignSettingsForm(CampaignSettings settings)
-		{
-			InitializeComponent();
+    internal partial class CampaignSettingsForm : Form
+    {
+        private readonly CampaignSettings _fSettings;
 
-			fSettings = settings;
+        public CampaignSettingsForm(CampaignSettings settings)
+        {
+            InitializeComponent();
 
-			HPBox.Value = (int)(fSettings.HP * 100);
-			XPBox.Value = (int)(fSettings.XP * 100);
-			AttackBox.Value = fSettings.AttackBonus;
-			ACBox.Value = fSettings.ACBonus;
-			DefenceBox.Value = fSettings.NADBonus;
-		}
+            _fSettings = settings;
 
-		CampaignSettings fSettings = null;
+            HPBox.Value = (int)(_fSettings.Hp * 100);
+            XPBox.Value = (int)(_fSettings.Xp * 100);
+            AttackBox.Value = _fSettings.AttackBonus;
+            ACBox.Value = _fSettings.AcBonus;
+            DefenceBox.Value = _fSettings.NadBonus;
+        }
 
-		private void OKBtn_Click(object sender, EventArgs e)
-		{
-			fSettings.HP = (double)HPBox.Value / 100;
-			fSettings.XP = (double)XPBox.Value / 100;
-			fSettings.AttackBonus = (int)AttackBox.Value;
-			fSettings.ACBonus = (int)ACBox.Value;
-			fSettings.NADBonus = (int)DefenceBox.Value;
-		}
-	}
+        private void OKBtn_Click(object sender, EventArgs e)
+        {
+            _fSettings.Hp = (double)HPBox.Value / 100;
+            _fSettings.Xp = (double)XPBox.Value / 100;
+            _fSettings.AttackBonus = (int)AttackBox.Value;
+            _fSettings.AcBonus = (int)ACBox.Value;
+            _fSettings.NadBonus = (int)DefenceBox.Value;
+        }
+    }
 }

@@ -1,40 +1,35 @@
 ﻿using System;
 using System.Windows.Forms;
-
 using Masterplan.Data;
 
 namespace Masterplan.UI
 {
-	partial class CreatureTemplateStatsForm : Form
-	{
-		public CreatureTemplateStatsForm(CreatureTemplate t)
-		{
-			InitializeComponent();
+    internal partial class CreatureTemplateStatsForm : Form
+    {
+        public CreatureTemplate Template { get; }
 
-			fTemplate = t.Copy();
+        public CreatureTemplateStatsForm(CreatureTemplate t)
+        {
+            InitializeComponent();
 
-			HPBox.Value = fTemplate.HP;
-			InitBox.Value = fTemplate.Initiative;
-			ACBox.Value = fTemplate.AC;
-			FortBox.Value = fTemplate.Fortitude;
-			RefBox.Value = fTemplate.Reflex;
-			WillBox.Value = fTemplate.Will;
-		}
+            Template = t.Copy();
 
-		public CreatureTemplate Template
-		{
-			get { return fTemplate; }
-		}
-		CreatureTemplate fTemplate = null;
+            HPBox.Value = Template.Hp;
+            InitBox.Value = Template.Initiative;
+            ACBox.Value = Template.Ac;
+            FortBox.Value = Template.Fortitude;
+            RefBox.Value = Template.Reflex;
+            WillBox.Value = Template.Will;
+        }
 
-		private void OKBtn_Click(object sender, EventArgs e)
-		{
-			fTemplate.HP = (int)HPBox.Value;
-			fTemplate.Initiative = (int)InitBox.Value;
-			fTemplate.AC = (int)ACBox.Value;
-			fTemplate.Fortitude = (int)FortBox.Value;
-			fTemplate.Reflex = (int)RefBox.Value;
-			fTemplate.Will = (int)WillBox.Value;
-		}
-	}
+        private void OKBtn_Click(object sender, EventArgs e)
+        {
+            Template.Hp = (int)HPBox.Value;
+            Template.Initiative = (int)InitBox.Value;
+            Template.Ac = (int)ACBox.Value;
+            Template.Fortitude = (int)FortBox.Value;
+            Template.Reflex = (int)RefBox.Value;
+            Template.Will = (int)WillBox.Value;
+        }
+    }
 }

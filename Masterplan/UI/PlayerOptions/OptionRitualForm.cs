@@ -1,100 +1,95 @@
 ﻿using System;
 using System.Windows.Forms;
-
 using Masterplan.Data;
 
-namespace Masterplan.UI
+namespace Masterplan.UI.PlayerOptions
 {
-	partial class OptionRitualForm : Form
-	{
-		public OptionRitualForm(Ritual ritual)
-		{
-			InitializeComponent();
+    internal partial class OptionRitualForm : Form
+    {
+        public Ritual Ritual { get; }
 
-			Array cats = Enum.GetValues(typeof(RitualCategory));
-			foreach (RitualCategory cat in cats)
-				CatBox.Items.Add(cat);
+        public OptionRitualForm(Ritual ritual)
+        {
+            InitializeComponent();
 
-			fRitual = ritual.Copy();
+            var cats = Enum.GetValues(typeof(RitualCategory));
+            foreach (RitualCategory cat in cats)
+                CatBox.Items.Add(cat);
 
-			NameBox.Text = fRitual.Name;
-			LevelBox.Value = fRitual.Level;
-			CatBox.SelectedItem = fRitual.Category;
+            Ritual = ritual.Copy();
 
-			TimeBox.Text = fRitual.Time;
-			DurationBox.Text = fRitual.Duration;
-			ComponentBox.Text = fRitual.ComponentCost;
-			MarketBox.Text = fRitual.MarketPrice;
-			SkillBox.Text = fRitual.KeySkill;
+            NameBox.Text = Ritual.Name;
+            LevelBox.Value = Ritual.Level;
+            CatBox.SelectedItem = Ritual.Category;
 
-			DetailsBox.Text = fRitual.Details;
-			ReadAloudBox.Text = fRitual.ReadAloud;
-		}
+            TimeBox.Text = Ritual.Time;
+            DurationBox.Text = Ritual.Duration;
+            ComponentBox.Text = Ritual.ComponentCost;
+            MarketBox.Text = Ritual.MarketPrice;
+            SkillBox.Text = Ritual.KeySkill;
 
-		public Ritual Ritual
-		{
-			get { return fRitual; }
-		}
-		Ritual fRitual = null;
+            DetailsBox.Text = Ritual.Details;
+            ReadAloudBox.Text = Ritual.ReadAloud;
+        }
 
-		private void OKBtn_Click(object sender, EventArgs e)
-		{
-			fRitual.Name = NameBox.Text;
+        private void OKBtn_Click(object sender, EventArgs e)
+        {
+            Ritual.Name = NameBox.Text;
 
-			fRitual.Level = (int)LevelBox.Value;
-			fRitual.Category = (RitualCategory)CatBox.SelectedItem;
+            Ritual.Level = (int)LevelBox.Value;
+            Ritual.Category = (RitualCategory)CatBox.SelectedItem;
 
-			fRitual.Time = TimeBox.Text;
-			fRitual.Duration = DurationBox.Text;
-			fRitual.ComponentCost = ComponentBox.Text;
-			fRitual.MarketPrice = MarketBox.Text;
-			fRitual.KeySkill = SkillBox.Text;
+            Ritual.Time = TimeBox.Text;
+            Ritual.Duration = DurationBox.Text;
+            Ritual.ComponentCost = ComponentBox.Text;
+            Ritual.MarketPrice = MarketBox.Text;
+            Ritual.KeySkill = SkillBox.Text;
 
-			fRitual.Details = DetailsBox.Text;
-			fRitual.ReadAloud = ReadAloudBox.Text;
-		}
+            Ritual.Details = DetailsBox.Text;
+            Ritual.ReadAloud = ReadAloudBox.Text;
+        }
 
-		private void CatBox_SelectedIndexChanged(object sender, EventArgs e)
-		{
-			RitualCategory cat = (RitualCategory)CatBox.SelectedItem;
+        private void CatBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            var cat = (RitualCategory)CatBox.SelectedItem;
 
-			SkillBox.Items.Clear();
-			switch (cat)
-			{
-				case RitualCategory.Binding:
-					SkillBox.Items.Add("Arcana");
-					SkillBox.Items.Add("Religion");
-					break;
-				case RitualCategory.Creation:
-					SkillBox.Items.Add("Arcana");
-					SkillBox.Items.Add("Religion");
-					break;
-				case RitualCategory.Deception:
-					SkillBox.Items.Add("Arcana");
-					break;
-				case RitualCategory.Divination:
-					SkillBox.Items.Add("Arcana");
-					SkillBox.Items.Add("Nature");
-					SkillBox.Items.Add("Religion");
-					break;
-				case RitualCategory.Exploration:
-					SkillBox.Items.Add("Arcana");
-					SkillBox.Items.Add("Nature");
-					SkillBox.Items.Add("Religion");
-					break;
-				case RitualCategory.Restoration:
-					SkillBox.Items.Add("Heal");
-					break;
-				case RitualCategory.Scrying:
-					SkillBox.Items.Add("Arcana");
-					break;
-				case RitualCategory.Travel:
-					SkillBox.Items.Add("Arcana");
-					break;
-				case RitualCategory.Warding:
-					SkillBox.Items.Add("Arcana");
-					break;
-			}
-		}
-	}
+            SkillBox.Items.Clear();
+            switch (cat)
+            {
+                case RitualCategory.Binding:
+                    SkillBox.Items.Add("Arcana");
+                    SkillBox.Items.Add("Religion");
+                    break;
+                case RitualCategory.Creation:
+                    SkillBox.Items.Add("Arcana");
+                    SkillBox.Items.Add("Religion");
+                    break;
+                case RitualCategory.Deception:
+                    SkillBox.Items.Add("Arcana");
+                    break;
+                case RitualCategory.Divination:
+                    SkillBox.Items.Add("Arcana");
+                    SkillBox.Items.Add("Nature");
+                    SkillBox.Items.Add("Religion");
+                    break;
+                case RitualCategory.Exploration:
+                    SkillBox.Items.Add("Arcana");
+                    SkillBox.Items.Add("Nature");
+                    SkillBox.Items.Add("Religion");
+                    break;
+                case RitualCategory.Restoration:
+                    SkillBox.Items.Add("Heal");
+                    break;
+                case RitualCategory.Scrying:
+                    SkillBox.Items.Add("Arcana");
+                    break;
+                case RitualCategory.Travel:
+                    SkillBox.Items.Add("Arcana");
+                    break;
+                case RitualCategory.Warding:
+                    SkillBox.Items.Add("Arcana");
+                    break;
+            }
+        }
+    }
 }

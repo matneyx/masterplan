@@ -1,41 +1,40 @@
 ﻿using System;
 using System.IO;
 using System.Windows.Forms;
-
 using Masterplan.Data;
 using Masterplan.Tools;
 
 namespace Masterplan.UI
 {
-	partial class SkillChallengeDetailsForm : Form
-	{
-		public SkillChallengeDetailsForm(SkillChallenge sc)
-		{
-			InitializeComponent();
+    internal partial class SkillChallengeDetailsForm : Form
+    {
+        private readonly SkillChallenge _fChallenge;
 
-			fChallenge = sc.Copy() as SkillChallenge;
+        public SkillChallengeDetailsForm(SkillChallenge sc)
+        {
+            InitializeComponent();
 
-			Browser.DocumentText = HTML.SkillChallenge(fChallenge, false, true, Session.Preferences.TextSize);
-		}
+            _fChallenge = sc.Copy() as SkillChallenge;
 
-		SkillChallenge fChallenge = null;
+            Browser.DocumentText = Html.SkillChallenge(_fChallenge, false, true, Session.Preferences.TextSize);
+        }
 
-		private void PlayerViewBtn_Click(object sender, EventArgs e)
-		{
-			if (Session.PlayerView == null)
-				Session.PlayerView = new PlayerViewForm(this);
+        private void PlayerViewBtn_Click(object sender, EventArgs e)
+        {
+            if (Session.PlayerView == null)
+                Session.PlayerView = new PlayerViewForm(this);
 
-			Session.PlayerView.ShowSkillChallenge(fChallenge);
-		}
+            Session.PlayerView.ShowSkillChallenge(_fChallenge);
+        }
 
-		private void ExportHTML_Click(object sender, EventArgs e)
-		{
-			SaveFileDialog dlg = new SaveFileDialog();
-			dlg.FileName = fChallenge.Name;
-			dlg.Filter = Program.HTMLFilter;
+        private void ExportHTML_Click(object sender, EventArgs e)
+        {
+            var dlg = new SaveFileDialog();
+            dlg.FileName = _fChallenge.Name;
+            dlg.Filter = Program.HtmlFilter;
 
-			if (dlg.ShowDialog() == DialogResult.OK)
-				File.WriteAllText(dlg.FileName, Browser.DocumentText);
-		}
-	}
+            if (dlg.ShowDialog() == DialogResult.OK)
+                File.WriteAllText(dlg.FileName, Browser.DocumentText);
+        }
+    }
 }

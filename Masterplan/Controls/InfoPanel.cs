@@ -1,142 +1,125 @@
 ﻿using System;
 using System.Windows.Forms;
-
 using Masterplan.Data;
 using Masterplan.Tools;
 using Masterplan.UI;
 
 namespace Masterplan.Controls
 {
-	partial class InfoPanel : UserControl
-	{
-		public InfoPanel()
-		{
-			InitializeComponent();
+    internal partial class InfoPanel : UserControl
+    {
+        public int Level
+        {
+            get => (int)LevelBox.Value;
+            set => LevelBox.Value = value;
+        }
 
-			update_list();
-		}
+        public DiceExpression SelectedDamageExpression
+        {
+            get
+            {
+                if (SkillList.SelectedItems.Count != 0)
+                    return SkillList.SelectedItems[0].Tag as DiceExpression;
 
-		public int Level
-		{
-			get { return (int)LevelBox.Value; }
-			set { LevelBox.Value = value; }
-		}
+                return null;
+            }
+        }
 
-		private void LevelBox_ValueChanged(object sender, EventArgs e)
-		{
-			update_list();
-		}
+        public InfoPanel()
+        {
+            InitializeComponent();
 
-		void update_list()
-		{
-			int level = (int)LevelBox.Value;
+            update_list();
+        }
 
-			int aid_another = 10 + (level / 2);
+        private void LevelBox_ValueChanged(object sender, EventArgs e)
+        {
+            update_list();
+        }
 
-			string normal = Statistics.NormalDamage(level);
-			string multiple = Statistics.MultipleDamage(level);
-			string minion = Statistics.MinionDamage(level).ToString();
+        private void update_list()
+        {
+            var level = (int)LevelBox.Value;
 
-			SkillList.BeginUpdate();
-			SkillList.Items.Clear();
+            var aidAnother = 10 + level / 2;
 
-			#region Skill DCs
+            var normal = Statistics.NormalDamage(level);
+            var multiple = Statistics.MultipleDamage(level);
+            var minion = Statistics.MinionDamage(level).ToString();
 
-			ListViewItem lvi_easy = SkillList.Items.Add("Easy");
-			lvi_easy.SubItems.Add("DC " + AI.GetSkillDC(Difficulty.Easy, level));
-			lvi_easy.Group = SkillList.Groups[0];
+            SkillList.BeginUpdate();
+            SkillList.Items.Clear();
 
-			ListViewItem lvi_moderate = SkillList.Items.Add("Moderate");
-			lvi_moderate.SubItems.Add("DC " + AI.GetSkillDC(Difficulty.Moderate, level));
-			lvi_moderate.Group = SkillList.Groups[0];
+            var lviEasy = SkillList.Items.Add("Easy");
+            lviEasy.SubItems.Add("DC " + Ai.GetSkillDc(Difficulty.Easy, level));
+            lviEasy.Group = SkillList.Groups[0];
 
-			ListViewItem lvi_hard = SkillList.Items.Add("Hard");
-			lvi_hard.SubItems.Add("DC " + AI.GetSkillDC(Difficulty.Hard, level));
-			lvi_hard.Group = SkillList.Groups[0];
+            var lviModerate = SkillList.Items.Add("Moderate");
+            lviModerate.SubItems.Add("DC " + Ai.GetSkillDc(Difficulty.Moderate, level));
+            lviModerate.Group = SkillList.Groups[0];
 
-			#endregion
+            var lviHard = SkillList.Items.Add("Hard");
+            lviHard.SubItems.Add("DC " + Ai.GetSkillDc(Difficulty.Hard, level));
+            lviHard.Group = SkillList.Groups[0];
 
-			#region Aid Another
+            var lviAid = SkillList.Items.Add("Aid Another");
+            lviAid.SubItems.Add("DC " + aidAnother);
+            lviAid.Group = SkillList.Groups[1];
 
-			ListViewItem lvi_aid = SkillList.Items.Add("Aid Another");
-			lvi_aid.SubItems.Add("DC " + aid_another);
-			lvi_aid.Group = SkillList.Groups[1];
+            var lviDamage = SkillList.Items.Add("Against a single target");
+            lviDamage.SubItems.Add(normal);
+            lviDamage.Tag = DiceExpression.Parse(normal);
+            lviDamage.Group = SkillList.Groups[2];
 
-			#endregion
+            var lviMultiple = SkillList.Items.Add("Against multiple targets");
+            lviMultiple.SubItems.Add(multiple);
+            lviMultiple.Tag = DiceExpression.Parse(multiple);
+            lviMultiple.Group = SkillList.Groups[2];
 
-			#region Damage
+            var lviMinion = SkillList.Items.Add("From a minion");
+            lviMinion.SubItems.Add(minion);
+            lviMinion.Tag = DiceExpression.Parse(minion);
+            lviMinion.Group = SkillList.Groups[2];
 
-			ListViewItem lvi_damage = SkillList.Items.Add("Against a single target");
-			lvi_damage.SubItems.Add(normal);
-			lvi_damage.Tag = DiceExpression.Parse(normal);
-			lvi_damage.Group = SkillList.Groups[2];
+            var lviAberrant = SkillList.Items.Add("Aberrant");
+            lviAberrant.SubItems.Add("Dungeoneering");
+            lviAberrant.Group = SkillList.Groups[3];
 
-			ListViewItem lvi_multiple = SkillList.Items.Add("Against multiple targets");
-			lvi_multiple.SubItems.Add(multiple);
-			lvi_multiple.Tag = DiceExpression.Parse(multiple);
-			lvi_multiple.Group = SkillList.Groups[2];
+            var lviElemental = SkillList.Items.Add("Elemental");
+            lviElemental.SubItems.Add("Arcana");
+            lviElemental.Group = SkillList.Groups[3];
 
-			ListViewItem lvi_minion = SkillList.Items.Add("From a minion");
-			lvi_minion.SubItems.Add(minion);
-			lvi_minion.Tag = DiceExpression.Parse(minion);
-			lvi_minion.Group = SkillList.Groups[2];
+            var lviFey = SkillList.Items.Add("Fey");
+            lviFey.SubItems.Add("Arcana");
+            lviFey.Group = SkillList.Groups[3];
 
-			#endregion
+            var lviImmortal = SkillList.Items.Add("Immortal");
+            lviImmortal.SubItems.Add("Religion");
+            lviImmortal.Group = SkillList.Groups[3];
 
-			#region Monster Knowledge
+            var lviNatural = SkillList.Items.Add("Natural");
+            lviNatural.SubItems.Add("Nature");
+            lviNatural.Group = SkillList.Groups[3];
 
-			ListViewItem lvi_aberrant = SkillList.Items.Add("Aberrant");
-			lvi_aberrant.SubItems.Add("Dungeoneering");
-			lvi_aberrant.Group = SkillList.Groups[3];
+            var lviShadow = SkillList.Items.Add("Shadow");
+            lviShadow.SubItems.Add("Arcana");
+            lviShadow.Group = SkillList.Groups[3];
 
-			ListViewItem lvi_elemental = SkillList.Items.Add("Elemental");
-			lvi_elemental.SubItems.Add("Arcana");
-			lvi_elemental.Group = SkillList.Groups[3];
+            var lviUndead = SkillList.Items.Add("Undead keyword");
+            lviUndead.SubItems.Add("Religion");
+            lviUndead.Group = SkillList.Groups[3];
 
-			ListViewItem lvi_fey = SkillList.Items.Add("Fey");
-			lvi_fey.SubItems.Add("Arcana");
-			lvi_fey.Group = SkillList.Groups[3];
+            SkillList.EndUpdate();
+        }
 
-			ListViewItem lvi_immortal = SkillList.Items.Add("Immortal");
-			lvi_immortal.SubItems.Add("Religion");
-			lvi_immortal.Group = SkillList.Groups[3];
-
-			ListViewItem lvi_natural = SkillList.Items.Add("Natural");
-			lvi_natural.SubItems.Add("Nature");
-			lvi_natural.Group = SkillList.Groups[3];
-
-			ListViewItem lvi_shadow = SkillList.Items.Add("Shadow");
-			lvi_shadow.SubItems.Add("Arcana");
-			lvi_shadow.Group = SkillList.Groups[3];
-
-			ListViewItem lvi_undead = SkillList.Items.Add("Undead keyword");
-			lvi_undead.SubItems.Add("Religion");
-			lvi_undead.Group = SkillList.Groups[3];
-
-			#endregion
-
-			SkillList.EndUpdate();
-		}
-
-		private void DamageList_DoubleClick(object sender, EventArgs e)
-		{
-			if (SelectedDamageExpression != null)
-			{
-				DieRollerForm dlg = new DieRollerForm();
-				dlg.Expression = SelectedDamageExpression;
-				dlg.ShowDialog();
-			}
-		}
-
-		public DiceExpression SelectedDamageExpression
-		{
-			get
-			{
-				if (SkillList.SelectedItems.Count != 0)
-					return SkillList.SelectedItems[0].Tag as DiceExpression;
-
-				return null;
-			}
-		}
-	}
+        private void DamageList_DoubleClick(object sender, EventArgs e)
+        {
+            if (SelectedDamageExpression != null)
+            {
+                var dlg = new DieRollerForm();
+                dlg.Expression = SelectedDamageExpression;
+                dlg.ShowDialog();
+            }
+        }
+    }
 }

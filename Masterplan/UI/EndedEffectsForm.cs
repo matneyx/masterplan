@@ -2,130 +2,119 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
-
 using Masterplan.Data;
 using Masterplan.Tools;
 
 namespace Masterplan.UI
 {
-	partial class EndedEffectsForm : Form
-	{
-		public EndedEffectsForm(List<Pair<CombatData, OngoingCondition>> conditions, Encounter enc)
-		{
-			InitializeComponent();
+    internal partial class EndedEffectsForm : Form
+    {
+        private readonly Encounter _fEncounter;
 
-			Application.Idle += new EventHandler(Application_Idle);
+        public Pair<CombatData, OngoingCondition> SelectedCondition
+        {
+            get
+            {
+                if (EffectList.SelectedItems.Count != 0)
+                    return EffectList.SelectedItems[0].Tag as Pair<CombatData, OngoingCondition>;
 
-			fEndedConditions = conditions;
-			fExtendedConditions = new List<Pair<CombatData, OngoingCondition>>();
-			fEncounter = enc;
+                return null;
+            }
+        }
 
-			update_list();
-		}
+        public List<Pair<CombatData, OngoingCondition>> EndedConditions { get; set; }
 
-		~EndedEffectsForm()
-		{
-			Application.Idle -= Application_Idle;
-		}
+        public List<Pair<CombatData, OngoingCondition>> ExtendedConditions { get; set; }
 
-		public Pair<CombatData, OngoingCondition> SelectedCondition
-		{
-			get
-			{
-				if (EffectList.SelectedItems.Count != 0)
-					return EffectList.SelectedItems[0].Tag as Pair<CombatData, OngoingCondition>;
+        public EndedEffectsForm(List<Pair<CombatData, OngoingCondition>> conditions, Encounter enc)
+        {
+            InitializeComponent();
 
-				return null;
-			}
-		}
+            Application.Idle += Application_Idle;
 
-		public List<Pair<CombatData, OngoingCondition>> EndedConditions
-		{
-			get { return fEndedConditions; }
-			set { fEndedConditions = value; }
-		}
-		List<Pair<CombatData, OngoingCondition>> fEndedConditions = null;
+            EndedConditions = conditions;
+            ExtendedConditions = new List<Pair<CombatData, OngoingCondition>>();
+            _fEncounter = enc;
 
-		public List<Pair<CombatData, OngoingCondition>> ExtendedConditions
-		{
-			get { return fExtendedConditions; }
-			set { fExtendedConditions = value; }
-		}
-		List<Pair<CombatData, OngoingCondition>> fExtendedConditions = null;
+            update_list();
+        }
 
-		Encounter fEncounter = null;
+        ~EndedEffectsForm()
+        {
+            Application.Idle -= Application_Idle;
+        }
 
-		void Application_Idle(object sender, EventArgs e)
-		{
-			ExtendBtn.Enabled = (SelectedCondition != null);
+        private void Application_Idle(object sender, EventArgs e)
+        {
+            ExtendBtn.Enabled = SelectedCondition != null;
 
-			if (SelectedCondition != null)
-			{
-				if (fEndedConditions.Contains(SelectedCondition))
-					ExtendBtn.Text = "Extend this effect";
-				else
-					ExtendBtn.Text = "End this effect";
-			}
-		}
+            if (SelectedCondition != null)
+            {
+                if (EndedConditions.Contains(SelectedCondition))
+                    ExtendBtn.Text = "Extend this effect";
+                else
+                    ExtendBtn.Text = "End this effect";
+            }
+        }
 
-		private void OKBtn_Click(object sender, EventArgs e)
-		{
-			foreach (Pair<CombatData, OngoingCondition> pair in fEndedConditions)
-				pair.First.Conditions.Remove(pair.Second);
-		}
+        private void OKBtn_Click(object sender, EventArgs e)
+        {
+            foreach (var pair in EndedConditions)
+                pair.First.Conditions.Remove(pair.Second);
+        }
 
-		private void ExtendBtn_Click(object sender, EventArgs e)
-		{
-			if (SelectedCondition == null)
-				return;
+        private void ExtendBtn_Click(object sender, EventArgs e)
+        {
+            if (SelectedCondition == null)
+                return;
 
-			if (fEndedConditions.Contains(SelectedCondition))
-			{
-				fEndedConditions.Remove(SelectedCondition);
-				fExtendedConditions.Add(SelectedCondition);
-			}
-			else if (fExtendedConditions.Contains(SelectedCondition))
-			{
-				fExtendedConditions.Remove(SelectedCondition);
-				fEndedConditions.Add(SelectedCondition);
-			}
+            if (EndedConditions.Contains(SelectedCondition))
+            {
+                EndedConditions.Remove(SelectedCondition);
+                ExtendedConditions.Add(SelectedCondition);
+            }
+            else if (ExtendedConditions.Contains(SelectedCondition))
+            {
+                ExtendedConditions.Remove(SelectedCondition);
+                EndedConditions.Add(SelectedCondition);
+            }
 
-			update_list();
-		}
+            update_list();
+        }
 
-		void update_list()
-		{
-			EffectList.Items.Clear();
+        private void update_list()
+        {
+            EffectList.Items.Clear();
 
-			foreach (Pair<CombatData, OngoingCondition> condition in fEndedConditions)
-			{
-				ListViewItem lvi = EffectList.Items.Add(condition.First.ToString());
-				lvi.SubItems.Add(condition.Second.ToString(fEncounter, false));
-				lvi.Group = EffectList.Groups[0];
-				lvi.Tag = condition;
-			}
+            foreach (var condition in EndedConditions)
+            {
+                var lvi = EffectList.Items.Add(condition.First.ToString());
+                lvi.SubItems.Add(condition.Second.ToString(_fEncounter, false));
+                lvi.Group = EffectList.Groups[0];
+                lvi.Tag = condition;
+            }
 
-			if (fEndedConditions.Count == 0)
-			{
-				ListViewItem lvi = EffectList.Items.Add("(none)");
-				lvi.Group = EffectList.Groups[0];
-				lvi.ForeColor = SystemColors.GrayText;
-			}
+            if (EndedConditions.Count == 0)
+            {
+                var lvi = EffectList.Items.Add("(none)");
+                lvi.Group = EffectList.Groups[0];
+                lvi.ForeColor = SystemColors.GrayText;
+            }
 
-			foreach (Pair<CombatData, OngoingCondition> condition in fExtendedConditions)
-			{
-				ListViewItem lvi = EffectList.Items.Add(condition.First.ToString());
-				lvi.SubItems.Add(condition.Second.ToString(fEncounter, false));
-				lvi.Group = EffectList.Groups[1];
-				lvi.Tag = condition;
-			}
+            foreach (var condition in ExtendedConditions)
+            {
+                var lvi = EffectList.Items.Add(condition.First.ToString());
+                lvi.SubItems.Add(condition.Second.ToString(_fEncounter, false));
+                lvi.Group = EffectList.Groups[1];
+                lvi.Tag = condition;
+            }
 
-			if (fExtendedConditions.Count == 0)
-			{
-				ListViewItem lvi = EffectList.Items.Add("(none)");
-				lvi.Group = EffectList.Groups[1];
-				lvi.ForeColor = SystemColors.GrayText;
-			}
-		}
-	}
+            if (ExtendedConditions.Count == 0)
+            {
+                var lvi = EffectList.Items.Add("(none)");
+                lvi.Group = EffectList.Groups[1];
+                lvi.ForeColor = SystemColors.GrayText;
+            }
+        }
+    }
 }

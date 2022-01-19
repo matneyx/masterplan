@@ -1,32 +1,27 @@
 ﻿using System;
 using System.Windows.Forms;
-
 using Masterplan.Data;
 
 namespace Masterplan.UI
 {
-	partial class RegenerationForm : Form
-	{
-		public RegenerationForm(Regeneration regen)
-		{
-			InitializeComponent();
+    internal partial class RegenerationForm : Form
+    {
+        public Regeneration Regeneration { get; }
 
-			fRegeneration = regen.Copy();
+        public RegenerationForm(Regeneration regen)
+        {
+            InitializeComponent();
 
-			ValueBox.Value = fRegeneration.Value;
-			DetailsBox.Text = fRegeneration.Details;
-		}
+            Regeneration = regen.Copy();
 
-		public Regeneration Regeneration
-		{
-			get { return fRegeneration; }
-		}
-		Regeneration fRegeneration = null;
+            ValueBox.Value = Regeneration.Value;
+            DetailsBox.Text = Regeneration.Details;
+        }
 
-		private void OKBtn_Click(object sender, EventArgs e)
-		{
-			fRegeneration.Value = (int)ValueBox.Value;
-			fRegeneration.Details = DetailsBox.Text;
-		}
-	}
+        private void OKBtn_Click(object sender, EventArgs e)
+        {
+            Regeneration.Value = (int)ValueBox.Value;
+            Regeneration.Details = DetailsBox.Text;
+        }
+    }
 }

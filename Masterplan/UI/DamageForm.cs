@@ -1,326 +1,306 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-
 using Masterplan.Data;
 using Masterplan.Tools;
 
 namespace Masterplan.UI
 {
-	internal partial class DamageForm : Form
-	{
-		public class Token
-		{
-			public Token(CombatData data, EncounterCard card)
-			{
-				Data = data;
-				Card = card;
-			}
+    internal partial class DamageForm : Form
+    {
+        private readonly List<Token> _fData;
 
-			public CombatData Data = null;
-			public EncounterCard Card = null;
-			public int Modifier = 0;
-		}
+        public List<DamageType> Types { get; } = new List<DamageType>();
 
-		public DamageForm(List<Pair<CombatData, EncounterCard>> tokens, int value)
-		{
-			InitializeComponent();
+        public DamageForm(List<Pair<CombatData, EncounterCard>> tokens, int value)
+        {
+            InitializeComponent();
 
-			Application.Idle += new EventHandler(Application_Idle);
+            Application.Idle += Application_Idle;
 
-			fData = new List<Token>();
-			foreach (Pair<CombatData, EncounterCard> token in tokens)
-				fData.Add(new Token(token.First, token.Second));
+            _fData = new List<Token>();
+            foreach (var token in tokens)
+                _fData.Add(new Token(token.First, token.Second));
 
-			DmgBox.Value = value;
+            DmgBox.Value = value;
 
-			if ((fData.Count == 1) && (fData[0].Card != null))
-				HalveBtn.Checked = fData[0].Card.Resist.ToLower().Contains("insubstantial");
+            if (_fData.Count == 1 && _fData[0].Card != null)
+                HalveBtn.Checked = _fData[0].Card.Resist.ToLower().Contains("insubstantial");
 
-			update_type();
-			update_modifier();
-			update_value();
-		}
+            update_type();
+            update_modifier();
+            update_value();
+        }
 
-		~DamageForm()
-		{
-			Application.Idle -= Application_Idle;
-		}
+        ~DamageForm()
+        {
+            Application.Idle -= Application_Idle;
+        }
 
-		void Application_Idle(object sender, EventArgs e)
-		{
-			ResetBtn.Enabled = (DmgBox.Value != 0);
+        private void Application_Idle(object sender, EventArgs e)
+        {
+            ResetBtn.Enabled = DmgBox.Value != 0;
 
-			AcidBtn.Checked = fTypes.Contains(DamageType.Acid);
-			ColdBtn.Checked = fTypes.Contains(DamageType.Cold);
-			FireBtn.Checked = fTypes.Contains(DamageType.Fire);
-			ForceBtn.Checked = fTypes.Contains(DamageType.Force);
-			LightningBtn.Checked = fTypes.Contains(DamageType.Lightning);
-			NecroticBtn.Checked = fTypes.Contains(DamageType.Necrotic);
-			PoisonBtn.Checked = fTypes.Contains(DamageType.Poison);
-			PsychicBtn.Checked = fTypes.Contains(DamageType.Psychic);
-			RadiantBtn.Checked = fTypes.Contains(DamageType.Radiant);
-			ThunderBtn.Checked = fTypes.Contains(DamageType.Thunder);
+            AcidBtn.Checked = Types.Contains(DamageType.Acid);
+            ColdBtn.Checked = Types.Contains(DamageType.Cold);
+            FireBtn.Checked = Types.Contains(DamageType.Fire);
+            ForceBtn.Checked = Types.Contains(DamageType.Force);
+            LightningBtn.Checked = Types.Contains(DamageType.Lightning);
+            NecroticBtn.Checked = Types.Contains(DamageType.Necrotic);
+            PoisonBtn.Checked = Types.Contains(DamageType.Poison);
+            PsychicBtn.Checked = Types.Contains(DamageType.Psychic);
+            RadiantBtn.Checked = Types.Contains(DamageType.Radiant);
+            ThunderBtn.Checked = Types.Contains(DamageType.Thunder);
 
-			TypeLbl.Enabled = (fTypes.Count != 0);
-			TypeBox.Enabled = (fTypes.Count != 0);
-			ModLbl.Enabled = (fTypes.Count != 0);
-			ModBox.Enabled = (fTypes.Count != 0);
-		}
+            TypeLbl.Enabled = Types.Count != 0;
+            TypeBox.Enabled = Types.Count != 0;
+            ModLbl.Enabled = Types.Count != 0;
+            ModBox.Enabled = Types.Count != 0;
+        }
 
-		List<Token> fData = null;
+        private void DamageForm_Shown(object sender, EventArgs e)
+        {
+            DmgBox.Select(0, 1);
+        }
 
-		public List<DamageType> Types
-		{
-			get { return fTypes; }
-		}
-		List<DamageType> fTypes = new List<DamageType>();
+        private void DmgBox_ValueChanged(object sender, EventArgs e)
+        {
+            update_value();
+        }
 
-		private void DamageForm_Shown(object sender, EventArgs e)
-		{
-			DmgBox.Select(0, 1);
-		}
+        private void HalveBtn_CheckedChanged(object sender, EventArgs e)
+        {
+            update_value();
+        }
 
-		private void DmgBox_ValueChanged(object sender, EventArgs e)
-		{
-			update_value();
-		}
+        private void OKBtn_Click(object sender, EventArgs e)
+        {
+            foreach (var token in _fData)
+                DoDamage(token.Data, token.Card, (int)DmgBox.Value, Types, HalveBtn.Checked);
+        }
 
-		private void HalveBtn_CheckedChanged(object sender, EventArgs e)
-		{
-			update_value();
-		}
+        internal static void DoDamage(CombatData data, EncounterCard card, int damage, List<DamageType> types,
+            bool halveDamage)
+        {
+            var modifier = 0;
+            if (card != null)
+                modifier = card.GetDamageModifier(types, data);
 
-		private void OKBtn_Click(object sender, EventArgs e)
-		{
-			foreach (Token token in fData)
-				DoDamage(token.Data, token.Card, (int)DmgBox.Value, fTypes, HalveBtn.Checked);
-		}
+            var value = get_value(damage, modifier, halveDamage);
 
-		internal static void DoDamage(CombatData data, EncounterCard card, int damage, List<DamageType> types, bool halve_damage)
-		{
-			int modifier = 0;
-			if (card != null)
-				modifier = card.GetDamageModifier(types, data);
+            // Take damage off temp HP first
+            if (data.TempHp > 0)
+            {
+                var n = Math.Min(data.TempHp, value);
 
-			int value = get_value(damage, modifier, halve_damage);
+                data.TempHp -= n;
+                value -= n;
+            }
 
-			// Take damage off temp HP first
-			if (data.TempHP > 0)
-			{
-				int n = Math.Min(data.TempHP, value);
+            data.Damage += value;
+        }
 
-				data.TempHP -= n;
-				value -= n;
-			}
+        private void update_type()
+        {
+            var str = "";
+            foreach (var dt in Types)
+            {
+                if (str != "")
+                    str += ", ";
 
-			data.Damage += value;
-		}
+                str += dt.ToString();
+            }
 
-		void update_type()
-		{
-			string str = "";
-			foreach (DamageType dt in fTypes)
-			{
-				if (str != "")
-					str += ", ";
+            if (str == "")
+                str = "(untyped)";
+            TypeBox.Text = str;
+        }
 
-				str += dt.ToString();
-			}
-			if (str == "")
-				str = "(untyped)";
-			TypeBox.Text = str;
-		}
+        private void update_modifier()
+        {
+            foreach (var token in _fData)
+                if (token.Card != null)
+                    token.Modifier = token.Card.GetDamageModifier(Types, token.Data);
 
-		void update_modifier()
-		{
-			foreach (Token token in fData)
-			{
-				if (token.Card != null)
-					token.Modifier = token.Card.GetDamageModifier(fTypes, token.Data);
-			}
+            if (_fData.Count == 1)
+            {
+                var token = _fData[0];
 
-			if (fData.Count == 1)
-			{
-				Token token = fData[0];
+                if (token.Modifier == int.MinValue)
+                    ModBox.Text = "Immune";
+                else if (token.Modifier > 0)
+                    ModBox.Text = "Vulnerable " + token.Modifier;
+                else if (token.Modifier < 0)
+                    ModBox.Text = "Resist " + Math.Abs(token.Modifier);
+                else
+                    ModBox.Text = "(none)";
+            }
+            else
+            {
+                ModBox.Text = "(multiple tokens)";
+            }
+        }
 
-				if (token.Modifier == int.MinValue)
-				{
-					ModBox.Text = "Immune";
-				}
-				else if (token.Modifier > 0)
-				{
-					ModBox.Text = "Vulnerable " + token.Modifier;
-				}
-				else if (token.Modifier < 0)
-				{
-					ModBox.Text = "Resist " + Math.Abs(token.Modifier);
-				}
-				else
-				{
-					ModBox.Text = "(none)";
-				}
-			}
-			else
-			{
-				ModBox.Text = "(multiple tokens)";
-			}
-		}
+        private void update_value()
+        {
+            if (_fData.Count == 1)
+            {
+                var value = get_value((int)DmgBox.Value, _fData[0].Modifier, HalveBtn.Checked);
+                ValBox.Text = value.ToString();
+            }
+            else
+            {
+                ValBox.Text = "(multiple tokens)";
+            }
+        }
 
-		void update_value()
-		{
-			if (fData.Count == 1)
-			{
-				int value = get_value((int)DmgBox.Value, fData[0].Modifier, HalveBtn.Checked);
-				ValBox.Text = value.ToString();
-			}
-			else
-			{
-				ValBox.Text = "(multiple tokens)";
-			}
-		}
+        private static int get_value(int initialValue, int modifier, bool halveDamage)
+        {
+            var value = initialValue;
 
-		static int get_value(int initial_value, int modifier, bool halve_damage)
-		{
-			int value = initial_value;
+            if (modifier != 0)
+            {
+                if (modifier == int.MinValue)
+                {
+                    value = 0;
+                }
+                else
+                {
+                    value += modifier;
+                    value = Math.Max(value, 0);
+                }
+            }
 
-			if (modifier != 0)
-			{
-				if (modifier == int.MinValue)
-				{
-					value = 0;
-				}
-				else
-				{
-					value += modifier;
-					value = Math.Max(value, 0);
-				}
-			}
+            if (halveDamage)
+                value /= 2;
 
-			if (halve_damage)
-				value /= 2;
+            return value;
+        }
 
-			return value;
-		}
+        private void Dmg1_Click(object sender, EventArgs e)
+        {
+            Damage(1);
+        }
 
-		#region Amounts
+        private void Dmg2_Click(object sender, EventArgs e)
+        {
+            Damage(2);
+        }
 
-		private void Dmg1_Click(object sender, EventArgs e)
-		{
-			damage(1);
-		}
+        private void Dmg5_Click(object sender, EventArgs e)
+        {
+            Damage(5);
+        }
 
-		private void Dmg2_Click(object sender, EventArgs e)
-		{
-			damage(2);
-		}
+        private void Dmg10_Click(object sender, EventArgs e)
+        {
+            Damage(10);
+        }
 
-		private void Dmg5_Click(object sender, EventArgs e)
-		{
-			damage(5);
-		}
+        private void Dmg20_Click(object sender, EventArgs e)
+        {
+            Damage(20);
+        }
 
-		private void Dmg10_Click(object sender, EventArgs e)
-		{
-			damage(10);
-		}
+        private void Dmg50_Click(object sender, EventArgs e)
+        {
+            Damage(50);
+        }
 
-		private void Dmg20_Click(object sender, EventArgs e)
-		{
-			damage(20);
-		}
+        private void Dmg100_Click(object sender, EventArgs e)
+        {
+            Damage(100);
+        }
 
-		private void Dmg50_Click(object sender, EventArgs e)
-		{
-			damage(50);
-		}
+        private void Damage(int n)
+        {
+            DmgBox.Value += n;
+        }
 
-		private void Dmg100_Click(object sender, EventArgs e)
-		{
-			damage(100);
-		}
+        private void ResetBtn_Click(object sender, EventArgs e)
+        {
+            DmgBox.Value = 0;
+        }
 
-		void damage(int n)
-		{
-			DmgBox.Value += n;
-		}
+        private void AcidBtn_Click(object sender, EventArgs e)
+        {
+            add_type(DamageType.Acid);
+        }
 
-		private void ResetBtn_Click(object sender, EventArgs e)
-		{
-			DmgBox.Value = 0;
-		}
+        private void ColdBtn_Click(object sender, EventArgs e)
+        {
+            add_type(DamageType.Cold);
+        }
 
-		#endregion
+        private void FireBtn_Click(object sender, EventArgs e)
+        {
+            add_type(DamageType.Fire);
+        }
 
-		#region Types
+        private void ForceBtn_Click(object sender, EventArgs e)
+        {
+            add_type(DamageType.Force);
+        }
 
-		private void AcidBtn_Click(object sender, EventArgs e)
-		{
-			add_type(DamageType.Acid);
-		}
+        private void LightningBtn_Click(object sender, EventArgs e)
+        {
+            add_type(DamageType.Lightning);
+        }
 
-		private void ColdBtn_Click(object sender, EventArgs e)
-		{
-			add_type(DamageType.Cold);
-		}
+        private void NecroticBtn_Click(object sender, EventArgs e)
+        {
+            add_type(DamageType.Necrotic);
+        }
 
-		private void FireBtn_Click(object sender, EventArgs e)
-		{
-			add_type(DamageType.Fire);
-		}
+        private void PoisonBtn_Click(object sender, EventArgs e)
+        {
+            add_type(DamageType.Poison);
+        }
 
-		private void ForceBtn_Click(object sender, EventArgs e)
-		{
-			add_type(DamageType.Force);
-		}
+        private void PsychicBtn_Click(object sender, EventArgs e)
+        {
+            add_type(DamageType.Psychic);
+        }
 
-		private void LightningBtn_Click(object sender, EventArgs e)
-		{
-			add_type(DamageType.Lightning);
-		}
+        private void RadiantBtn_Click(object sender, EventArgs e)
+        {
+            add_type(DamageType.Radiant);
+        }
 
-		private void NecroticBtn_Click(object sender, EventArgs e)
-		{
-			add_type(DamageType.Necrotic);
-		}
+        private void ThunderBtn_Click(object sender, EventArgs e)
+        {
+            add_type(DamageType.Thunder);
+        }
 
-		private void PoisonBtn_Click(object sender, EventArgs e)
-		{
-			add_type(DamageType.Poison);
-		}
+        private void add_type(DamageType type)
+        {
+            if (Types.Contains(type))
+            {
+                Types.Remove(type);
+            }
+            else
+            {
+                Types.Add(type);
+                Types.Sort();
+            }
 
-		private void PsychicBtn_Click(object sender, EventArgs e)
-		{
-			add_type(DamageType.Psychic);
-		}
+            update_type();
+            update_modifier();
+            update_value();
+        }
 
-		private void RadiantBtn_Click(object sender, EventArgs e)
-		{
-			add_type(DamageType.Radiant);
-		}
+        public class Token
+        {
+            public EncounterCard Card;
 
-		private void ThunderBtn_Click(object sender, EventArgs e)
-		{
-			add_type(DamageType.Thunder);
-		}
+            public CombatData Data;
+            public int Modifier;
 
-		void add_type(DamageType type)
-		{
-			if (fTypes.Contains(type))
-			{
-				fTypes.Remove(type);
-			}
-			else
-			{
-				fTypes.Add(type);
-				fTypes.Sort();
-			}
-
-			update_type();
-			update_modifier();
-			update_value();
-		}
-
-		#endregion
-	}
+            public Token(CombatData data, EncounterCard card)
+            {
+                Data = data;
+                Card = card;
+            }
+        }
+    }
 }

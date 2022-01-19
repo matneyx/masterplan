@@ -1,169 +1,169 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
-
 using Masterplan.Data;
 
 namespace Masterplan.UI
 {
-	partial class GroupHealthForm : Form
-	{
-		public GroupHealthForm()
-		{
-			InitializeComponent();
+    internal partial class GroupHealthForm : Form
+    {
+        private readonly Label _fPlaceholder = new Label();
 
-			fPlaceholder.Text = "Select a PC from the list to set its current HP";
-			fPlaceholder.TextAlign = ContentAlignment.MiddleCenter;
-			fPlaceholder.Dock = DockStyle.Fill;
-			HPPanel.Controls.Add(fPlaceholder);
-			fPlaceholder.BringToFront();
+        private bool _fUpdating;
 
-			update_list();
-		}
+        public Hero SelectedHero
+        {
+            get
+            {
+                if (CombatantList.SelectedItems.Count != 0)
+                    return CombatantList.SelectedItems[0].Tag as Hero;
 
-		public Hero SelectedHero
-		{
-			get
-			{
-				if (CombatantList.SelectedItems.Count != 0)
-					return CombatantList.SelectedItems[0].Tag as Hero;
+                return null;
+            }
+        }
 
-				return null;
-			}
-		}
+        public GroupHealthForm()
+        {
+            InitializeComponent();
 
-		bool fUpdating = false;
-		Label fPlaceholder = new Label();
+            _fPlaceholder.Text = "Select a PC from the list to set its current HP";
+            _fPlaceholder.TextAlign = ContentAlignment.MiddleCenter;
+            _fPlaceholder.Dock = DockStyle.Fill;
+            HPPanel.Controls.Add(_fPlaceholder);
+            _fPlaceholder.BringToFront();
 
-		private void CombatantList_SelectedIndexChanged(object sender, EventArgs e)
-		{
-			fUpdating = true;
+            update_list();
+        }
 
-			update_hp_panel();
+        private void CombatantList_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            _fUpdating = true;
 
-			fUpdating = false;
-		}
+            update_hp_panel();
 
-		private void CombatantList_DoubleClick(object sender, EventArgs e)
-		{
-		}
+            _fUpdating = false;
+        }
 
-		private void MaxHPBox_ValueChanged(object sender, EventArgs e)
-		{
-			if (fUpdating)
-				return;
+        private void CombatantList_DoubleClick(object sender, EventArgs e)
+        {
+        }
 
-			SelectedHero.HP = (int)MaxHPBox.Value;
-			Session.Modified = true;
+        private void MaxHPBox_ValueChanged(object sender, EventArgs e)
+        {
+            if (_fUpdating)
+                return;
 
-			CurrentHPBox.Maximum = SelectedHero.HP;
+            SelectedHero.Hp = (int)MaxHPBox.Value;
+            Session.Modified = true;
 
-			update_hp_panel();
-			update_list_hp(SelectedHero);
-		}
+            CurrentHPBox.Maximum = SelectedHero.Hp;
 
-		private void CurrentHPBox_ValueChanged(object sender, EventArgs e)
-		{
-			if (fUpdating)
-				return;
+            update_hp_panel();
+            update_list_hp(SelectedHero);
+        }
 
-			int damage = SelectedHero.HP - (int)CurrentHPBox.Value;
+        private void CurrentHPBox_ValueChanged(object sender, EventArgs e)
+        {
+            if (_fUpdating)
+                return;
 
-			SelectedHero.CombatData.Damage = damage;
-			Session.Modified = true;
+            var damage = SelectedHero.Hp - (int)CurrentHPBox.Value;
 
-			update_hp_panel();
-			update_list_hp(SelectedHero);
-		}
+            SelectedHero.CombatData.Damage = damage;
+            Session.Modified = true;
 
-		private void TempHPBox_ValueChanged(object sender, EventArgs e)
-		{
-			if (fUpdating)
-				return;
+            update_hp_panel();
+            update_list_hp(SelectedHero);
+        }
 
-			SelectedHero.CombatData.TempHP = (int)TempHPBox.Value;
-			Session.Modified = true;
+        private void TempHPBox_ValueChanged(object sender, EventArgs e)
+        {
+            if (_fUpdating)
+                return;
 
-			update_hp_panel();
-			update_list_hp(SelectedHero);
-		}
+            SelectedHero.CombatData.TempHp = (int)TempHPBox.Value;
+            Session.Modified = true;
 
-		private void FullHealBtn_Click(object sender, EventArgs e)
-		{
-			if (SelectedHero != null)
-			{
-				SelectedHero.CombatData.Damage = 0;
-				Session.Modified = true;
+            update_hp_panel();
+            update_list_hp(SelectedHero);
+        }
 
-				update_hp_panel();
-				update_list_hp(SelectedHero);
-			}
-		}
+        private void FullHealBtn_Click(object sender, EventArgs e)
+        {
+            if (SelectedHero != null)
+            {
+                SelectedHero.CombatData.Damage = 0;
+                Session.Modified = true;
 
-		void update_list()
-		{
-			CombatantList.Items.Clear();
+                update_hp_panel();
+                update_list_hp(SelectedHero);
+            }
+        }
 
-			foreach (Hero hero in Session.Project.Heroes)
-			{
-				if (hero.HP == 0)
-					continue;
+        private void update_list()
+        {
+            CombatantList.Items.Clear();
 
-				ListViewItem lvi = CombatantList.Items.Add(hero.Name);
-				lvi.SubItems.Add("");
-				lvi.Tag = hero;
-			}
+            foreach (var hero in Session.Project.Heroes)
+            {
+                if (hero.Hp == 0)
+                    continue;
 
-			foreach (Hero hero in Session.Project.Heroes)
-				update_list_hp(hero);
-		}
+                var lvi = CombatantList.Items.Add(hero.Name);
+                lvi.SubItems.Add("");
+                lvi.Tag = hero;
+            }
 
-		void update_hp_panel()
-		{
-			if (SelectedHero != null)
-			{
-				fPlaceholder.Visible = false;
+            foreach (var hero in Session.Project.Heroes)
+                update_list_hp(hero);
+        }
 
-				HeroNameLbl.Text = SelectedHero.Name;
+        private void update_hp_panel()
+        {
+            if (SelectedHero != null)
+            {
+                _fPlaceholder.Visible = false;
 
-				MaxHPBox.Value = SelectedHero.HP;
-				CurrentHPBox.Value = SelectedHero.HP - SelectedHero.CombatData.Damage;
-				TempHPBox.Value = SelectedHero.CombatData.TempHP;
+                HeroNameLbl.Text = SelectedHero.Name;
 
-				HPGauge.FullHP = SelectedHero.HP;
-				HPGauge.Damage = SelectedHero.CombatData.Damage;
-				HPGauge.TempHP = SelectedHero.CombatData.TempHP;
+                MaxHPBox.Value = SelectedHero.Hp;
+                CurrentHPBox.Value = SelectedHero.Hp - SelectedHero.CombatData.Damage;
+                TempHPBox.Value = SelectedHero.CombatData.TempHp;
 
-				FullHealBtn.Enabled = (SelectedHero.CombatData.Damage != 0);
-			}
-			else
-			{
-				fPlaceholder.Visible = true;
-			}
-		}
+                HPGauge.FullHp = SelectedHero.Hp;
+                HPGauge.Damage = SelectedHero.CombatData.Damage;
+                HPGauge.TempHp = SelectedHero.CombatData.TempHp;
 
-		void update_list_hp(Hero hero)
-		{
-			string str = hero.HP.ToString();
-			if (hero.CombatData.Damage > 0)
-			{
-				int current = hero.HP - hero.CombatData.Damage;
-				str = current + " / " + hero.HP;
-			}
-			if (hero.CombatData.TempHP > 0)
-				str += " (+" + hero.CombatData.TempHP + ")";
+                FullHealBtn.Enabled = SelectedHero.CombatData.Damage != 0;
+            }
+            else
+            {
+                _fPlaceholder.Visible = true;
+            }
+        }
 
-			ListViewItem hero_lvi = null;
-			foreach (ListViewItem lvi in CombatantList.Items)
-			{
-				if (lvi.Tag == hero)
-				{
-					hero_lvi = lvi;
-					break;
-				}
-			}
-			if (hero_lvi != null)
-				hero_lvi.SubItems[1].Text = str;
-		}
-	}
+        private void update_list_hp(Hero hero)
+        {
+            var str = hero.Hp.ToString();
+            if (hero.CombatData.Damage > 0)
+            {
+                var current = hero.Hp - hero.CombatData.Damage;
+                str = current + " / " + hero.Hp;
+            }
+
+            if (hero.CombatData.TempHp > 0)
+                str += " (+" + hero.CombatData.TempHp + ")";
+
+            ListViewItem heroLvi = null;
+            foreach (ListViewItem lvi in CombatantList.Items)
+                if (lvi.Tag == hero)
+                {
+                    heroLvi = lvi;
+                    break;
+                }
+
+            if (heroLvi != null)
+                heroLvi.SubItems[1].Text = str;
+        }
+    }
 }

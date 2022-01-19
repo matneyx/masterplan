@@ -1,68 +1,54 @@
 ﻿using System;
 using System.Windows.Forms;
-
 using Masterplan.Tools.Generators;
 
 namespace Masterplan.Wizards
 {
-	partial class MapAreasPage : UserControl, IWizardPage
-	{
-		public MapAreasPage()
-		{
-			InitializeComponent();
-		}
+    internal partial class MapAreasPage : UserControl, IWizardPage
+    {
+        private MapBuilderData _fData;
 
-		MapBuilderData fData = null;
+        public MapAreasPage()
+        {
+            InitializeComponent();
+        }
 
-		#region IWizardPage Members
+        private void MaxAreasBox_ValueChanged(object sender, EventArgs e)
+        {
+            MinAreasBox.Maximum = MaxAreasBox.Value;
+        }
 
-		public bool AllowNext
-		{
-			get { return false; }
-		}
+        public bool AllowNext => false;
 
-		public bool AllowBack
-		{
-			get { return true; }
-		}
+        public bool AllowBack => true;
 
-		public bool AllowFinish
-		{
-			get { return true; }
-		}
+        public bool AllowFinish => true;
 
-		public void OnShown(object data)
-		{
-			if (fData == null)
-			{
-				fData = data as MapBuilderData;
-				MaxAreasBox.Value = fData.MaxAreaCount;
-				MinAreasBox.Value = fData.MinAreaCount;
-			}
-		}
+        public void OnShown(object data)
+        {
+            if (_fData == null)
+            {
+                _fData = data as MapBuilderData;
+                MaxAreasBox.Value = _fData.MaxAreaCount;
+                MinAreasBox.Value = _fData.MinAreaCount;
+            }
+        }
 
-		public bool OnBack()
-		{
-			return true;
-		}
+        public bool OnBack()
+        {
+            return true;
+        }
 
-		public bool OnNext()
-		{
-			return true;
-		}
+        public bool OnNext()
+        {
+            return true;
+        }
 
-		public bool OnFinish()
-		{
-			fData.MaxAreaCount = (int)MaxAreasBox.Value;
-			fData.MinAreaCount = (int)MinAreasBox.Value;
-			return true;
-		}
-
-		#endregion
-
-		private void MaxAreasBox_ValueChanged(object sender, EventArgs e)
-		{
-			MinAreasBox.Maximum = MaxAreasBox.Value;
-		}
-	}
+        public bool OnFinish()
+        {
+            _fData.MaxAreaCount = (int)MaxAreasBox.Value;
+            _fData.MinAreaCount = (int)MinAreasBox.Value;
+            return true;
+        }
+    }
 }

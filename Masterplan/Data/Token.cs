@@ -3,437 +3,465 @@ using System.Drawing;
 
 namespace Masterplan.Data
 {
-	/// <summary>
-	/// Interface for map tokens.
-	/// </summary>
-	public interface IToken
-	{
-	}
+    /// <summary>
+    ///     Interface for map tokens.
+    /// </summary>
+    public interface IToken
+    {
+    }
 
-	/// <summary>
-	/// A map token for a creature.
-	/// </summary>
-	[Serializable]
-	public class CreatureToken : IToken
-	{
-		/// <summary>
-		/// Default constructor.
-		/// </summary>
-		public CreatureToken()
-		{
-		}
-
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		/// <param name="slot_id">The ID of the EncounterSlot.</param>
-		/// <param name="data">The CombatData for this creature.</param>
-		public CreatureToken(Guid slot_id, CombatData data)
-		{
-			SlotID = slot_id;
-			Data = data;
-		}
-
-		/// <summary>
-		/// The ID of the encounter slot.
-		/// </summary>
-		public Guid SlotID = Guid.Empty;
-
-		/// <summary>
-		/// The CombatData for this creature.
-		/// </summary>
-		public CombatData Data = null;
-	}
-
-	/// <summary>
-	/// Types of custom token.
-	/// </summary>
-	public enum CustomTokenType
-	{
-		/// <summary>
-		/// The custom token is shown as a token.
-		/// </summary>
-		Token,
-
-		/// <summary>
-		/// The custom token is shown as a translucent overlay.
-		/// </summary>
-		Overlay
-	}
-
-	/// <summary>
-	/// Types of overlay style.
-	/// </summary>
-	public enum OverlayStyle
-	{
-		/// <summary>
-		/// A rounded, translucent overlay.
-		/// </summary>
-		Rounded,
-
-		/// <summary>
-		/// A rectangular, opaque overlay.
-		/// </summary>
-		Block
-	}
-
-	/// <summary>
-	/// A custom map token or overlay.
-	/// </summary>
-	[Serializable]
-	public class CustomToken : IToken
-	{
-		/// <summary>
-		/// Gets or sets the unique ID.
-		/// </summary>
-		public Guid ID
-		{
-			get { return fID; }
-			set { fID = value; }
-		}
-		Guid fID = Guid.NewGuid();
-
-		/// <summary>
-		/// Gets or sets the token type.
-		/// </summary>
-		public CustomTokenType Type
-		{
-			get { return fType; }
-			set { fType = value; }
-		}
-		CustomTokenType fType = CustomTokenType.Token;
-
-		/// <summary>
-		/// Gets or sets the token name.
-		/// </summary>
-		public string Name
-		{
-			get { return fName; }
-			set { fName = value; }
-		}
-		string fName = "";
-
-		/// <summary>
-		/// Gets or sets the token details.
-		/// </summary>
-		public string Details
-		{
-			get { return fDetails; }
-			set { fDetails = value; }
-		}
-		string fDetails = "";
+    /// <summary>
+    ///     A map token for a creature.
+    /// </summary>
+    [Serializable]
+    public class CreatureToken : IToken
+    {
+        /// <summary>
+        ///     The CombatData for this creature.
+        /// </summary>
+        public CombatData Data;
 
         /// <summary>
-        /// Gets or sets the size of the token.
+        ///     The ID of the encounter slot.
+        /// </summary>
+        public Guid SlotId = Guid.Empty;
+
+        /// <summary>
+        ///     Default constructor.
+        /// </summary>
+        public CreatureToken()
+        {
+        }
+
+        /// <summary>
+        ///     Constructor.
+        /// </summary>
+        /// <param name="slot_id">The ID of the EncounterSlot.</param>
+        /// <param name="data">The CombatData for this creature.</param>
+        public CreatureToken(Guid slotId, CombatData data)
+        {
+            SlotId = slotId;
+            Data = data;
+        }
+    }
+
+    /// <summary>
+    ///     Types of custom token.
+    /// </summary>
+    public enum CustomTokenType
+    {
+        /// <summary>
+        ///     The custom token is shown as a token.
+        /// </summary>
+        Token,
+
+        /// <summary>
+        ///     The custom token is shown as a translucent overlay.
+        /// </summary>
+        Overlay
+    }
+
+    /// <summary>
+    ///     Types of overlay style.
+    /// </summary>
+    public enum OverlayStyle
+    {
+        /// <summary>
+        ///     A rounded, translucent overlay.
+        /// </summary>
+        Rounded,
+
+        /// <summary>
+        ///     A rectangular, opaque overlay.
+        /// </summary>
+        Block
+    }
+
+    /// <summary>
+    ///     A custom map token or overlay.
+    /// </summary>
+    [Serializable]
+    public class CustomToken : IToken
+    {
+        private Color _fColour = Color.DarkBlue;
+
+        private Guid _fCreatureId = Guid.Empty;
+
+        private CombatData _fData = new CombatData();
+
+        private string _fDetails = "";
+
+        private bool _fDifficultTerrain;
+
+        private Guid _fId = Guid.NewGuid();
+
+        private Image _fImage;
+
+        private string _fName = "";
+
+        private bool _fOpaque;
+
+        private Size _fOverlaySize = new Size(3, 3);
+
+        private OverlayStyle _fOverlayStyle = OverlayStyle.Rounded;
+
+        private TerrainPower _fTerrainPower;
+
+        private CreatureSize _fTokenSize = CreatureSize.Medium;
+
+        private CustomTokenType _fType = CustomTokenType.Token;
+
+        /// <summary>
+        ///     Gets or sets the unique ID.
+        /// </summary>
+        public Guid Id
+        {
+            get => _fId;
+            set => _fId = value;
+        }
+
+        /// <summary>
+        ///     Gets or sets the token type.
+        /// </summary>
+        public CustomTokenType Type
+        {
+            get => _fType;
+            set => _fType = value;
+        }
+
+        /// <summary>
+        ///     Gets or sets the token name.
+        /// </summary>
+        public string Name
+        {
+            get => _fName;
+            set => _fName = value;
+        }
+
+        /// <summary>
+        ///     Gets or sets the token details.
+        /// </summary>
+        public string Details
+        {
+            get => _fDetails;
+            set => _fDetails = value;
+        }
+
+        /// <summary>
+        ///     Gets or sets the size of the token.
         /// </summary>
         public CreatureSize TokenSize
         {
-            get { return fTokenSize; }
-            set { fTokenSize = value; }
+            get => _fTokenSize;
+            set => _fTokenSize = value;
         }
-        CreatureSize fTokenSize = CreatureSize.Medium;
 
         /// <summary>
-        /// Gets or sets the size of the overlay.
+        ///     Gets or sets the size of the overlay.
         /// </summary>
         public Size OverlaySize
         {
-            get { return fOverlaySize; }
-            set { fOverlaySize = value; }
+            get => _fOverlaySize;
+            set => _fOverlaySize = value;
         }
-        Size fOverlaySize = new Size(3, 3);
-
-		/// <summary>
-		/// Gets or sets the style of the overlay.
-		/// </summary>
-		public OverlayStyle OverlayStyle
-		{
-			get { return fOverlayStyle; }
-			set { fOverlayStyle = value; }
-		}
-		OverlayStyle fOverlayStyle = OverlayStyle.Rounded;
 
         /// <summary>
-        /// Gets or sets the colour of the token.
+        ///     Gets or sets the style of the overlay.
+        /// </summary>
+        public OverlayStyle OverlayStyle
+        {
+            get => _fOverlayStyle;
+            set => _fOverlayStyle = value;
+        }
+
+        /// <summary>
+        ///     Gets or sets the colour of the token.
         /// </summary>
         public Color Colour
         {
-            get { return fColour; }
-            set { fColour = value; }
+            get => _fColour;
+            set => _fColour = value;
         }
-        Color fColour = Color.DarkBlue;
-
-		/// <summary>
-		/// Gets or sets the token / overlay image.
-		/// </summary>
-		public Image Image
-		{
-			get { return fImage; }
-			set { fImage = value; }
-		}
-		Image fImage = null;
 
         /// <summary>
-        /// Gets or sets whether the overlay represents difficult terrain.
+        ///     Gets or sets the token / overlay image.
+        /// </summary>
+        public Image Image
+        {
+            get => _fImage;
+            set => _fImage = value;
+        }
+
+        /// <summary>
+        ///     Gets or sets whether the overlay represents difficult terrain.
         /// </summary>
         public bool DifficultTerrain
         {
-            get { return fDifficultTerrain; }
-            set { fDifficultTerrain = value; }
+            get => _fDifficultTerrain;
+            set => _fDifficultTerrain = value;
         }
-        bool fDifficultTerrain = false;
 
         /// <summary>
-        /// Gets or sets whether the overlay obscures line of sight.
+        ///     Gets or sets whether the overlay obscures line of sight.
         /// </summary>
         public bool Opaque
         {
-            get { return fOpaque; }
-            set { fOpaque = value; }
+            get => _fOpaque;
+            set => _fOpaque = value;
         }
-        bool fOpaque = false;
 
         /// <summary>
-        /// Gets or sets the CombatData for this token.
+        ///     Gets or sets the CombatData for this token.
         /// </summary>
         public CombatData Data
         {
-            get { return fData; }
-            set { fData = value; }
+            get => _fData;
+            set => _fData = value;
         }
-        CombatData fData = new CombatData();
 
         /// <summary>
-        /// Gets or sets the terrain power for this overlay.
+        ///     Gets or sets the terrain power for this overlay.
         /// </summary>
         public TerrainPower TerrainPower
         {
-            get { return fTerrainPower; }
-            set { fTerrainPower = value; }
+            get => _fTerrainPower;
+            set => _fTerrainPower = value;
         }
-        TerrainPower fTerrainPower = null;
 
-		/// <summary>
-		/// The ID of the creature or hero on which the token is centred.
-		/// </summary>
-		public Guid CreatureID
-		{
-			get { return fCreatureID; }
-			set { fCreatureID = value; }
-		}
-		Guid fCreatureID = Guid.Empty;
+        /// <summary>
+        ///     The ID of the creature or hero on which the token is centred.
+        /// </summary>
+        public Guid CreatureId
+        {
+            get => _fCreatureId;
+            set => _fCreatureId = value;
+        }
 
-		/// <summary>
-		/// Creates a copy of the CustomToken.
-		/// </summary>
-		/// <returns>Returns the copy.</returns>
-		public CustomToken Copy()
-		{
-			CustomToken ct = new CustomToken();
+        /// <summary>
+        ///     Creates a copy of the CustomToken.
+        /// </summary>
+        /// <returns>Returns the copy.</returns>
+        public CustomToken Copy()
+        {
+            var ct = new CustomToken();
 
-			ct.ID = fID;
-			ct.Type = fType;
-			ct.Name = fName;
-			ct.Details = fDetails;
-			ct.TokenSize = fTokenSize;
-            ct.OverlaySize = fOverlaySize;
-			ct.OverlayStyle = fOverlayStyle;
-			ct.Colour = fColour;
-			ct.Image = fImage;
-            ct.DifficultTerrain = fDifficultTerrain;
-            ct.Opaque = fOpaque;
-            ct.Data = fData.Copy();
-            ct.TerrainPower = (fTerrainPower != null) ? fTerrainPower.Copy() : null;
-			ct.CreatureID = fCreatureID;
+            ct.Id = _fId;
+            ct.Type = _fType;
+            ct.Name = _fName;
+            ct.Details = _fDetails;
+            ct.TokenSize = _fTokenSize;
+            ct.OverlaySize = _fOverlaySize;
+            ct.OverlayStyle = _fOverlayStyle;
+            ct.Colour = _fColour;
+            ct.Image = _fImage;
+            ct.DifficultTerrain = _fDifficultTerrain;
+            ct.Opaque = _fOpaque;
+            ct.Data = _fData.Copy();
+            ct.TerrainPower = _fTerrainPower?.Copy();
+            ct.CreatureId = _fCreatureId;
 
-			return ct;
-		}
-	}
+            return ct;
+        }
+    }
 
     /// <summary>
-    /// Types of terrain power.
+    ///     Types of terrain power.
     /// </summary>
     public enum TerrainPowerType
     {
         /// <summary>
-        /// The terrain power can be used more than once.
+        ///     The terrain power can be used more than once.
         /// </summary>
         AtWill,
 
         /// <summary>
-        /// The terrain power can be used once.
+        ///     The terrain power can be used once.
         /// </summary>
         SingleUse
     }
 
     /// <summary>
-    /// A terrain power.
+    ///     A terrain power.
     /// </summary>
     [Serializable]
     public class TerrainPower
     {
-		/// <summary>
-		/// Gets or sets the power's ID.
-		/// </summary>
-		public Guid ID
-		{
-			get { return fID; }
-			set { fID = value; }
-		}
-		Guid fID = Guid.NewGuid();
+        private ActionType _fAction = ActionType.Standard;
 
-		/// <summary>
-		/// Gets or sets the power name.
-		/// </summary>
-		public string Name
-		{
-			get { return fName; }
-			set { fName = value; }
-		}
-		string fName = "";
+        private string _fAttack = "";
 
-		/// <summary>
-        /// Gets or sets the power type.
+        private string _fCheck = "";
+
+        private string _fEffect = "";
+
+        private string _fFailure = "";
+
+        private string _fFlavourText = "";
+
+        private string _fHit = "";
+
+        private Guid _fId = Guid.NewGuid();
+
+        private string _fMiss = "";
+
+        private string _fName = "";
+
+        private string _fRequirement = "";
+
+        private string _fSuccess = "";
+
+        private string _fTarget = "";
+
+        private TerrainPowerType _fType = TerrainPowerType.SingleUse;
+
+        /// <summary>
+        ///     Gets or sets the power's ID.
+        /// </summary>
+        public Guid Id
+        {
+            get => _fId;
+            set => _fId = value;
+        }
+
+        /// <summary>
+        ///     Gets or sets the power name.
+        /// </summary>
+        public string Name
+        {
+            get => _fName;
+            set => _fName = value;
+        }
+
+        /// <summary>
+        ///     Gets or sets the power type.
         /// </summary>
         public TerrainPowerType Type
         {
-            get { return fType; }
-            set { fType = value; }
+            get => _fType;
+            set => _fType = value;
         }
-        TerrainPowerType fType = TerrainPowerType.SingleUse;
 
         /// <summary>
-        /// Gets or sets the flavour text
+        ///     Gets or sets the flavour text
         /// </summary>
         public string FlavourText
         {
-            get { return fFlavourText; }
-            set { fFlavourText = value; }
+            get => _fFlavourText;
+            set => _fFlavourText = value;
         }
-        string fFlavourText = "";
 
         /// <summary>
-        /// Gets or sets the power's required action.
+        ///     Gets or sets the power's required action.
         /// </summary>
         public ActionType Action
         {
-            get { return fAction; }
-            set { fAction = value; }
+            get => _fAction;
+            set => _fAction = value;
         }
-        ActionType fAction = ActionType.Standard;
 
         /// <summary>
-        /// Gets or sets the power's requirement.
+        ///     Gets or sets the power's requirement.
         /// </summary>
         public string Requirement
         {
-            get { return fRequirement; }
-            set { fRequirement = value; }
+            get => _fRequirement;
+            set => _fRequirement = value;
         }
-        string fRequirement = "";
 
         /// <summary>
-        /// Gets or sets the power's check details.
+        ///     Gets or sets the power's check details.
         /// </summary>
         public string Check
         {
-            get { return fCheck; }
-            set { fCheck = value; }
+            get => _fCheck;
+            set => _fCheck = value;
         }
-        string fCheck = "";
 
         /// <summary>
-        /// Gets or sets the power's success details.
+        ///     Gets or sets the power's success details.
         /// </summary>
         public string Success
         {
-            get { return fSuccess; }
-            set { fSuccess = value; }
+            get => _fSuccess;
+            set => _fSuccess = value;
         }
-        string fSuccess = "";
 
         /// <summary>
-        /// Gets or sets the power's failure details.
+        ///     Gets or sets the power's failure details.
         /// </summary>
         public string Failure
         {
-            get { return fFailure; }
-            set { fFailure = value; }
+            get => _fFailure;
+            set => _fFailure = value;
         }
-        string fFailure = "";
 
         /// <summary>
-        /// Gets or sets the power's target.
+        ///     Gets or sets the power's target.
         /// </summary>
         public string Target
         {
-            get { return fTarget; }
-            set { fTarget = value; }
+            get => _fTarget;
+            set => _fTarget = value;
         }
-        string fTarget = "";
 
         /// <summary>
-        /// Gets or sets the power's attack details.
+        ///     Gets or sets the power's attack details.
         /// </summary>
         public string Attack
         {
-            get { return fAttack; }
-            set { fAttack = value; }
+            get => _fAttack;
+            set => _fAttack = value;
         }
-        string fAttack = "";
 
         /// <summary>
-        /// Gets or sets the power's hit details.
+        ///     Gets or sets the power's hit details.
         /// </summary>
         public string Hit
         {
-            get { return fHit; }
-            set { fHit = value; }
+            get => _fHit;
+            set => _fHit = value;
         }
-        string fHit = "";
 
         /// <summary>
-        /// Gets or sets the power's miss details.
+        ///     Gets or sets the power's miss details.
         /// </summary>
         public string Miss
         {
-            get { return fMiss; }
-            set { fMiss = value; }
+            get => _fMiss;
+            set => _fMiss = value;
         }
-        string fMiss = "";
 
         /// <summary>
-        /// Gets or sets the power's effect details.
+        ///     Gets or sets the power's effect details.
         /// </summary>
         public string Effect
         {
-            get { return fEffect; }
-            set { fEffect = value; }
+            get => _fEffect;
+            set => _fEffect = value;
         }
-        string fEffect = "";
 
         /// <summary>
-        /// Creates a copy of the terrain power.
+        ///     Creates a copy of the terrain power.
         /// </summary>
         /// <returns>Returns the copy.</returns>
         public TerrainPower Copy()
         {
-            TerrainPower tp = new TerrainPower();
+            var tp = new TerrainPower();
 
-			tp.ID = fID;
-            tp.Name = fName;
-            tp.Type = fType;
-            tp.FlavourText = fFlavourText;
-            tp.Action = fAction;
-            tp.Requirement = fRequirement;
-            tp.Check = fCheck;
-            tp.Success = fSuccess;
-            tp.Failure = fFailure;
-            tp.Target = fTarget;
-            tp.Attack = fAttack;
-            tp.Hit = fHit;
-            tp.Miss = fMiss;
-            tp.Effect = fEffect;
+            tp.Id = _fId;
+            tp.Name = _fName;
+            tp.Type = _fType;
+            tp.FlavourText = _fFlavourText;
+            tp.Action = _fAction;
+            tp.Requirement = _fRequirement;
+            tp.Check = _fCheck;
+            tp.Success = _fSuccess;
+            tp.Failure = _fFailure;
+            tp.Target = _fTarget;
+            tp.Attack = _fAttack;
+            tp.Hit = _fHit;
+            tp.Miss = _fMiss;
+            tp.Effect = _fEffect;
 
             return tp;
         }

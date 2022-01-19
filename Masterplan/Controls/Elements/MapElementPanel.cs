@@ -1,64 +1,57 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
-
 using Masterplan.Data;
 using Masterplan.UI;
 
-namespace Masterplan.Controls
+namespace Masterplan.Controls.Elements
 {
-	partial class MapElementPanel : UserControl
-	{
-		public MapElementPanel()
-		{
-			InitializeComponent();
-		}
+    internal partial class MapElementPanel : UserControl
+    {
+        private MapElement _mapElement;
 
-		public MapElement MapElement
-		{
-			get { return fMapElement; }
-			set
-			{
-				fMapElement = value;
-				update_view();
-			}
-		}
-		MapElement fMapElement = null;
+        public MapElement MapElement
+        {
+            get => _mapElement;
+            set
+            {
+                _mapElement = value;
+                update_view();
+            }
+        }
 
-		private void MapSelectBtn_Click(object sender, EventArgs e)
-		{
-			MapAreaSelectForm dlg = new MapAreaSelectForm(fMapElement.MapID, fMapElement.MapAreaID);
-			if (dlg.ShowDialog() == DialogResult.OK)
-			{
-				fMapElement.MapID = (dlg.Map != null) ? dlg.Map.ID : Guid.Empty;
-				fMapElement.MapAreaID = (dlg.MapArea != null) ? dlg.MapArea.ID : Guid.Empty;
+        public MapElementPanel()
+        {
+            InitializeComponent();
+        }
 
-				update_view();
-			}
-		}
+        private void MapSelectBtn_Click(object sender, EventArgs e)
+        {
+            var mapAreaSelectForm = new MapAreaSelectForm(_mapElement.MapId, _mapElement.MapAreaId);
 
-		void update_view()
-		{
-			Map map = Session.Project.FindTacticalMap(fMapElement.MapID);
-			if (map != null)
-			{
-				MapView.Map = map;
+            if (mapAreaSelectForm.ShowDialog() != DialogResult.OK) return;
 
-				MapArea area = map.FindArea(fMapElement.MapAreaID);
-				if (area != null)
-				{
-					MapView.Viewpoint = area.Region;
-				}
-				else
-				{
-					MapView.Viewpoint = Rectangle.Empty;
-				}
-			}
-			else
-			{
-				MapView.Map = null;
-				MapView.Viewpoint = Rectangle.Empty;
-			}
-		}
-	}
+            _mapElement.MapId = mapAreaSelectForm.Map?.Id ?? Guid.Empty;
+            _mapElement.MapAreaId = mapAreaSelectForm.MapArea?.Id ?? Guid.Empty;
+
+            update_view();
+        }
+
+        private void update_view()
+        {
+            var map = Session.Project.FindTacticalMap(_mapElement.MapId);
+            if (map != null)
+            {
+                MapView.Map = map;
+
+                var area = map.FindArea(_mapElement.MapAreaId);
+                MapView.Viewpoint = area?.Region ?? Rectangle.Empty;
+            }
+            else
+            {
+                MapView.Map = null;
+                MapView.Viewpoint = Rectangle.Empty;
+            }
+        }
+    }
 }

@@ -1,38 +1,33 @@
 ﻿using System;
 using System.Windows.Forms;
-
 using Masterplan.Data;
 
 namespace Masterplan.UI
 {
-	partial class TokenLinkForm : Form
-	{
-		public TokenLinkForm(TokenLink link)
-		{
-			InitializeComponent();
+    internal partial class TokenLinkForm : Form
+    {
+        public TokenLink Link { get; }
 
-			LinkTextBox.Items.Add("Marked");
-			LinkTextBox.Items.Add("Oath");
-			LinkTextBox.Items.Add("Quarry");
-			LinkTextBox.Items.Add("Curse");
-			LinkTextBox.Items.Add("Shroud");
-			LinkTextBox.Items.Add("Dominated");
-			LinkTextBox.Items.Add("Sanctioned");
+        public TokenLinkForm(TokenLink link)
+        {
+            InitializeComponent();
 
-			fLink = link.Copy();
+            LinkTextBox.Items.Add("Marked");
+            LinkTextBox.Items.Add("Oath");
+            LinkTextBox.Items.Add("Quarry");
+            LinkTextBox.Items.Add("Curse");
+            LinkTextBox.Items.Add("Shroud");
+            LinkTextBox.Items.Add("Dominated");
+            LinkTextBox.Items.Add("Sanctioned");
 
-			LinkTextBox.Text = fLink.Text;
-		}
+            Link = link.Copy();
 
-		public TokenLink Link
-		{
-			get { return fLink; }
-		}
-		TokenLink fLink = null;
+            LinkTextBox.Text = Link.Text;
+        }
 
-		private void OKBtn_Click(object sender, EventArgs e)
-		{
-			fLink.Text = LinkTextBox.Text;
-		}
-	}
+        private void OKBtn_Click(object sender, EventArgs e)
+        {
+            Link.Text = LinkTextBox.Text;
+        }
+    }
 }

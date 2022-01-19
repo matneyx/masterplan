@@ -1,182 +1,179 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Windows.Forms;
-
 using Masterplan.Data;
 using Masterplan.Tools;
 
 namespace Masterplan.UI
 {
-	partial class TrapSelectForm : Form
-	{
-		public TrapSelectForm()
-		{
-			InitializeComponent();
+    internal partial class TrapSelectForm : Form
+    {
+        public Trap Trap
+        {
+            get
+            {
+                if (TrapList.SelectedItems.Count != 0)
+                    return TrapList.SelectedItems[0].Tag as Trap;
 
-			TrapList.ListViewItemSorter = new TrapSorter();
+                return null;
+            }
+        }
 
-			Application.Idle += new EventHandler(Application_Idle);
+        public TrapSelectForm()
+        {
+            InitializeComponent();
 
-			if (Session.Project != null)
-			{
-				int min = Math.Max(1, Session.Project.Party.Level - 4);
-				int max = Session.Project.Party.Level + 5;
-				LevelRangePanel.SetLevelRange(min, max);
-			}
+            TrapList.ListViewItemSorter = new TrapSorter();
 
-			update_list();
+            Application.Idle += Application_Idle;
 
-			Browser.DocumentText = "";
-			TrapList_SelectedIndexChanged(null, null);
-		}
+            if (Session.Project != null)
+            {
+                var min = Math.Max(1, Session.Project.Party.Level - 4);
+                var max = Session.Project.Party.Level + 5;
+                LevelRangePanel.SetLevelRange(min, max);
+            }
 
-		~TrapSelectForm()
-		{
-			Application.Idle -= Application_Idle;
-		}
+            update_list();
 
-		void Application_Idle(object sender, EventArgs e)
-		{
-			OKBtn.Enabled = (Trap != null);
-		}
+            Browser.DocumentText = "";
+            TrapList_SelectedIndexChanged(null, null);
+        }
 
-		public Trap Trap
-		{
-			get
-			{
-				if (TrapList.SelectedItems.Count != 0)
-					return TrapList.SelectedItems[0].Tag as Trap;
+        ~TrapSelectForm()
+        {
+            Application.Idle -= Application_Idle;
+        }
 
-				return null;
-			}
-		}
+        private void Application_Idle(object sender, EventArgs e)
+        {
+            OKBtn.Enabled = Trap != null;
+        }
 
-		private void TrapList_DoubleClick(object sender, EventArgs e)
-		{
-			if (Trap != null)
-			{
-				DialogResult = DialogResult.OK;
-				Close();
-			}
-		}
+        private void TrapList_DoubleClick(object sender, EventArgs e)
+        {
+            if (Trap != null)
+            {
+                DialogResult = DialogResult.OK;
+                Close();
+            }
+        }
 
-		private void TrapList_SelectedIndexChanged(object sender, EventArgs e)
-		{
-			string html = HTML.Trap(Trap, null, true, false, false, Session.Preferences.TextSize);
+        private void TrapList_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            var html = Html.Trap(Trap, null, true, false, false, Session.Preferences.TextSize);
 
-			Browser.Document.OpenNew(true);
-			Browser.Document.Write(html);
-		}
+            Browser.Document.OpenNew(true);
+            Browser.Document.Write(html);
+        }
 
-		private void TrapList_ColumnClick(object sender, ColumnClickEventArgs e)
-		{
-			TrapSorter sorter = TrapList.ListViewItemSorter as TrapSorter;
-			sorter.Set(e.Column);
+        private void TrapList_ColumnClick(object sender, ColumnClickEventArgs e)
+        {
+            var sorter = TrapList.ListViewItemSorter as TrapSorter;
+            sorter.Set(e.Column);
 
-			TrapList.Sort();
-		}
+            TrapList.Sort();
+        }
 
-		private void LevelRangePanel_RangeChanged(object sender, EventArgs e)
-		{
-			update_list();
-		}
+        private void LevelRangePanel_RangeChanged(object sender, EventArgs e)
+        {
+            update_list();
+        }
 
-		void update_list()
-		{
-			List<Trap> traps = Session.Traps;
+        private void update_list()
+        {
+            var traps = Session.Traps;
 
-			TrapList.BeginUpdate();
-			TrapList.Items.Clear();
-			foreach (Trap trap in traps)
-			{
-				// Check level
-				if ((trap.Level < LevelRangePanel.MinimumLevel) || (trap.Level > LevelRangePanel.MaximumLevel))
-					continue;
+            TrapList.BeginUpdate();
+            TrapList.Items.Clear();
+            foreach (var trap in traps)
+            {
+                // Check level
+                if (trap.Level < LevelRangePanel.MinimumLevel || trap.Level > LevelRangePanel.MaximumLevel)
+                    continue;
 
-				if (!match(trap, LevelRangePanel.NameQuery))
-					continue;
+                if (!Match(trap, LevelRangePanel.NameQuery))
+                    continue;
 
-				ListViewItem lvi = TrapList.Items.Add(trap.Name);
-				lvi.SubItems.Add(trap.Info);
-				lvi.Group = TrapList.Groups[trap.Type == TrapType.Trap ? 0 : 1];
-				lvi.Tag = trap;
-			}
-			TrapList.EndUpdate();
-		}
+                var lvi = TrapList.Items.Add(trap.Name);
+                lvi.SubItems.Add(trap.Info);
+                lvi.Group = TrapList.Groups[trap.Type == TrapType.Trap ? 0 : 1];
+                lvi.Tag = trap;
+            }
 
-		bool match(Trap trap, string query)
-		{
-			string[] tokens = query.ToLower().Split();
+            TrapList.EndUpdate();
+        }
 
-			foreach (string token in tokens)
-			{
-				if (!match_token(trap, token))
-					return false;
-			}
+        private bool Match(Trap trap, string query)
+        {
+            var tokens = query.ToLower().Split();
 
-			return true;
-		}
+            foreach (var token in tokens)
+                if (!match_token(trap, token))
+                    return false;
 
-		bool match_token(Trap trap, string token)
-		{
-			if (trap.Name.ToLower().Contains(token))
-				return true;
+            return true;
+        }
 
-			return false;
-		}
+        private bool match_token(Trap trap, string token)
+        {
+            if (trap.Name.ToLower().Contains(token))
+                return true;
 
-		public class TrapSorter : IComparer
-		{
-			public void Set(int column)
-			{
-				if (fColumn == column)
-					fAscending = !fAscending;
+            return false;
+        }
 
-				fColumn = column;
-			}
+        public class TrapSorter : IComparer
+        {
+            private bool _fAscending = true;
+            private int _fColumn;
 
-			bool fAscending = true;
-			int fColumn = 0;
+            public void Set(int column)
+            {
+                if (_fColumn == column)
+                    _fAscending = !_fAscending;
 
-			public int Compare(object x, object y)
-			{
-				ListViewItem lvi_x = x as ListViewItem;
-				ListViewItem lvi_y = y as ListViewItem;
+                _fColumn = column;
+            }
 
-				int result = 0;
+            public int Compare(object x, object y)
+            {
+                var lviX = x as ListViewItem;
+                var lviY = y as ListViewItem;
 
-				switch (fColumn)
-				{
-					case 0:
-						{
-							ListViewItem.ListViewSubItem lvsi_x = lvi_x.SubItems[fColumn];
-							ListViewItem.ListViewSubItem lvsi_y = lvi_y.SubItems[fColumn];
+                var result = 0;
 
-							string str_x = lvsi_x.Text;
-							string str_y = lvsi_y.Text;
+                switch (_fColumn)
+                {
+                    case 0:
+                    {
+                        var lvsiX = lviX.SubItems[_fColumn];
+                        var lvsiY = lviY.SubItems[_fColumn];
 
-							result = str_x.CompareTo(str_y);
-						}
-						break;
-					case 1:
-						{
-							Trap trap_x = lvi_x.Tag as Trap;
-							Trap trap_y = lvi_y.Tag as Trap;
+                        var strX = lvsiX.Text;
+                        var strY = lvsiY.Text;
 
-							int level_x = trap_x.Level;
-							int level_y = trap_y.Level;
+                        result = strX.CompareTo(strY);
+                    }
+                        break;
+                    case 1:
+                    {
+                        var trapX = lviX.Tag as Trap;
+                        var trapY = lviY.Tag as Trap;
 
-							result = level_x.CompareTo(level_y);
-						}
-						break;
-				}
+                        var levelX = trapX.Level;
+                        var levelY = trapY.Level;
 
-				if (!fAscending)
-					result *= -1;
+                        result = levelX.CompareTo(levelY);
+                    }
+                        break;
+                }
 
-				return result;
-			}
-		}
-	}
+                if (!_fAscending)
+                    result *= -1;
+
+                return result;
+            }
+        }
+    }
 }

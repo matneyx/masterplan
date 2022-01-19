@@ -1,86 +1,78 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-
 using Masterplan.Data;
 
 namespace Masterplan.UI
 {
-	partial class RegionalMapSelectForm : Form
-	{
-		public RegionalMapSelectForm(List<RegionalMap> maps, List<Guid> exclude, bool multi_select)
-		{
-			InitializeComponent();
+    internal partial class RegionalMapSelectForm : Form
+    {
+        public RegionalMap Map
+        {
+            get
+            {
+                if (MapList.SelectedItems.Count != 0)
+                    return MapList.SelectedItems[0].Tag as RegionalMap;
 
-			foreach (RegionalMap map in maps)
-			{
-				if ((exclude != null) && (exclude.Contains(map.ID)))
-					continue;
+                return null;
+            }
+        }
 
-				ListViewItem lvi = MapList.Items.Add(map.Name);
-				lvi.Tag = map;
-			}
+        public List<RegionalMap> Maps
+        {
+            get
+            {
+                var maps = new List<RegionalMap>();
 
-			if (multi_select)
-			{
-				MapList.CheckBoxes = true;
-			}
+                foreach (ListViewItem lvi in MapList.CheckedItems)
+                {
+                    var map = lvi.Tag as RegionalMap;
+                    if (map != null)
+                        maps.Add(map);
+                }
 
-			Application.Idle += new EventHandler(Application_Idle);
-		}
+                return maps;
+            }
+        }
 
-		~RegionalMapSelectForm()
-		{
-			Application.Idle -= Application_Idle;
-		}
+        public RegionalMapSelectForm(List<RegionalMap> maps, List<Guid> exclude, bool multiSelect)
+        {
+            InitializeComponent();
 
-		void Application_Idle(object sender, EventArgs e)
-		{
-			if (MapList.CheckBoxes)
-			{
-				OKBtn.Enabled = (MapList.CheckedItems.Count != 0);
-			}
-			else
-			{
-				OKBtn.Enabled = (Map != null);
-			}
-		}
+            foreach (var map in maps)
+            {
+                if (exclude != null && exclude.Contains(map.Id))
+                    continue;
 
-		public RegionalMap Map
-		{
-			get
-			{
-				if (MapList.SelectedItems.Count != 0)
-					return MapList.SelectedItems[0].Tag as RegionalMap;
+                var lvi = MapList.Items.Add(map.Name);
+                lvi.Tag = map;
+            }
 
-				return null;
-			}
-		}
+            if (multiSelect) MapList.CheckBoxes = true;
 
-		public List<RegionalMap> Maps
-		{
-			get
-			{
-				List<RegionalMap> maps = new List<RegionalMap>();
+            Application.Idle += Application_Idle;
+        }
 
-				foreach (ListViewItem lvi in MapList.CheckedItems)
-				{
-					RegionalMap map = lvi.Tag as RegionalMap;
-					if (map != null)
-						maps.Add(map);
-				}
+        ~RegionalMapSelectForm()
+        {
+            Application.Idle -= Application_Idle;
+        }
 
-				return maps;
-			}
-		}
+        private void Application_Idle(object sender, EventArgs e)
+        {
+            if (MapList.CheckBoxes)
+                OKBtn.Enabled = MapList.CheckedItems.Count != 0;
+            else
+                OKBtn.Enabled = Map != null;
+        }
 
-		private void TileList_DoubleClick(object sender, EventArgs e)
-		{
-			if (Map != null)
-			{
-				DialogResult = DialogResult.OK;
-				Close();
-			}
-		}
-	}
+        private void TileList_DoubleClick(object sender, EventArgs e)
+        {
+            if (Map != null)
+            {
+                DialogResult = DialogResult.OK;
+                Close();
+            }
+        }
+    }
 }

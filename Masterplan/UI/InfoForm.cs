@@ -2,19 +2,19 @@
 
 namespace Masterplan.UI
 {
-    partial class InfoForm : Form
+    internal partial class InfoForm : Form
     {
-		public InfoForm()
+        public int Level
+        {
+            get => InfoPanel.Level;
+            set => InfoPanel.Level = value;
+        }
+
+        public InfoForm()
         {
             InitializeComponent();
 
-			InfoPanel.Level = (Session.Project != null) ? Session.Project.Party.Level : 1;
+            InfoPanel.Level = Session.Project != null ? Session.Project.Party.Level : 1;
         }
-
-		public int Level
-		{
-			get { return InfoPanel.Level; }
-			set { InfoPanel.Level = value; }
-		}
     }
 }

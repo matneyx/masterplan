@@ -1,84 +1,73 @@
 ﻿using System;
 using System.Windows.Forms;
-
 using Masterplan.Data;
 
 namespace Masterplan.UI
 {
-	partial class DamageModifierForm : Form
-	{
-		public DamageModifierForm(DamageModifier dm)
-		{
-			InitializeComponent();
+    internal partial class DamageModifierForm : Form
+    {
+        public DamageModifier Modifier { get; }
 
-			foreach (DamageType type in Enum.GetValues(typeof(DamageType)))
-			{
-				if (type == DamageType.Untyped)
-					continue;
+        public DamageModifierForm(DamageModifier dm)
+        {
+            InitializeComponent();
 
-				DamageTypeBox.Items.Add(type);
-			}
+            foreach (DamageType type in Enum.GetValues(typeof(DamageType)))
+            {
+                if (type == DamageType.Untyped)
+                    continue;
 
-			TypeBox.Items.Add("Immunity to this damage type");
-			TypeBox.Items.Add("Resistance to this damage type");
-			TypeBox.Items.Add("Vulnerability to this damage type");
+                DamageTypeBox.Items.Add(type);
+            }
 
-			fMod = dm.Copy();
+            TypeBox.Items.Add("Immunity to this damage type");
+            TypeBox.Items.Add("Resistance to this damage type");
+            TypeBox.Items.Add("Vulnerability to this damage type");
 
-			if (fMod.Type == DamageType.Untyped)
-			{
-				DamageTypeBox.SelectedIndex = 0;
-			}
-			else
-			{
-				DamageTypeBox.SelectedItem = fMod.Type;
-			}
+            Modifier = dm.Copy();
 
-			if (fMod.Value == 0)
-			{
-				TypeBox.SelectedIndex = 0;
-			}
-			if (fMod.Value < 0)
-			{
-				TypeBox.SelectedIndex = 1;
-				ValueBox.Value = Math.Abs(fMod.Value);
-			}
-			if (fMod.Value > 0)
-			{
-				TypeBox.SelectedIndex = 2;
-				ValueBox.Value = fMod.Value;
-			}
-		}
+            if (Modifier.Type == DamageType.Untyped)
+                DamageTypeBox.SelectedIndex = 0;
+            else
+                DamageTypeBox.SelectedItem = Modifier.Type;
 
-		public DamageModifier Modifier
-		{
-			get { return fMod; }
-		}
-		DamageModifier fMod = null;
+            if (Modifier.Value == 0) TypeBox.SelectedIndex = 0;
+            if (Modifier.Value < 0)
+            {
+                TypeBox.SelectedIndex = 1;
+                ValueBox.Value = Math.Abs(Modifier.Value);
+            }
 
-		private void OKBtn_Click(object sender, EventArgs e)
-		{
-			fMod.Type = (DamageType)DamageTypeBox.SelectedItem;
+            if (Modifier.Value > 0)
+            {
+                TypeBox.SelectedIndex = 2;
+                ValueBox.Value = Modifier.Value;
+            }
+        }
 
-			switch (TypeBox.SelectedIndex)
-			{
-				case 0:
-					fMod.Value = 0;
-					break;
-				case 1:
-					int val = (int)ValueBox.Value;
-					fMod.Value = -val;
-					break;
-				case 2:
-					fMod.Value = (int)ValueBox.Value;
-					break;
-			}
-		}
+        private void OKBtn_Click(object sender, EventArgs e)
+        {
+            Modifier.Type = (DamageType)DamageTypeBox.SelectedItem;
 
-		private void TypeBox_SelectedIndexChanged(object sender, EventArgs e)
-		{
-			ValueLbl.Enabled = (TypeBox.SelectedIndex != 0);
-			ValueBox.Enabled = (TypeBox.SelectedIndex != 0);
-		}
-	}
+            switch (TypeBox.SelectedIndex)
+            {
+                case 0:
+                    Modifier.Value = 0;
+                    break;
+                case 1:
+                    var val = (int)ValueBox.Value;
+                    Modifier.Value = -val;
+                    break;
+                case 2:
+                    Modifier.Value = (int)ValueBox.Value;
+                    break;
+            }
+        }
+
+        private void TypeBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            ValueLbl.Enabled = TypeBox.SelectedIndex != 0;
+            ValueBox.Enabled = TypeBox.SelectedIndex != 0;
+        }
+    }
 }

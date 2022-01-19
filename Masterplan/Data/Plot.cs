@@ -1,234 +1,224 @@
 ﻿using System;
 using System.Collections.Generic;
-
 using Masterplan.Tools;
 
 namespace Masterplan.Data
 {
-	/// <summary>
-	/// Class representing a plot structure.
-	/// </summary>
-	[Serializable]
-	public class Plot
-	{
-		/// <summary>
-		/// Gets or sets the list of plot points in the plot.
-		/// </summary>
-		public List<PlotPoint> Points
-		{
-			get { return fPoints; }
-			set { fPoints = value; }
-		}
-		List<PlotPoint> fPoints = new List<PlotPoint>();
+    /// <summary>
+    ///     Class representing a plot structure.
+    /// </summary>
+    [Serializable]
+    public class Plot
+    {
+        private List<PlotPoint> _fPoints = new List<PlotPoint>();
 
-		/// <summary>
-		/// Finds the plot point with the given ID.
-		/// </summary>
-		/// <param name="id">The ID of the desired plot point.</param>
-		/// <returns>Returns the plot point.</returns>
-		public PlotPoint FindPoint(Guid id)
-		{
-			foreach (PlotPoint pp in fPoints)
-			{
-				if (pp.ID == id)
-					return pp;
-			}
+        /// <summary>
+        ///     Gets or sets the list of plot points in the plot.
+        /// </summary>
+        public List<PlotPoint> Points
+        {
+            get => _fPoints;
+            set => _fPoints = value;
+        }
 
-			return null;
-		}
+        /// <summary>
+        ///     Returns a list containing all the plot points in this plot and its subplots.
+        /// </summary>
+        public List<PlotPoint> AllPlotPoints
+        {
+            get
+            {
+                var points = new List<PlotPoint>();
 
-		/// <summary>
-		/// Removes the specified plot point, and all references to it.
-		/// </summary>
-		/// <param name="point">The plot point.</param>
-		public void RemovePoint(PlotPoint point)
-		{
-			List<Guid> links_to = new List<Guid>();
-			foreach (PlotPoint pp in fPoints)
-			{
-				if (pp.Links.Contains(point.ID))
-				{
-					// Remove the reference to this point
-					while (pp.Links.Contains(point.ID))
-						pp.Links.Remove(point.ID);
+                foreach (var pp in _fPoints)
+                {
+                    points.Add(pp);
+                    points.AddRange(pp.Subplot.AllPlotPoints);
+                }
 
-					// Link this to all points on the other side
-					foreach (Guid point_id in point.Links)
-					{
-						if (pp.Links.Contains(point_id))
-							continue;
+                return points;
+            }
+        }
 
-						pp.Links.Add(point_id);
-					}
-				}
-			}
+        /// <summary>
+        ///     Finds the plot point with the given ID.
+        /// </summary>
+        /// <param name="id">The ID of the desired plot point.</param>
+        /// <returns>Returns the plot point.</returns>
+        public PlotPoint FindPoint(Guid id)
+        {
+            foreach (var pp in _fPoints)
+                if (pp.Id == id)
+                    return pp;
 
-			fPoints.Remove(point);
-		}
+            return null;
+        }
 
-		/// <summary>
-		/// Find all points in this plot which lead to the point with the specified ID.
-		/// </summary>
-		/// <param name="point_id">The ID of the plot point.</param>
-		/// <returns>Returns the list of points.</returns>
-		public List<PlotPoint> FindPrerequisites(Guid point_id)
-		{
-			List<PlotPoint> points = new List<PlotPoint>();
+        /// <summary>
+        ///     Removes the specified plot point, and all references to it.
+        /// </summary>
+        /// <param name="point">The plot point.</param>
+        public void RemovePoint(PlotPoint point)
+        {
+            new List<Guid>();
+            foreach (var pp in _fPoints)
+                if (pp.Links.Contains(point.Id))
+                {
+                    // Remove the reference to this point
+                    while (pp.Links.Contains(point.Id))
+                        pp.Links.Remove(point.Id);
 
-			foreach (PlotPoint pp in fPoints)
-			{
-				if (pp.Links.Contains(point_id))
-					points.Add(pp);
-			}
+                    // Link this to all points on the other side
+                    foreach (var pointId in point.Links)
+                    {
+                        if (pp.Links.Contains(pointId))
+                            continue;
 
-			return points;
-		}
+                        pp.Links.Add(pointId);
+                    }
+                }
 
-		/// <summary>
-		/// Find all points in this plot which lead from the point with the specified ID.
-		/// </summary>
-		/// <param name="pp">The ID of the plot point.</param>
-		/// <returns>Returns the list of points.</returns>
-		public List<PlotPoint> FindSubtree(PlotPoint pp)
-		{
-			List<PlotPoint> subtree = new List<PlotPoint>();
-			subtree.Add(pp);
+            _fPoints.Remove(point);
+        }
 
-			foreach (Guid id in pp.Links)
-			{
-				PlotPoint child = FindPoint(id);
-				List<PlotPoint> branch = FindSubtree(child);
+        /// <summary>
+        ///     Find all points in this plot which lead to the point with the specified ID.
+        /// </summary>
+        /// <param name="point_id">The ID of the plot point.</param>
+        /// <returns>Returns the list of points.</returns>
+        public List<PlotPoint> FindPrerequisites(Guid pointId)
+        {
+            var points = new List<PlotPoint>();
 
-				subtree.AddRange(branch);
-			}
+            foreach (var pp in _fPoints)
+                if (pp.Links.Contains(pointId))
+                    points.Add(pp);
 
-			return subtree;
-		}
+            return points;
+        }
 
-		/// <summary>
-		/// Returns the plot point which is associated with the specified map and map area.
-		/// Does not recurse into subplots.
-		/// </summary>
-		/// <param name="map">The map.</param>
-		/// <param name="area">The map area.</param>
-		/// <returns>The plot point, if one exists; false otherwise.</returns>
-		public PlotPoint FindPointForMapArea(Map map, MapArea area)
-		{
-			foreach (PlotPoint point in fPoints)
-			{
-				Map m = null;
-				MapArea ma = null;
-				point.GetTacticalMapArea(ref m, ref ma);
-				if ((m == map) && (ma == area))
-					return point;
-			}
+        /// <summary>
+        ///     Find all points in this plot which lead from the point with the specified ID.
+        /// </summary>
+        /// <param name="pp">The ID of the plot point.</param>
+        /// <returns>Returns the list of points.</returns>
+        public List<PlotPoint> FindSubtree(PlotPoint pp)
+        {
+            var subtree = new List<PlotPoint>();
+            subtree.Add(pp);
 
-			return null;
-		}
+            foreach (var id in pp.Links)
+            {
+                var child = FindPoint(id);
+                var branch = FindSubtree(child);
 
-		/// <summary>
-		/// Finds the list of tactical maps which are used in this plot.
-		/// </summary>
-		/// <returns>Returns the list of IDs of maps.</returns>
-		public List<Guid> FindTacticalMaps()
-		{
-			BinarySearchTree<Guid> bst = new BinarySearchTree<Guid>();
+                subtree.AddRange(branch);
+            }
 
-			foreach (PlotPoint pp in fPoints)
-			{
-				if (pp.Element != null)
-				{
-					if (pp.Element is Encounter)
-					{
-						Encounter enc = pp.Element as Encounter;
+            return subtree;
+        }
 
-						if ((enc.MapID != Guid.Empty) && (enc.MapAreaID != Guid.Empty))
-							bst.Add(enc.MapID);
-					}
+        /// <summary>
+        ///     Returns the plot point which is associated with the specified map and map area.
+        ///     Does not recurse into subplots.
+        /// </summary>
+        /// <param name="map">The map.</param>
+        /// <param name="area">The map area.</param>
+        /// <returns>The plot point, if one exists; false otherwise.</returns>
+        public PlotPoint FindPointForMapArea(Map map, MapArea area)
+        {
+            foreach (var point in _fPoints)
+            {
+                Map m = null;
+                MapArea ma = null;
+                point.GetTacticalMapArea(ref m, ref ma);
+                if (m == map && ma == area)
+                    return point;
+            }
 
-					if (pp.Element is TrapElement)
-					{
-						TrapElement te = pp.Element as TrapElement;
+            return null;
+        }
 
-						if ((te.MapID != Guid.Empty) && (te.MapAreaID != Guid.Empty))
-							bst.Add(te.MapID);
-					}
+        /// <summary>
+        ///     Finds the list of tactical maps which are used in this plot.
+        /// </summary>
+        /// <returns>Returns the list of IDs of maps.</returns>
+        public List<Guid> FindTacticalMaps()
+        {
+            var bst = new BinarySearchTree<Guid>();
 
-					if (pp.Element is SkillChallenge)
-					{
-						SkillChallenge sc = pp.Element as SkillChallenge;
+            foreach (var pp in _fPoints)
+                if (pp.Element != null)
+                {
+                    if (pp.Element is Encounter)
+                    {
+                        var enc = pp.Element as Encounter;
 
-						if ((sc.MapID != Guid.Empty) && (sc.MapAreaID != Guid.Empty))
-							bst.Add(sc.MapID);
-					}
+                        if (enc.MapId != Guid.Empty && enc.MapAreaId != Guid.Empty)
+                            bst.Add(enc.MapId);
+                    }
 
-					if (pp.Element is MapElement)
-					{
-						MapElement me = pp.Element as MapElement;
+                    if (pp.Element is TrapElement)
+                    {
+                        var te = pp.Element as TrapElement;
 
-						if (me.MapID != Guid.Empty)
-							bst.Add(me.MapID);
-					}
-				}
-			}
+                        if (te.MapId != Guid.Empty && te.MapAreaId != Guid.Empty)
+                            bst.Add(te.MapId);
+                    }
 
-			List<Guid> list = bst.SortedList;
-			list.Remove(Guid.Empty);
+                    if (pp.Element is SkillChallenge)
+                    {
+                        var sc = pp.Element as SkillChallenge;
 
-			return list;
-		}
+                        if (sc.MapId != Guid.Empty && sc.MapAreaId != Guid.Empty)
+                            bst.Add(sc.MapId);
+                    }
 
-		/// <summary>
-		/// Finds the list of regional maps which are used in this plot.
-		/// </summary>
-		/// <returns>Returns the list of IDs of maps.</returns>
-		public List<Guid> FindRegionalMaps()
-		{
-			BinarySearchTree<Guid> bst = new BinarySearchTree<Guid>();
+                    if (pp.Element is MapElement)
+                    {
+                        var me = pp.Element as MapElement;
 
-			foreach (PlotPoint pp in fPoints)
-			{
-				if ((pp.RegionalMapID != Guid.Empty) && (pp.MapLocationID != Guid.Empty))
-					bst.Add(pp.RegionalMapID);
-			}
+                        if (me.MapId != Guid.Empty)
+                            bst.Add(me.MapId);
+                    }
+                }
 
-			List<Guid> list = bst.SortedList;
-			list.Remove(Guid.Empty);
+            var list = bst.SortedList;
+            list.Remove(Guid.Empty);
 
-			return list;
-		}
+            return list;
+        }
 
-		/// <summary>
-		/// Returns a list containing all the plot points in this plot and its subplots.
-		/// </summary>
-		public List<PlotPoint> AllPlotPoints
-		{
-			get
-			{
-				List<PlotPoint> points = new List<PlotPoint>();
+        /// <summary>
+        ///     Finds the list of regional maps which are used in this plot.
+        /// </summary>
+        /// <returns>Returns the list of IDs of maps.</returns>
+        public List<Guid> FindRegionalMaps()
+        {
+            var bst = new BinarySearchTree<Guid>();
 
-				foreach (PlotPoint pp in fPoints)
-				{
-					points.Add(pp);
-					points.AddRange(pp.Subplot.AllPlotPoints);
-				}
+            foreach (var pp in _fPoints)
+                if (pp.RegionalMapId != Guid.Empty && pp.MapLocationId != Guid.Empty)
+                    bst.Add(pp.RegionalMapId);
 
-				return points;
-			}
-		}
+            var list = bst.SortedList;
+            list.Remove(Guid.Empty);
 
-		/// <summary>
-		/// Creates a copy of the plot.
-		/// </summary>
-		/// <returns>Returns the copy.</returns>
-		public Plot Copy()
-		{
-			Plot p = new Plot();
+            return list;
+        }
 
-			foreach (PlotPoint pp in fPoints)
-				p.Points.Add(pp.Copy());
+        /// <summary>
+        ///     Creates a copy of the plot.
+        /// </summary>
+        /// <returns>Returns the copy.</returns>
+        public Plot Copy()
+        {
+            var p = new Plot();
 
-			return p;
-		}
-	}
+            foreach (var pp in _fPoints)
+                p.Points.Add(pp.Copy());
+
+            return p;
+        }
+    }
 }

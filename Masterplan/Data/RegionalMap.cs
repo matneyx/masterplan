@@ -4,165 +4,170 @@ using System.Drawing;
 
 namespace Masterplan.Data
 {
-	/// <summary>
-	/// Class representing a regional map.
-	/// </summary>
-	[Serializable]
-	public class RegionalMap
-	{
-		/// <summary>
-		/// Gets or sets the map name.
-		/// </summary>
-		public string Name
-		{
-			get { return fName; }
-			set { fName = value; }
-		}
-		string fName = "";
+    /// <summary>
+    ///     Class representing a regional map.
+    /// </summary>
+    [Serializable]
+    public class RegionalMap
+    {
+        private Guid _fId = Guid.NewGuid();
 
-		/// <summary>
-		/// Gets or sets the unique ID of the map.
-		/// </summary>
-		public Guid ID
-		{
-			get { return fID; }
-			set { fID = value; }
-		}
-		Guid fID = Guid.NewGuid();
+        private Image _fImage;
 
-		/// <summary>
-		/// Gets or sets the map image.
-		/// </summary>
-		public Image Image
-		{
-			get { return fImage; }
-			set { fImage = value; }
-		}
-		Image fImage = null;
+        private List<MapLocation> _fLocations = new List<MapLocation>();
 
-		/// <summary>
-		/// Gets or sets the list of map locations.
-		/// </summary>
-		public List<MapLocation> Locations
-		{
-			get { return fLocations; }
-			set { fLocations = value; }
-		}
-		List<MapLocation> fLocations = new List<MapLocation>();
+        private string _fName = "";
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="location_id"></param>
-		/// <returns></returns>
-		public  MapLocation FindLocation(Guid location_id)
-		{
-			foreach (MapLocation loc in fLocations)
-			{
-				if (loc.ID == location_id)
-					return loc;
-			}
+        /// <summary>
+        ///     Gets or sets the map name.
+        /// </summary>
+        public string Name
+        {
+            get => _fName;
+            set => _fName = value;
+        }
 
-			return null;
-		}
+        /// <summary>
+        ///     Gets or sets the unique ID of the map.
+        /// </summary>
+        public Guid Id
+        {
+            get => _fId;
+            set => _fId = value;
+        }
 
-		/// <summary>
-		/// Creates a copy of the map.
-		/// </summary>
-		/// <returns>Returns the copy.</returns>
-		public RegionalMap Copy()
-		{
-			RegionalMap rm = new RegionalMap();
+        /// <summary>
+        ///     Gets or sets the map image.
+        /// </summary>
+        public Image Image
+        {
+            get => _fImage;
+            set => _fImage = value;
+        }
 
-			rm.Name = fName;
-			rm.ID = fID;
-			rm.Image = fImage;
+        /// <summary>
+        ///     Gets or sets the list of map locations.
+        /// </summary>
+        public List<MapLocation> Locations
+        {
+            get => _fLocations;
+            set => _fLocations = value;
+        }
 
-			foreach (MapLocation ml in fLocations)
-				rm.Locations.Add(ml.Copy());
+        /// <summary>
+        /// </summary>
+        /// <param name="location_id"></param>
+        /// <returns></returns>
+        public MapLocation FindLocation(Guid locationId)
+        {
+            foreach (var loc in _fLocations)
+                if (loc.Id == locationId)
+                    return loc;
 
-			return rm;
-		}
+            return null;
+        }
 
-		/// <summary>
-		/// Returns the map name.
-		/// </summary>
-		/// <returns></returns>
-		public override string ToString()
-		{
-			return fName;
-		}
-	}
+        /// <summary>
+        ///     Creates a copy of the map.
+        /// </summary>
+        /// <returns>Returns the copy.</returns>
+        public RegionalMap Copy()
+        {
+            var rm = new RegionalMap();
 
-	/// <summary>
-	/// Class representing a location on a regional map.
-	/// </summary>
-	[Serializable]
-	public class MapLocation
-	{
-		/// <summary>
-		/// Gets or sets the name of the location.
-		/// </summary>
-		public string Name
-		{
-			get { return fName; }
-			set { fName = value; }
-		}
-		string fName = "";
+            rm.Name = _fName;
+            rm.Id = _fId;
+            rm.Image = _fImage;
 
-		/// <summary>
-		/// Gets or sets the location category.
-		/// </summary>
-		public string Category
-		{
-			get { return fCategory; }
-			set { fCategory = value; }
-		}
-		string fCategory = "";
+            foreach (var ml in _fLocations)
+                rm.Locations.Add(ml.Copy());
 
-		/// <summary>
-		/// Gets or sets the unique ID of the location.
-		/// </summary>
-		public Guid ID
-		{
-			get { return fID; }
-			set { fID = value; }
-		}
-		Guid fID = Guid.NewGuid();
+            return rm;
+        }
 
-		/// <summary>
-		/// Gets or sets the location point.
-		/// </summary>
-		public PointF Point
-		{
-			get { return fPoint; }
-			set { fPoint = value; }
-		}
-		PointF fPoint = PointF.Empty;
+        /// <summary>
+        ///     Returns the map name.
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            return _fName;
+        }
+    }
 
-		/// <summary>
-		/// Creates a copy of the map location.
-		/// </summary>
-		/// <returns>Returns the copy.</returns>
-		public MapLocation Copy()
-		{
-			MapLocation ml = new MapLocation();
+    /// <summary>
+    ///     Class representing a location on a regional map.
+    /// </summary>
+    [Serializable]
+    public class MapLocation
+    {
+        private string _fCategory = "";
 
-			ml.Name = fName;
-			ml.Category = fCategory;
-			ml.ID = fID;
-			ml.Point = new PointF(fPoint.X, fPoint.Y);
+        private Guid _fId = Guid.NewGuid();
 
-			return ml;
-		}
+        private string _fName = "";
 
-		/// <summary>
-		/// Returns the location name.
-		/// </summary>
-		/// <returns></returns>
-		public override string ToString()
-		{
-			return fName;
-		}
-	}
+        private PointF _fPoint = PointF.Empty;
+
+        /// <summary>
+        ///     Gets or sets the name of the location.
+        /// </summary>
+        public string Name
+        {
+            get => _fName;
+            set => _fName = value;
+        }
+
+        /// <summary>
+        ///     Gets or sets the location category.
+        /// </summary>
+        public string Category
+        {
+            get => _fCategory;
+            set => _fCategory = value;
+        }
+
+        /// <summary>
+        ///     Gets or sets the unique ID of the location.
+        /// </summary>
+        public Guid Id
+        {
+            get => _fId;
+            set => _fId = value;
+        }
+
+        /// <summary>
+        ///     Gets or sets the location point.
+        /// </summary>
+        public PointF Point
+        {
+            get => _fPoint;
+            set => _fPoint = value;
+        }
+
+        /// <summary>
+        ///     Creates a copy of the map location.
+        /// </summary>
+        /// <returns>Returns the copy.</returns>
+        public MapLocation Copy()
+        {
+            var ml = new MapLocation();
+
+            ml.Name = _fName;
+            ml.Category = _fCategory;
+            ml.Id = _fId;
+            ml.Point = new PointF(_fPoint.X, _fPoint.Y);
+
+            return ml;
+        }
+
+        /// <summary>
+        ///     Returns the location name.
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            return _fName;
+        }
+    }
 }

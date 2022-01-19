@@ -1,6 +1,6 @@
 ﻿namespace Masterplan.UI
 {
-	partial class NPCForm
+	partial class NpcForm
 	{
 		/// <summary>
 		/// Required designer variable.
@@ -28,7 +28,7 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
-			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(NPCForm));
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(NpcForm));
 			System.Windows.Forms.ListViewGroup listViewGroup1 = new System.Windows.Forms.ListViewGroup("Immunities", System.Windows.Forms.HorizontalAlignment.Left);
 			System.Windows.Forms.ListViewGroup listViewGroup2 = new System.Windows.Forms.ListViewGroup("Resistances", System.Windows.Forms.HorizontalAlignment.Left);
 			System.Windows.Forms.ListViewGroup listViewGroup3 = new System.Windows.Forms.ListViewGroup("Vulnerabilities", System.Windows.Forms.HorizontalAlignment.Left);
@@ -150,9 +150,9 @@
 			((System.ComponentModel.ISupportInitialize)(this.PortraitBox)).BeginInit();
 			this.PortraitToolbar.SuspendLayout();
 			this.SuspendLayout();
-			// 
+			//
 			// OKBtn
-			// 
+			//
 			this.OKBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.OKBtn.DialogResult = System.Windows.Forms.DialogResult.OK;
 			this.OKBtn.Location = new System.Drawing.Point(241, 345);
@@ -162,9 +162,9 @@
 			this.OKBtn.Text = "OK";
 			this.OKBtn.UseVisualStyleBackColor = true;
 			this.OKBtn.Click += new System.EventHandler(this.OKBtn_Click);
-			// 
+			//
 			// CancelBtn
-			// 
+			//
 			this.CancelBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.CancelBtn.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this.CancelBtn.Location = new System.Drawing.Point(322, 345);
@@ -173,36 +173,36 @@
 			this.CancelBtn.TabIndex = 12;
 			this.CancelBtn.Text = "Cancel";
 			this.CancelBtn.UseVisualStyleBackColor = true;
-			// 
+			//
 			// NameLbl
-			// 
+			//
 			this.NameLbl.AutoSize = true;
 			this.NameLbl.Location = new System.Drawing.Point(12, 15);
 			this.NameLbl.Name = "NameLbl";
 			this.NameLbl.Size = new System.Drawing.Size(38, 13);
 			this.NameLbl.TabIndex = 0;
 			this.NameLbl.Text = "Name:";
-			// 
+			//
 			// NameBox
-			// 
+			//
 			this.NameBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
 						| System.Windows.Forms.AnchorStyles.Right)));
 			this.NameBox.Location = new System.Drawing.Point(72, 12);
 			this.NameBox.Name = "NameBox";
 			this.NameBox.Size = new System.Drawing.Size(325, 20);
 			this.NameBox.TabIndex = 1;
-			// 
+			//
 			// LevelLbl
-			// 
+			//
 			this.LevelLbl.AutoSize = true;
 			this.LevelLbl.Location = new System.Drawing.Point(12, 40);
 			this.LevelLbl.Name = "LevelLbl";
 			this.LevelLbl.Size = new System.Drawing.Size(36, 13);
 			this.LevelLbl.TabIndex = 2;
 			this.LevelLbl.Text = "Level:";
-			// 
+			//
 			// LevelBox
-			// 
+			//
 			this.LevelBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
 						| System.Windows.Forms.AnchorStyles.Right)));
 			this.LevelBox.Location = new System.Drawing.Point(72, 38);
@@ -225,129 +225,129 @@
             0,
             0});
 			this.LevelBox.ValueChanged += new System.EventHandler(this.ParameterChanged);
-			// 
+			//
 			// TemplateLbl
-			// 
+			//
 			this.TemplateLbl.AutoSize = true;
 			this.TemplateLbl.Location = new System.Drawing.Point(12, 67);
 			this.TemplateLbl.Name = "TemplateLbl";
 			this.TemplateLbl.Size = new System.Drawing.Size(54, 13);
 			this.TemplateLbl.TabIndex = 4;
 			this.TemplateLbl.Text = "Template:";
-			// 
+			//
 			// StrLbl
-			// 
+			//
 			this.StrLbl.AutoSize = true;
 			this.StrLbl.Location = new System.Drawing.Point(6, 9);
 			this.StrLbl.Name = "StrLbl";
 			this.StrLbl.Size = new System.Drawing.Size(50, 13);
 			this.StrLbl.TabIndex = 0;
 			this.StrLbl.Text = "Strength:";
-			// 
+			//
 			// StrBox
-			// 
+			//
 			this.StrBox.Location = new System.Drawing.Point(77, 6);
 			this.StrBox.Name = "StrBox";
 			this.StrBox.Size = new System.Drawing.Size(100, 20);
 			this.StrBox.TabIndex = 1;
 			this.StrBox.ValueChanged += new System.EventHandler(this.ParameterChanged);
-			// 
+			//
 			// ConBox
-			// 
+			//
 			this.ConBox.Location = new System.Drawing.Point(77, 32);
 			this.ConBox.Name = "ConBox";
 			this.ConBox.Size = new System.Drawing.Size(100, 20);
 			this.ConBox.TabIndex = 4;
 			this.ConBox.ValueChanged += new System.EventHandler(this.ParameterChanged);
-			// 
+			//
 			// ConLbl
-			// 
+			//
 			this.ConLbl.AutoSize = true;
 			this.ConLbl.Location = new System.Drawing.Point(6, 35);
 			this.ConLbl.Name = "ConLbl";
 			this.ConLbl.Size = new System.Drawing.Size(65, 13);
 			this.ConLbl.TabIndex = 3;
 			this.ConLbl.Text = "Constitution:";
-			// 
+			//
 			// DexBox
-			// 
+			//
 			this.DexBox.Location = new System.Drawing.Point(77, 58);
 			this.DexBox.Name = "DexBox";
 			this.DexBox.Size = new System.Drawing.Size(100, 20);
 			this.DexBox.TabIndex = 7;
 			this.DexBox.ValueChanged += new System.EventHandler(this.ParameterChanged);
-			// 
+			//
 			// DexLbl
-			// 
+			//
 			this.DexLbl.AutoSize = true;
 			this.DexLbl.Location = new System.Drawing.Point(6, 61);
 			this.DexLbl.Name = "DexLbl";
 			this.DexLbl.Size = new System.Drawing.Size(51, 13);
 			this.DexLbl.TabIndex = 6;
 			this.DexLbl.Text = "Dexterity:";
-			// 
+			//
 			// IntBox
-			// 
+			//
 			this.IntBox.Location = new System.Drawing.Point(77, 84);
 			this.IntBox.Name = "IntBox";
 			this.IntBox.Size = new System.Drawing.Size(100, 20);
 			this.IntBox.TabIndex = 10;
 			this.IntBox.ValueChanged += new System.EventHandler(this.ParameterChanged);
-			// 
+			//
 			// IntLbl
-			// 
+			//
 			this.IntLbl.AutoSize = true;
 			this.IntLbl.Location = new System.Drawing.Point(6, 87);
 			this.IntLbl.Name = "IntLbl";
 			this.IntLbl.Size = new System.Drawing.Size(64, 13);
 			this.IntLbl.TabIndex = 9;
 			this.IntLbl.Text = "Intelligence:";
-			// 
+			//
 			// WisBox
-			// 
+			//
 			this.WisBox.Location = new System.Drawing.Point(77, 110);
 			this.WisBox.Name = "WisBox";
 			this.WisBox.Size = new System.Drawing.Size(100, 20);
 			this.WisBox.TabIndex = 13;
 			this.WisBox.ValueChanged += new System.EventHandler(this.ParameterChanged);
-			// 
+			//
 			// WisLbl
-			// 
+			//
 			this.WisLbl.AutoSize = true;
 			this.WisLbl.Location = new System.Drawing.Point(6, 113);
 			this.WisLbl.Name = "WisLbl";
 			this.WisLbl.Size = new System.Drawing.Size(48, 13);
 			this.WisLbl.TabIndex = 12;
 			this.WisLbl.Text = "Wisdom:";
-			// 
+			//
 			// ChaBox
-			// 
+			//
 			this.ChaBox.Location = new System.Drawing.Point(77, 136);
 			this.ChaBox.Name = "ChaBox";
 			this.ChaBox.Size = new System.Drawing.Size(100, 20);
 			this.ChaBox.TabIndex = 16;
 			this.ChaBox.ValueChanged += new System.EventHandler(this.ParameterChanged);
-			// 
+			//
 			// ChaLbl
-			// 
+			//
 			this.ChaLbl.AutoSize = true;
 			this.ChaLbl.Location = new System.Drawing.Point(6, 139);
 			this.ChaLbl.Name = "ChaLbl";
 			this.ChaLbl.Size = new System.Drawing.Size(53, 13);
 			this.ChaLbl.TabIndex = 15;
 			this.ChaLbl.Text = "Charisma:";
-			// 
+			//
 			// InitLbl
-			// 
+			//
 			this.InitLbl.AutoSize = true;
 			this.InitLbl.Location = new System.Drawing.Point(6, 9);
 			this.InitLbl.Name = "InitLbl";
 			this.InitLbl.Size = new System.Drawing.Size(49, 13);
 			this.InitLbl.TabIndex = 0;
 			this.InitLbl.Text = "Initiative:";
-			// 
+			//
 			// InitModBox
-			// 
+			//
 			this.InitModBox.Location = new System.Drawing.Point(77, 6);
 			this.InitModBox.Maximum = new decimal(new int[] {
             1000,
@@ -363,9 +363,9 @@
 			this.InitModBox.Size = new System.Drawing.Size(100, 20);
 			this.InitModBox.TabIndex = 1;
 			this.InitModBox.ValueChanged += new System.EventHandler(this.ParameterChanged);
-			// 
+			//
 			// InitBox
-			// 
+			//
 			this.InitBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
 						| System.Windows.Forms.AnchorStyles.Right)));
 			this.InitBox.Location = new System.Drawing.Point(183, 6);
@@ -376,9 +376,9 @@
 			this.InitBox.TabStop = false;
 			this.InitBox.Text = "[init]";
 			this.InitBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-			// 
+			//
 			// HPBox
-			// 
+			//
 			this.HPBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
 						| System.Windows.Forms.AnchorStyles.Right)));
 			this.HPBox.Location = new System.Drawing.Point(183, 32);
@@ -389,9 +389,9 @@
 			this.HPBox.TabStop = false;
 			this.HPBox.Text = "[hp]";
 			this.HPBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-			// 
+			//
 			// HPModBox
-			// 
+			//
 			this.HPModBox.Location = new System.Drawing.Point(77, 32);
 			this.HPModBox.Maximum = new decimal(new int[] {
             1000,
@@ -407,18 +407,18 @@
 			this.HPModBox.Size = new System.Drawing.Size(100, 20);
 			this.HPModBox.TabIndex = 7;
 			this.HPModBox.ValueChanged += new System.EventHandler(this.ParameterChanged);
-			// 
+			//
 			// HPLbl
-			// 
+			//
 			this.HPLbl.AutoSize = true;
 			this.HPLbl.Location = new System.Drawing.Point(6, 35);
 			this.HPLbl.Name = "HPLbl";
 			this.HPLbl.Size = new System.Drawing.Size(55, 13);
 			this.HPLbl.TabIndex = 6;
 			this.HPLbl.Text = "Hit Points:";
-			// 
+			//
 			// ACBox
-			// 
+			//
 			this.ACBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
 						| System.Windows.Forms.AnchorStyles.Right)));
 			this.ACBox.Location = new System.Drawing.Point(183, 58);
@@ -429,9 +429,9 @@
 			this.ACBox.TabStop = false;
 			this.ACBox.Text = "[ac]";
 			this.ACBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-			// 
+			//
 			// ACModBox
-			// 
+			//
 			this.ACModBox.Location = new System.Drawing.Point(77, 58);
 			this.ACModBox.Maximum = new decimal(new int[] {
             1000,
@@ -447,18 +447,18 @@
 			this.ACModBox.Size = new System.Drawing.Size(100, 20);
 			this.ACModBox.TabIndex = 10;
 			this.ACModBox.ValueChanged += new System.EventHandler(this.ParameterChanged);
-			// 
+			//
 			// ACLbl
-			// 
+			//
 			this.ACLbl.AutoSize = true;
 			this.ACLbl.Location = new System.Drawing.Point(6, 61);
 			this.ACLbl.Name = "ACLbl";
 			this.ACLbl.Size = new System.Drawing.Size(24, 13);
 			this.ACLbl.TabIndex = 9;
 			this.ACLbl.Text = "AC:";
-			// 
+			//
 			// FortBox
-			// 
+			//
 			this.FortBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
 						| System.Windows.Forms.AnchorStyles.Right)));
 			this.FortBox.Location = new System.Drawing.Point(183, 84);
@@ -469,9 +469,9 @@
 			this.FortBox.TabStop = false;
 			this.FortBox.Text = "[fort]";
 			this.FortBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-			// 
+			//
 			// FortModBox
-			// 
+			//
 			this.FortModBox.Location = new System.Drawing.Point(77, 84);
 			this.FortModBox.Maximum = new decimal(new int[] {
             1000,
@@ -487,18 +487,18 @@
 			this.FortModBox.Size = new System.Drawing.Size(100, 20);
 			this.FortModBox.TabIndex = 13;
 			this.FortModBox.ValueChanged += new System.EventHandler(this.ParameterChanged);
-			// 
+			//
 			// FortLbl
-			// 
+			//
 			this.FortLbl.AutoSize = true;
 			this.FortLbl.Location = new System.Drawing.Point(6, 87);
 			this.FortLbl.Name = "FortLbl";
 			this.FortLbl.Size = new System.Drawing.Size(51, 13);
 			this.FortLbl.TabIndex = 12;
 			this.FortLbl.Text = "Fortitude:";
-			// 
+			//
 			// RefBox
-			// 
+			//
 			this.RefBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
 						| System.Windows.Forms.AnchorStyles.Right)));
 			this.RefBox.Location = new System.Drawing.Point(183, 110);
@@ -509,9 +509,9 @@
 			this.RefBox.TabStop = false;
 			this.RefBox.Text = "[ref]";
 			this.RefBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-			// 
+			//
 			// RefModBox
-			// 
+			//
 			this.RefModBox.Location = new System.Drawing.Point(77, 110);
 			this.RefModBox.Maximum = new decimal(new int[] {
             1000,
@@ -527,18 +527,18 @@
 			this.RefModBox.Size = new System.Drawing.Size(100, 20);
 			this.RefModBox.TabIndex = 16;
 			this.RefModBox.ValueChanged += new System.EventHandler(this.ParameterChanged);
-			// 
+			//
 			// RefLbl
-			// 
+			//
 			this.RefLbl.AutoSize = true;
 			this.RefLbl.Location = new System.Drawing.Point(6, 113);
 			this.RefLbl.Name = "RefLbl";
 			this.RefLbl.Size = new System.Drawing.Size(40, 13);
 			this.RefLbl.TabIndex = 15;
 			this.RefLbl.Text = "Reflex:";
-			// 
+			//
 			// WillBox
-			// 
+			//
 			this.WillBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
 						| System.Windows.Forms.AnchorStyles.Right)));
 			this.WillBox.Location = new System.Drawing.Point(183, 136);
@@ -549,9 +549,9 @@
 			this.WillBox.TabStop = false;
 			this.WillBox.Text = "[will]";
 			this.WillBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-			// 
+			//
 			// WillModBox
-			// 
+			//
 			this.WillModBox.Location = new System.Drawing.Point(77, 136);
 			this.WillModBox.Maximum = new decimal(new int[] {
             1000,
@@ -567,18 +567,18 @@
 			this.WillModBox.Size = new System.Drawing.Size(100, 20);
 			this.WillModBox.TabIndex = 19;
 			this.WillModBox.ValueChanged += new System.EventHandler(this.ParameterChanged);
-			// 
+			//
 			// WillLbl
-			// 
+			//
 			this.WillLbl.AutoSize = true;
 			this.WillLbl.Location = new System.Drawing.Point(6, 139);
 			this.WillLbl.Name = "WillLbl";
 			this.WillLbl.Size = new System.Drawing.Size(27, 13);
 			this.WillLbl.TabIndex = 18;
 			this.WillLbl.Text = "Will:";
-			// 
+			//
 			// ChaModBox
-			// 
+			//
 			this.ChaModBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
 						| System.Windows.Forms.AnchorStyles.Right)));
 			this.ChaModBox.Location = new System.Drawing.Point(183, 136);
@@ -589,9 +589,9 @@
 			this.ChaModBox.TabStop = false;
 			this.ChaModBox.Text = "[cha]";
 			this.ChaModBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-			// 
+			//
 			// WisModBox
-			// 
+			//
 			this.WisModBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
 						| System.Windows.Forms.AnchorStyles.Right)));
 			this.WisModBox.Location = new System.Drawing.Point(183, 110);
@@ -602,9 +602,9 @@
 			this.WisModBox.TabStop = false;
 			this.WisModBox.Text = "[wis]";
 			this.WisModBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-			// 
+			//
 			// IntModBox
-			// 
+			//
 			this.IntModBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
 						| System.Windows.Forms.AnchorStyles.Right)));
 			this.IntModBox.Location = new System.Drawing.Point(183, 84);
@@ -615,9 +615,9 @@
 			this.IntModBox.TabStop = false;
 			this.IntModBox.Text = "[int]";
 			this.IntModBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-			// 
+			//
 			// DexModBox
-			// 
+			//
 			this.DexModBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
 						| System.Windows.Forms.AnchorStyles.Right)));
 			this.DexModBox.Location = new System.Drawing.Point(183, 58);
@@ -628,9 +628,9 @@
 			this.DexModBox.TabStop = false;
 			this.DexModBox.Text = "[dex]";
 			this.DexModBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-			// 
+			//
 			// ConModBox
-			// 
+			//
 			this.ConModBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
 						| System.Windows.Forms.AnchorStyles.Right)));
 			this.ConModBox.Location = new System.Drawing.Point(183, 32);
@@ -641,9 +641,9 @@
 			this.ConModBox.TabStop = false;
 			this.ConModBox.Text = "[con]";
 			this.ConModBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-			// 
+			//
 			// StrModBox
-			// 
+			//
 			this.StrModBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
 						| System.Windows.Forms.AnchorStyles.Right)));
 			this.StrModBox.Location = new System.Drawing.Point(183, 6);
@@ -654,9 +654,9 @@
 			this.StrModBox.TabStop = false;
 			this.StrModBox.Text = "[str]";
 			this.StrModBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-			// 
+			//
 			// Pages
-			// 
+			//
 			this.Pages.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
 						| System.Windows.Forms.AnchorStyles.Left)
 						| System.Windows.Forms.AnchorStyles.Right)));
@@ -672,9 +672,9 @@
 			this.Pages.SelectedIndex = 0;
 			this.Pages.Size = new System.Drawing.Size(385, 219);
 			this.Pages.TabIndex = 10;
-			// 
+			//
 			// AbilitiesPage
-			// 
+			//
 			this.AbilitiesPage.Controls.Add(this.CostBox);
 			this.AbilitiesPage.Controls.Add(this.CostLbl);
 			this.AbilitiesPage.Controls.Add(this.StrModBox);
@@ -702,9 +702,9 @@
 			this.AbilitiesPage.TabIndex = 2;
 			this.AbilitiesPage.Text = "Abilities";
 			this.AbilitiesPage.UseVisualStyleBackColor = true;
-			// 
+			//
 			// CostBox
-			// 
+			//
 			this.CostBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
 						| System.Windows.Forms.AnchorStyles.Right)));
 			this.CostBox.Location = new System.Drawing.Point(77, 162);
@@ -715,18 +715,18 @@
 			this.CostBox.TabStop = false;
 			this.CostBox.Text = "[cost]";
 			this.CostBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-			// 
+			//
 			// CostLbl
-			// 
+			//
 			this.CostLbl.AutoSize = true;
 			this.CostLbl.Location = new System.Drawing.Point(6, 165);
 			this.CostLbl.Name = "CostLbl";
 			this.CostLbl.Size = new System.Drawing.Size(31, 13);
 			this.CostLbl.TabIndex = 18;
 			this.CostLbl.Text = "Cost:";
-			// 
+			//
 			// CombatPage
-			// 
+			//
 			this.CombatPage.Controls.Add(this.InitBox);
 			this.CombatPage.Controls.Add(this.InitLbl);
 			this.CombatPage.Controls.Add(this.FortLbl);
@@ -752,9 +752,9 @@
 			this.CombatPage.TabIndex = 0;
 			this.CombatPage.Text = "Combat Statistics";
 			this.CombatPage.UseVisualStyleBackColor = true;
-			// 
+			//
 			// PowersPage
-			// 
+			//
 			this.PowersPage.Controls.Add(this.PowerList);
 			this.PowersPage.Controls.Add(this.PowerToolbar);
 			this.PowersPage.Location = new System.Drawing.Point(4, 22);
@@ -764,9 +764,9 @@
 			this.PowersPage.TabIndex = 5;
 			this.PowersPage.Text = "Powers";
 			this.PowersPage.UseVisualStyleBackColor = true;
-			// 
+			//
 			// PowerList
-			// 
+			//
 			this.PowerList.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.NameHdr});
 			this.PowerList.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -781,14 +781,14 @@
 			this.PowerList.UseCompatibleStateImageBehavior = false;
 			this.PowerList.View = System.Windows.Forms.View.Details;
 			this.PowerList.DoubleClick += new System.EventHandler(this.PowerEditBtn_Click);
-			// 
+			//
 			// NameHdr
-			// 
+			//
 			this.NameHdr.Text = "Power Name";
 			this.NameHdr.Width = 200;
-			// 
+			//
 			// PowerToolbar
-			// 
+			//
 			this.PowerToolbar.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.PowerAddBtn,
             this.PowerRemoveBtn,
@@ -801,9 +801,9 @@
 			this.PowerToolbar.Size = new System.Drawing.Size(371, 25);
 			this.PowerToolbar.TabIndex = 2;
 			this.PowerToolbar.Text = "toolStrip1";
-			// 
+			//
 			// PowerAddBtn
-			// 
+			//
 			this.PowerAddBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
 			this.PowerAddBtn.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.PowerBrowse});
@@ -813,16 +813,16 @@
 			this.PowerAddBtn.Size = new System.Drawing.Size(45, 22);
 			this.PowerAddBtn.Text = "Add";
 			this.PowerAddBtn.ButtonClick += new System.EventHandler(this.PowerAddBtn_Click);
-			// 
+			//
 			// PowerBrowse
-			// 
+			//
 			this.PowerBrowse.Name = "PowerBrowse";
 			this.PowerBrowse.Size = new System.Drawing.Size(121, 22);
 			this.PowerBrowse.Text = "Browse...";
 			this.PowerBrowse.Click += new System.EventHandler(this.SelectPowerBtn_Click);
-			// 
+			//
 			// PowerRemoveBtn
-			// 
+			//
 			this.PowerRemoveBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
 			this.PowerRemoveBtn.Image = ((System.Drawing.Image)(resources.GetObject("PowerRemoveBtn.Image")));
 			this.PowerRemoveBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -830,9 +830,9 @@
 			this.PowerRemoveBtn.Size = new System.Drawing.Size(54, 22);
 			this.PowerRemoveBtn.Text = "Remove";
 			this.PowerRemoveBtn.Click += new System.EventHandler(this.PowerRemoveBtn_Click);
-			// 
+			//
 			// PowerEditBtn
-			// 
+			//
 			this.PowerEditBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
 			this.PowerEditBtn.Image = ((System.Drawing.Image)(resources.GetObject("PowerEditBtn.Image")));
 			this.PowerEditBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -840,14 +840,14 @@
 			this.PowerEditBtn.Size = new System.Drawing.Size(31, 22);
 			this.PowerEditBtn.Text = "Edit";
 			this.PowerEditBtn.Click += new System.EventHandler(this.PowerEditBtn_Click);
-			// 
+			//
 			// toolStripSeparator1
-			// 
+			//
 			this.toolStripSeparator1.Name = "toolStripSeparator1";
 			this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
-			// 
+			//
 			// PowerUpBtn
-			// 
+			//
 			this.PowerUpBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
 			this.PowerUpBtn.Image = ((System.Drawing.Image)(resources.GetObject("PowerUpBtn.Image")));
 			this.PowerUpBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -855,9 +855,9 @@
 			this.PowerUpBtn.Size = new System.Drawing.Size(59, 22);
 			this.PowerUpBtn.Text = "Move Up";
 			this.PowerUpBtn.Click += new System.EventHandler(this.PowerUpBtn_Click);
-			// 
+			//
 			// PowerDownBtn
-			// 
+			//
 			this.PowerDownBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
 			this.PowerDownBtn.Image = ((System.Drawing.Image)(resources.GetObject("PowerDownBtn.Image")));
 			this.PowerDownBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -865,9 +865,9 @@
 			this.PowerDownBtn.Size = new System.Drawing.Size(75, 22);
 			this.PowerDownBtn.Text = "Move Down";
 			this.PowerDownBtn.Click += new System.EventHandler(this.PowerDownBtn_Click);
-			// 
+			//
 			// AuraPage
-			// 
+			//
 			this.AuraPage.Controls.Add(this.AuraList);
 			this.AuraPage.Controls.Add(this.AuraToolbar);
 			this.AuraPage.Location = new System.Drawing.Point(4, 22);
@@ -877,9 +877,9 @@
 			this.AuraPage.TabIndex = 6;
 			this.AuraPage.Text = "Auras";
 			this.AuraPage.UseVisualStyleBackColor = true;
-			// 
+			//
 			// AuraList
-			// 
+			//
 			this.AuraList.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.AuraHdr});
 			this.AuraList.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -894,14 +894,14 @@
 			this.AuraList.UseCompatibleStateImageBehavior = false;
 			this.AuraList.View = System.Windows.Forms.View.Details;
 			this.AuraList.DoubleClick += new System.EventHandler(this.AuraEditBtn_Click);
-			// 
+			//
 			// AuraHdr
-			// 
+			//
 			this.AuraHdr.Text = "Aura Name";
 			this.AuraHdr.Width = 200;
-			// 
+			//
 			// AuraToolbar
-			// 
+			//
 			this.AuraToolbar.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.AuraAddBtn,
             this.AuraRemoveBtn,
@@ -911,9 +911,9 @@
 			this.AuraToolbar.Size = new System.Drawing.Size(371, 25);
 			this.AuraToolbar.TabIndex = 4;
 			this.AuraToolbar.Text = "toolStrip1";
-			// 
+			//
 			// AuraAddBtn
-			// 
+			//
 			this.AuraAddBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
 			this.AuraAddBtn.Image = ((System.Drawing.Image)(resources.GetObject("AuraAddBtn.Image")));
 			this.AuraAddBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -921,9 +921,9 @@
 			this.AuraAddBtn.Size = new System.Drawing.Size(33, 22);
 			this.AuraAddBtn.Text = "Add";
 			this.AuraAddBtn.Click += new System.EventHandler(this.AuraAddBtn_Click);
-			// 
+			//
 			// AuraRemoveBtn
-			// 
+			//
 			this.AuraRemoveBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
 			this.AuraRemoveBtn.Image = ((System.Drawing.Image)(resources.GetObject("AuraRemoveBtn.Image")));
 			this.AuraRemoveBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -931,9 +931,9 @@
 			this.AuraRemoveBtn.Size = new System.Drawing.Size(54, 22);
 			this.AuraRemoveBtn.Text = "Remove";
 			this.AuraRemoveBtn.Click += new System.EventHandler(this.AuraRemoveBtn_Click);
-			// 
+			//
 			// AuraEditBtn
-			// 
+			//
 			this.AuraEditBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
 			this.AuraEditBtn.Image = ((System.Drawing.Image)(resources.GetObject("AuraEditBtn.Image")));
 			this.AuraEditBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -941,9 +941,9 @@
 			this.AuraEditBtn.Size = new System.Drawing.Size(31, 22);
 			this.AuraEditBtn.Text = "Edit";
 			this.AuraEditBtn.Click += new System.EventHandler(this.AuraEditBtn_Click);
-			// 
+			//
 			// DamagePage
-			// 
+			//
 			this.DamagePage.Controls.Add(this.DamageList);
 			this.DamagePage.Controls.Add(this.DamageToolbar);
 			this.DamagePage.Location = new System.Drawing.Point(4, 22);
@@ -953,9 +953,9 @@
 			this.DamagePage.TabIndex = 4;
 			this.DamagePage.Text = "Damage";
 			this.DamagePage.UseVisualStyleBackColor = true;
-			// 
+			//
 			// DamageList
-			// 
+			//
 			this.DamageList.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.DmgModHdr});
 			this.DamageList.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -980,14 +980,14 @@
 			this.DamageList.UseCompatibleStateImageBehavior = false;
 			this.DamageList.View = System.Windows.Forms.View.Details;
 			this.DamageList.DoubleClick += new System.EventHandler(this.EditDmgBtn_Click);
-			// 
+			//
 			// DmgModHdr
-			// 
+			//
 			this.DmgModHdr.Text = "Damage Modifier";
 			this.DmgModHdr.Width = 200;
-			// 
+			//
 			// DamageToolbar
-			// 
+			//
 			this.DamageToolbar.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.AddDmgBtn,
             this.RemoveDmgBtn,
@@ -1000,9 +1000,9 @@
 			this.DamageToolbar.Size = new System.Drawing.Size(371, 25);
 			this.DamageToolbar.TabIndex = 2;
 			this.DamageToolbar.Text = "toolStrip1";
-			// 
+			//
 			// AddDmgBtn
-			// 
+			//
 			this.AddDmgBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
 			this.AddDmgBtn.Image = ((System.Drawing.Image)(resources.GetObject("AddDmgBtn.Image")));
 			this.AddDmgBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -1010,9 +1010,9 @@
 			this.AddDmgBtn.Size = new System.Drawing.Size(33, 22);
 			this.AddDmgBtn.Text = "Add";
 			this.AddDmgBtn.Click += new System.EventHandler(this.AddDmgBtn_Click);
-			// 
+			//
 			// RemoveDmgBtn
-			// 
+			//
 			this.RemoveDmgBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
 			this.RemoveDmgBtn.Image = ((System.Drawing.Image)(resources.GetObject("RemoveDmgBtn.Image")));
 			this.RemoveDmgBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -1020,9 +1020,9 @@
 			this.RemoveDmgBtn.Size = new System.Drawing.Size(54, 22);
 			this.RemoveDmgBtn.Text = "Remove";
 			this.RemoveDmgBtn.Click += new System.EventHandler(this.RemoveDmgBtn_Click);
-			// 
+			//
 			// EditDmgBtn
-			// 
+			//
 			this.EditDmgBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
 			this.EditDmgBtn.Image = ((System.Drawing.Image)(resources.GetObject("EditDmgBtn.Image")));
 			this.EditDmgBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -1030,14 +1030,14 @@
 			this.EditDmgBtn.Size = new System.Drawing.Size(31, 22);
 			this.EditDmgBtn.Text = "Edit";
 			this.EditDmgBtn.Click += new System.EventHandler(this.EditDmgBtn_Click);
-			// 
+			//
 			// toolStripSeparator2
-			// 
+			//
 			this.toolStripSeparator2.Name = "toolStripSeparator2";
 			this.toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
-			// 
+			//
 			// RegenBtn
-			// 
+			//
 			this.RegenBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
 			this.RegenBtn.Image = ((System.Drawing.Image)(resources.GetObject("RegenBtn.Image")));
 			this.RegenBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -1045,17 +1045,17 @@
 			this.RegenBtn.Size = new System.Drawing.Size(81, 22);
 			this.RegenBtn.Text = "Regeneration";
 			this.RegenBtn.Click += new System.EventHandler(this.RegenBtn_Click);
-			// 
+			//
 			// ClearRegenLbl
-			// 
+			//
 			this.ClearRegenLbl.IsLink = true;
 			this.ClearRegenLbl.Name = "ClearRegenLbl";
 			this.ClearRegenLbl.Size = new System.Drawing.Size(88, 22);
 			this.ClearRegenLbl.Text = "(remove regen)";
 			this.ClearRegenLbl.Click += new System.EventHandler(this.ClearRegenLbl_Click);
-			// 
+			//
 			// DetailsPage
-			// 
+			//
 			this.DetailsPage.Controls.Add(this.DetailsList);
 			this.DetailsPage.Controls.Add(this.DetailsToolbar);
 			this.DetailsPage.Location = new System.Drawing.Point(4, 22);
@@ -1065,9 +1065,9 @@
 			this.DetailsPage.TabIndex = 3;
 			this.DetailsPage.Text = "Details";
 			this.DetailsPage.UseVisualStyleBackColor = true;
-			// 
+			//
 			// DetailsList
-			// 
+			//
 			this.DetailsList.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.AttributeHdr,
             this.ValueHdr});
@@ -1083,19 +1083,19 @@
 			this.DetailsList.UseCompatibleStateImageBehavior = false;
 			this.DetailsList.View = System.Windows.Forms.View.Details;
 			this.DetailsList.DoubleClick += new System.EventHandler(this.DetailsEditBtn_Click);
-			// 
+			//
 			// AttributeHdr
-			// 
+			//
 			this.AttributeHdr.Text = "Field";
 			this.AttributeHdr.Width = 100;
-			// 
+			//
 			// ValueHdr
-			// 
+			//
 			this.ValueHdr.Text = "Details";
 			this.ValueHdr.Width = 200;
-			// 
+			//
 			// DetailsToolbar
-			// 
+			//
 			this.DetailsToolbar.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.DetailsEditBtn});
 			this.DetailsToolbar.Location = new System.Drawing.Point(3, 3);
@@ -1103,9 +1103,9 @@
 			this.DetailsToolbar.Size = new System.Drawing.Size(371, 25);
 			this.DetailsToolbar.TabIndex = 2;
 			this.DetailsToolbar.Text = "toolStrip1";
-			// 
+			//
 			// DetailsEditBtn
-			// 
+			//
 			this.DetailsEditBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
 			this.DetailsEditBtn.Image = ((System.Drawing.Image)(resources.GetObject("DetailsEditBtn.Image")));
 			this.DetailsEditBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -1113,9 +1113,9 @@
 			this.DetailsEditBtn.Size = new System.Drawing.Size(31, 22);
 			this.DetailsEditBtn.Text = "Edit";
 			this.DetailsEditBtn.Click += new System.EventHandler(this.DetailsEditBtn_Click);
-			// 
+			//
 			// PicturePage
-			// 
+			//
 			this.PicturePage.Controls.Add(this.PortraitBox);
 			this.PicturePage.Controls.Add(this.PortraitToolbar);
 			this.PicturePage.Location = new System.Drawing.Point(4, 22);
@@ -1125,9 +1125,9 @@
 			this.PicturePage.TabIndex = 7;
 			this.PicturePage.Text = "Picture";
 			this.PicturePage.UseVisualStyleBackColor = true;
-			// 
+			//
 			// PortraitBox
-			// 
+			//
 			this.PortraitBox.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.PortraitBox.Location = new System.Drawing.Point(3, 28);
 			this.PortraitBox.Name = "PortraitBox";
@@ -1135,9 +1135,9 @@
 			this.PortraitBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
 			this.PortraitBox.TabIndex = 3;
 			this.PortraitBox.TabStop = false;
-			// 
+			//
 			// PortraitToolbar
-			// 
+			//
 			this.PortraitToolbar.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.PortraitBrowse,
             this.PortraitClear});
@@ -1146,9 +1146,9 @@
 			this.PortraitToolbar.Size = new System.Drawing.Size(371, 25);
 			this.PortraitToolbar.TabIndex = 2;
 			this.PortraitToolbar.Text = "toolStrip1";
-			// 
+			//
 			// PortraitBrowse
-			// 
+			//
 			this.PortraitBrowse.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
 			this.PortraitBrowse.Image = ((System.Drawing.Image)(resources.GetObject("PortraitBrowse.Image")));
 			this.PortraitBrowse.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -1156,9 +1156,9 @@
 			this.PortraitBrowse.Size = new System.Drawing.Size(49, 22);
 			this.PortraitBrowse.Text = "Browse";
 			this.PortraitBrowse.Click += new System.EventHandler(this.PortraitBrowse_Click);
-			// 
+			//
 			// PortraitClear
-			// 
+			//
 			this.PortraitClear.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
 			this.PortraitClear.Image = ((System.Drawing.Image)(resources.GetObject("PortraitClear.Image")));
 			this.PortraitClear.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -1166,9 +1166,9 @@
 			this.PortraitClear.Size = new System.Drawing.Size(38, 22);
 			this.PortraitClear.Text = "Clear";
 			this.PortraitClear.Click += new System.EventHandler(this.PortraitClear_Click);
-			// 
+			//
 			// TemplateBox
-			// 
+			//
 			this.TemplateBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
 						| System.Windows.Forms.AnchorStyles.Right)));
 			this.TemplateBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
@@ -1179,9 +1179,9 @@
 			this.TemplateBox.Sorted = true;
 			this.TemplateBox.TabIndex = 5;
 			this.TemplateBox.SelectedIndexChanged += new System.EventHandler(this.TemplateBox_SelectedIndexChanged);
-			// 
+			//
 			// InfoBtn
-			// 
+			//
 			this.InfoBtn.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
 						| System.Windows.Forms.AnchorStyles.Right)));
 			this.InfoBtn.Location = new System.Drawing.Point(72, 91);
@@ -1191,18 +1191,18 @@
 			this.InfoBtn.Text = "[info]";
 			this.InfoBtn.UseVisualStyleBackColor = true;
 			this.InfoBtn.Click += new System.EventHandler(this.InfoBtn_Click);
-			// 
+			//
 			// InfoLbl
-			// 
+			//
 			this.InfoLbl.AutoSize = true;
 			this.InfoLbl.Location = new System.Drawing.Point(12, 96);
 			this.InfoLbl.Name = "InfoLbl";
 			this.InfoLbl.Size = new System.Drawing.Size(28, 13);
 			this.InfoLbl.TabIndex = 8;
 			this.InfoLbl.Text = "Info:";
-			// 
+			//
 			// NPCForm
-			// 
+			//
 			this.AcceptButton = this.OKBtn;
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -1221,7 +1221,7 @@
 			this.Controls.Add(this.OKBtn);
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
-			this.Name = "NPCForm";
+			this.Name = "NpcForm";
 			this.ShowIcon = false;
 			this.ShowInTaskbar = false;
 			this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
